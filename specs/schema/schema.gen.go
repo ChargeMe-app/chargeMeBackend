@@ -4,18 +4,11 @@
 package schema
 
 import (
-	"bytes"
-	"compress/gzip"
-	"encoding/base64"
 	"fmt"
 	"net/http"
-	"net/url"
-	"path"
-	"strings"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
-	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/labstack/echo/v4"
+	"github.com/go-chi/chi/v5"
 )
 
 // Список станций по адресу
@@ -64,187 +57,219 @@ type GetChargingStationsParams struct {
 type ServerInterface interface {
 	// Проверка сервиса
 	// (GET /healthz)
-	HealthCheck(ctx echo.Context) error
+	HealthCheck(w http.ResponseWriter, r *http.Request)
 	// Получение списка зарядных станций в пределах координат
 	// (GET /v1/stations)
-	GetChargingStations(ctx echo.Context, params GetChargingStationsParams) error
+	GetChargingStations(w http.ResponseWriter, r *http.Request, params GetChargingStationsParams)
 }
 
-// ServerInterfaceWrapper converts echo contexts to parameters.
+// ServerInterfaceWrapper converts contexts to parameters.
 type ServerInterfaceWrapper struct {
-	Handler ServerInterface
+	Handler            ServerInterface
+	HandlerMiddlewares []MiddlewareFunc
+	ErrorHandlerFunc   func(w http.ResponseWriter, r *http.Request, err error)
 }
 
-// HealthCheck converts echo context to params.
-func (w *ServerInterfaceWrapper) HealthCheck(ctx echo.Context) error {
-	var err error
+type MiddlewareFunc func(http.HandlerFunc) http.HandlerFunc
 
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.HealthCheck(ctx)
-	return err
+// HealthCheck operation middleware
+func (siw *ServerInterfaceWrapper) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.HealthCheck(w, r)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
 }
 
-// GetChargingStations converts echo context to params.
-func (w *ServerInterfaceWrapper) GetChargingStations(ctx echo.Context) error {
+// GetChargingStations operation middleware
+func (siw *ServerInterfaceWrapper) GetChargingStations(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	var err error
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetChargingStationsParams
-	// ------------- Optional query parameter "latitudeMin" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "latitudeMin", ctx.QueryParams(), &params.LatitudeMin)
+	// ------------- Optional query parameter "latitudeMin" -------------
+	if paramValue := r.URL.Query().Get("latitudeMin"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "latitudeMin", r.URL.Query(), &params.LatitudeMin)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter latitudeMin: %s", err))
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "latitudeMin", Err: err})
+		return
 	}
 
 	// ------------- Optional query parameter "longitudeMin" -------------
+	if paramValue := r.URL.Query().Get("longitudeMin"); paramValue != "" {
 
-	err = runtime.BindQueryParameter("form", true, false, "longitudeMin", ctx.QueryParams(), &params.LongitudeMin)
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "longitudeMin", r.URL.Query(), &params.LongitudeMin)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter longitudeMin: %s", err))
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "longitudeMin", Err: err})
+		return
 	}
 
 	// ------------- Optional query parameter "latitudeMax" -------------
+	if paramValue := r.URL.Query().Get("latitudeMax"); paramValue != "" {
 
-	err = runtime.BindQueryParameter("form", true, false, "latitudeMax", ctx.QueryParams(), &params.LatitudeMax)
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "latitudeMax", r.URL.Query(), &params.LatitudeMax)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter latitudeMax: %s", err))
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "latitudeMax", Err: err})
+		return
 	}
 
 	// ------------- Optional query parameter "longitudeMax" -------------
+	if paramValue := r.URL.Query().Get("longitudeMax"); paramValue != "" {
 
-	err = runtime.BindQueryParameter("form", true, false, "longitudeMax", ctx.QueryParams(), &params.LongitudeMax)
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "longitudeMax", r.URL.Query(), &params.LongitudeMax)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter longitudeMax: %s", err))
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "longitudeMax", Err: err})
+		return
 	}
 
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetChargingStations(ctx, params)
-	return err
-}
-
-// This is a simple interface which specifies echo.Route addition functions which
-// are present on both echo.Echo and echo.Group, since we want to allow using
-// either of them for path registration
-type EchoRouter interface {
-	CONNECT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	DELETE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	GET(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	HEAD(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	OPTIONS(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	PATCH(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	POST(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	PUT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	TRACE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-}
-
-// RegisterHandlers adds each server route to the EchoRouter.
-func RegisterHandlers(router EchoRouter, si ServerInterface) {
-	RegisterHandlersWithBaseURL(router, si, "")
-}
-
-// Registers handlers, and prepends BaseURL to the paths, so that the paths
-// can be served under a prefix.
-func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL string) {
-
-	wrapper := ServerInterfaceWrapper{
-		Handler: si,
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetChargingStations(w, r, params)
 	}
 
-	router.GET(baseURL+"/healthz", wrapper.HealthCheck)
-	router.GET(baseURL+"/v1/stations", wrapper.GetChargingStations)
-
-}
-
-// Base64 encoded, gzipped, json marshaled Swagger object
-var swaggerSpec = []string{
-
-	"H4sIAAAAAAAC/7xWz2/bNhT+VwRuR8N2k6UodBuKYduh2KHHIRhY+sVmK5EqSafNAgNOgmzYD2CX3Yfd",
-	"dlTTePXSWfkXHv+j4VFSrMRKIgxbbxRJvfd933v8yEMmdJppBcpZFh8yKyaQ8jD8dDQyYO1Tx53UKkyN",
-	"wAojM/pmMcPf8RKX/ggLvIj8kT/GHFf+O1ziXxFeYhFhjud+jgt/5E9Yj2VGZ2CchBCLCwE2jPa0Sblj",
-	"MZPKbW+xHnMHGZSfMAbDZj3GSyy0u1q0zkg1pjUpCM0tC9+Us22ro465E+6km46aUdQ0fVYtajW+fVXx",
-	"tD25Fdq0/2IbcksHaRh8bGCPxeyjwbpYg6pSg6o+9G8VjBvDD9hs1mMGXk6lgRGLv671XmtZKdfUKajS",
-	"YNzkV7GpsTeQ7l5l1s+eg3AE5TNjtCHo14sudKlUB9lTsJaP2+S7QSzEXO9vQ/PV1CXg2jrYn/gfcIUF",
-	"ta//OfJzzPGd/xEX+Dfm/Y2mFVopEK6k1oFE5yZ7IRP9ijvX9UBk+hV0A7GhVs2gKvY6cx21TcG6yzpI",
-	"2DSC5aaEnSXRoWjdD0JV5PvOQSBdx96kStul2tObTB9PuBnDE+o1J10C16f2wdhy34P+sD8MBDJQPJMs",
-	"Ztv9YX+blOBuEngMJsATN/mWxuPWzvzNz7HAM1z4OV5gHvmjMDwLhptHuKI56tY3WPhjUp8sN5jxm3U1",
-	"WEBhQu2+HLGYfRHyPp6AeMFIF5tpZcvCbA2HrR5/lbaZL8eFPw7a2mmacnNwP2bSjY8t1cCBmCgpeMJ2",
-	"KcRg/8Gg6Xu3KIIFvvcn/ntc4AqXuIgCZ4pNyfAd5n7uf8FzXPmf/OnGjXQW4SXdRniOC3yPuT+N8AIL",
-	"LPwcz3FJivrjDcE+BxeqLNX46iakQhqeggNDdA6ZJIAvp2AOapuMr0z0iVTBNKlJW1j9gUtSjaCW+HI8",
-	"wwLf0vVJLP/EFS7Cpz/Bt4SbjhS85mlGLbjzsP/J9lbv5j0y690Cqrbze1D9SlpT1g+FqxaLv/63YoW2",
-	"86f/k1x347pbrk7IHu60I9ttP6VCKwcqHBOeZYkUoTUHz23p0WukdznmzRdeML/r1J5Oy2fDrMd2/sPM",
-	"5fOgJR/5v1E8iSyYfTARVBuv+8wHcoLarkRlANH6yROglxhLC5iahMVs4lxm48Eg0YInE21d/Gj4aMhm",
-	"u7N/AgAA///RnGF1aQsAAA==",
-}
-
-// GetSwagger returns the content of the embedded swagger specification file
-// or error if failed to decode
-func decodeSpec() ([]byte, error) {
-	zipped, err := base64.StdEncoding.DecodeString(strings.Join(swaggerSpec, ""))
-	if err != nil {
-		return nil, fmt.Errorf("error base64 decoding spec: %s", err)
-	}
-	zr, err := gzip.NewReader(bytes.NewReader(zipped))
-	if err != nil {
-		return nil, fmt.Errorf("error decompressing spec: %s", err)
-	}
-	var buf bytes.Buffer
-	_, err = buf.ReadFrom(zr)
-	if err != nil {
-		return nil, fmt.Errorf("error decompressing spec: %s", err)
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
 	}
 
-	return buf.Bytes(), nil
+	handler(w, r.WithContext(ctx))
 }
 
-var rawSpec = decodeSpecCached()
+type UnescapedCookieParamError struct {
+	ParamName string
+	Err       error
+}
 
-// a naive cached of a decoded swagger spec
-func decodeSpecCached() func() ([]byte, error) {
-	data, err := decodeSpec()
-	return func() ([]byte, error) {
-		return data, err
+func (e *UnescapedCookieParamError) Error() string {
+	return fmt.Sprintf("error unescaping cookie parameter '%s'", e.ParamName)
+}
+
+func (e *UnescapedCookieParamError) Unwrap() error {
+	return e.Err
+}
+
+type UnmarshalingParamError struct {
+	ParamName string
+	Err       error
+}
+
+func (e *UnmarshalingParamError) Error() string {
+	return fmt.Sprintf("Error unmarshaling parameter %s as JSON: %s", e.ParamName, e.Err.Error())
+}
+
+func (e *UnmarshalingParamError) Unwrap() error {
+	return e.Err
+}
+
+type RequiredParamError struct {
+	ParamName string
+}
+
+func (e *RequiredParamError) Error() string {
+	return fmt.Sprintf("Query argument %s is required, but not found", e.ParamName)
+}
+
+type RequiredHeaderError struct {
+	ParamName string
+	Err       error
+}
+
+func (e *RequiredHeaderError) Error() string {
+	return fmt.Sprintf("Header parameter %s is required, but not found", e.ParamName)
+}
+
+func (e *RequiredHeaderError) Unwrap() error {
+	return e.Err
+}
+
+type InvalidParamFormatError struct {
+	ParamName string
+	Err       error
+}
+
+func (e *InvalidParamFormatError) Error() string {
+	return fmt.Sprintf("Invalid format for parameter %s: %s", e.ParamName, e.Err.Error())
+}
+
+func (e *InvalidParamFormatError) Unwrap() error {
+	return e.Err
+}
+
+type TooManyValuesForParamError struct {
+	ParamName string
+	Count     int
+}
+
+func (e *TooManyValuesForParamError) Error() string {
+	return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
+}
+
+// Handler creates http.Handler with routing matching OpenAPI spec.
+func Handler(si ServerInterface) http.Handler {
+	return HandlerWithOptions(si, ChiServerOptions{})
+}
+
+type ChiServerOptions struct {
+	BaseURL          string
+	BaseRouter       chi.Router
+	Middlewares      []MiddlewareFunc
+	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
+}
+
+// HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
+func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
+	return HandlerWithOptions(si, ChiServerOptions{
+		BaseRouter: r,
+	})
+}
+
+func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string) http.Handler {
+	return HandlerWithOptions(si, ChiServerOptions{
+		BaseURL:    baseURL,
+		BaseRouter: r,
+	})
+}
+
+// HandlerWithOptions creates http.Handler with additional options
+func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handler {
+	r := options.BaseRouter
+
+	if r == nil {
+		r = chi.NewRouter()
 	}
-}
-
-// Constructs a synthetic filesystem for resolving external references when loading openapi specifications.
-func PathToRawSpec(pathToFile string) map[string]func() ([]byte, error) {
-	var res = make(map[string]func() ([]byte, error))
-	if len(pathToFile) > 0 {
-		res[pathToFile] = rawSpec
-	}
-
-	return res
-}
-
-// GetSwagger returns the Swagger specification corresponding to the generated code
-// in this file. The external references of Swagger specification are resolved.
-// The logic of resolving external references is tightly connected to "import-mapping" feature.
-// Externally referenced files must be embedded in the corresponding golang packages.
-// Urls can be supported but this task was out of the scope.
-func GetSwagger() (swagger *openapi3.T, err error) {
-	var resolvePath = PathToRawSpec("")
-
-	loader := openapi3.NewLoader()
-	loader.IsExternalRefsAllowed = true
-	loader.ReadFromURIFunc = func(loader *openapi3.Loader, url *url.URL) ([]byte, error) {
-		var pathToFile = url.String()
-		pathToFile = path.Clean(pathToFile)
-		getSpec, ok := resolvePath[pathToFile]
-		if !ok {
-			err1 := fmt.Errorf("path not found: %s", pathToFile)
-			return nil, err1
+	if options.ErrorHandlerFunc == nil {
+		options.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
-		return getSpec()
 	}
-	var specData []byte
-	specData, err = rawSpec()
-	if err != nil {
-		return
+	wrapper := ServerInterfaceWrapper{
+		Handler:            si,
+		HandlerMiddlewares: options.Middlewares,
+		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
-	swagger, err = loader.LoadFromData(specData)
-	if err != nil {
-		return
-	}
-	return
+
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/healthz", wrapper.HealthCheck)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/stations", wrapper.GetChargingStations)
+	})
+
+	return r
 }
