@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: ChargeMe
+  description: ChargeMe
+  version: 1.0.0
+servers:
+  - url: https://localhost:8080
+
+paths:
+  /healthz:
+    get:
+      tags:
+        - technical
+      summary: Проверка сервиса
+      description: >-
+        Проверка сервиса на работоспособность
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Сервис работает
+
+  /v1/stations:
+    get:
+      tags:
+        - charging stations
+      operationId: getChargingStations
+      summary: Получение списка зарядных станций в пределах координат
+      description: Получение списка зарядных станций в пределах координат
+      parameters:
+        - name: latitudeMin
+          in: query
+          schema:
+            description: >-
+              Широта правого нижнего угла.
+            type: number
+            example: 56.432
+        - name: longitudeMin
+          in: query
+          schema:
+            description: >-
+              Долгота правого нижнего угла.
+            type: number
+            example: 56.432
+        - name: latitudeMax
+          in: query
+          schema:
+            description: >-
+              Широта правого верхнего угла.
+            type: number
+            example: 56.432
+        - name: longitudeMax
+          in: query
+          schema:
+            description: >-
+              Долгота правого верхнего угла.
+            type: number
+            example: 65.432
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressStations'
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+components:
+  schemas:
+    AddressStations:
+      description: Список станций по адресу
+      type: object
+      required:
+        - access
+        - address
+        - icon
+        - icon_type
+        - id
+        - latitude
+        - longitude
+        - name
+        - score
+        - stations
+      properties:
+        access:
+          type: integer
+          format: int32
+        address:
+          type: string
+        icon:
+          type: string
+        icon_type:
+          type: string
+        id:
+          type: integer
+          format: int32
+        latitude:
+          type: number
+        longitude:
+          type: number
+        name:
+          type: string
+        score:
+          type: number
+        stations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Station'
+
+    Station:
+      description: Сущность станции.
+      type: object
+      required:
+        - id
+        - outlets
+      properties:
+        id:
+          type: integer
+          format: int32
+        outlets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Outlet'
+
+    Outlet:
+      description: Сущность разъема.
+      type: object
+      required:
+        - connector
+        - id
+        - kilowatts
+        - power
+      properties:
+        connector:
+          type: integer
+          format: int32
+        id:
+          type: integer
+          format: int32
+        kilowatts:
+          type: integer
+          format: int32
+        power:
+          type: integer
+          format: int32
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+      required:
+        - code
+        - message
