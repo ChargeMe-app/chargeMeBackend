@@ -1,16 +1,16 @@
 package main
 
 import (
-	"chargeMe/internal/api"
-	"chargeMe/specs/schema"
 	"context"
-	"golang.org/x/sync/errgroup"
 	"log"
 	"net/http"
 	"os/signal"
 	"syscall"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/api"
+	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
