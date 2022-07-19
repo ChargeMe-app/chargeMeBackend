@@ -1,8 +1,8 @@
 package api
 
 import (
-	"chargeMe/specs/schema"
 	"fmt"
+	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
 	"log"
 	"net/http"
 )

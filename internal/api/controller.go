@@ -1,7 +1,7 @@
 package api
 
 import (
-	"chargeMe/specs/schema"
+	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
 )
 
 var _ schema.ServerInterface = &apiServer{}
