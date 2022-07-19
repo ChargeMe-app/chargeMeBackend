@@ -42,7 +42,7 @@ type Outlet struct {
 // Сущность станции.
 type Station struct {
 	Id      int32    `json:"id"`
-	Outlets []Outlet `json:"outlets"`
+	Outlets []Outlet `json:"outlet"`
 }
 
 // GetChargingStationsParams defines parameters for GetChargingStations.

@@ -2,19 +2,10 @@ package api
 
 import (
 	"fmt"
-	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
-	"log"
 	"net/http"
-)
 
-// Проверка сервиса
-// (GET /healthz)
-func (api *apiServer) HealthCheck(w http.ResponseWriter, r *http.Request) {
-	//ctx := r.Context()
-	w.Write([]byte("hello healthCheck"))
-	fmt.Println("hello healthCheck")
-	log.Fatal("kek HealthCheck")
-}
+	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
+)
 
 // Получение списка зарядных станций в пределах координат
 // (GET /v1/stations)

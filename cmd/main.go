@@ -2,10 +2,17 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"log"
 	"net/http"
 	"os/signal"
 	"syscall"
+
+	"github.com/jackc/pgx/v4/stdlib"
+	"github.com/jmoiron/sqlx"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/service"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/storage"
+	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/api"
@@ -14,7 +21,6 @@ import (
 )
 
 func main() {
-
 	ctx, cancel := signal.NotifyContext(
 		context.Background(),
 		syscall.SIGHUP,
@@ -26,11 +32,25 @@ func main() {
 
 	apiServer := api.NewApiServer()
 
-	err := startHttpServer(ctx, apiServer)
+	drv := stdlib.GetDefaultDriver().(*stdlib.Driver)
+
+	ctor, err := drv.OpenConnector("postgres://postgres:pass@localhost:5432/postgres?sslmode=disable")
 	if err != nil {
-		log.Fatal("failed to start httpServer", err)
+		log.Fatal("failed to connect to database:", err)
 	}
 
+	db := sql.OpenDB(ctor)
+	dbx := sqlx.NewDb(db, "pgx")
+	libDBWrapper := libdb.NewSQLXDB(dbx)
+
+	storageRegistry := storage.NewStorageRegistry(libDBWrapper)
+
+	_ = service.NewServiceRegistry(storageRegistry)
+
+	err = startHttpServer(ctx, apiServer)
+	if err != nil {
+		log.Fatal("failed to start httpServer:", err)
+	}
 }
 
 func startHttpServer(
