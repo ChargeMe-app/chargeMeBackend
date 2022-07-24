@@ -14,9 +14,9 @@ type Services struct {
 }
 
 func NewServiceRegistry(storages *storage.Storages) *Services {
-	place := storages.PlaceStorage
-	station := storages.StationStorage
-	outlet := storages.OutletStorage
+	place := placeService.NewPlaceService(storages.PlaceStorage)
+	station := stationService.NewStationService(storages.StationStorage)
+	outlet := outletService.NewOutletService(storages.OutletStorage)
 
 	return &Services{
 		Place:   place,

@@ -2,7 +2,6 @@ package place
 
 import (
 	"github.com/google/uuid"
-	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 )
 
 type PlaceID string
@@ -17,7 +16,6 @@ type Place struct {
 	score     *float64
 	longitude float64
 	latitude  float64
-	stations  []stationDomain.Station
 	access    *int
 	iconLink  *string
 	address   *string
@@ -28,7 +26,6 @@ func NewPlace(
 	score *float64,
 	longitude float64,
 	latitude float64,
-	stations []stationDomain.Station,
 	access *int,
 	iconLink *string,
 	address *string,
@@ -38,7 +35,6 @@ func NewPlace(
 		name:      name,
 		longitude: longitude,
 		latitude:  latitude,
-		stations:  stations,
 	}
 
 	p.SetPlaceScore(score)
@@ -55,7 +51,6 @@ func NewPlaceWithID(
 	score *float64,
 	longitude float64,
 	latitude float64,
-	stations []stationDomain.Station,
 	access *int,
 	iconLink *string,
 	address *string,
@@ -65,7 +60,6 @@ func NewPlaceWithID(
 		name:      name,
 		longitude: longitude,
 		latitude:  latitude,
-		stations:  stations,
 	}
 
 	p.SetPlaceScore(score)
