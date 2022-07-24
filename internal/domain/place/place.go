@@ -7,7 +7,7 @@ import (
 type PlaceID string
 
 func (placeID PlaceID) String() string {
-	return placeID.String()
+	return string(placeID)
 }
 
 type Place struct {

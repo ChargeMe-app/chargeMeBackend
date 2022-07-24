@@ -8,7 +8,7 @@ import (
 type StationID string
 
 func (stationID StationID) String() string {
-	return stationID.String()
+	return string(stationID)
 }
 
 type Station struct {

@@ -40,8 +40,6 @@ func main() {
 	)
 	defer cancel()
 
-	apiServer := api.NewApiServer()
-
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -57,6 +55,8 @@ func main() {
 	storageRegistry := storage.NewStorageRegistry(libDBWrapper)
 
 	_ = service.NewServiceRegistry(storageRegistry)
+
+	apiServer := api.NewApiServer()
 
 	err = startHttpServer(ctx, apiServer)
 	if err != nil {

@@ -39,7 +39,7 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 		Values(
 			place.GetPlaceID().String(),
 			place.GetPlaceName(),
-			place.GetPlaceName(),
+			place.GetPlaceScore(),
 			place.GetPlaceLongitude(),
 			place.GetPlaceLatitude(),
 			place.GetPlaceAddress(),
