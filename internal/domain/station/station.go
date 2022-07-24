@@ -2,7 +2,6 @@ package station
 
 import (
 	"github.com/google/uuid"
-	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 )
 
@@ -15,7 +14,6 @@ func (stationID StationID) String() string {
 type Station struct {
 	stationID StationID
 	placeID   place.PlaceID
-	outlets   []outletDomain.Outlet
 }
 
 func NewStation(placeID place.PlaceID) Station {
@@ -41,8 +39,4 @@ func (s Station) GetStationID() StationID {
 
 func (s Station) GetPlaceID() place.PlaceID {
 	return s.placeID
-}
-
-func (s Station) GetOutlets() []outletDomain.Outlet {
-	return s.outlets
 }
