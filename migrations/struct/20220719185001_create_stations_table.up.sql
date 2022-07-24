@@ -1,6 +1,7 @@
 CREATE TABLE stations(
     id TEXT PRIMARY KEY,
-    location_id TEXT NOT NULL REFERENCES places (id) ON DELETE CASCADE
+    location_id TEXT NOT NULL REFERENCES places (id) ON DELETE CASCADE,
+    access INTEGER
 );
 
 COMMENT ON TABLE stations IS 'таблица с зарядными станциями';
