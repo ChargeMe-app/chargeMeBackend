@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os/signal"
 	"syscall"
 
-	"github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/lib/pq"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/service"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/storage"
@@ -18,6 +20,14 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/internal/api"
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
 	"golang.org/x/sync/errgroup"
+)
+
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "postgres"
+	password = "pass"
+	dbname   = "postgres"
 )
 
 func main() {
@@ -32,14 +42,15 @@ func main() {
 
 	apiServer := api.NewApiServer()
 
-	drv := stdlib.GetDefaultDriver().(*stdlib.Driver)
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
 
-	ctor, err := drv.OpenConnector("postgres://postgres:pass@localhost:5432/postgres?sslmode=disable")
+	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal("failed to connect to database:", err)
+		log.Fatal("failed to connect to database:", err.Error())
 	}
 
-	db := sql.OpenDB(ctor)
 	dbx := sqlx.NewDb(db, "pgx")
 	libDBWrapper := libdb.NewSQLXDB(dbx)
 
