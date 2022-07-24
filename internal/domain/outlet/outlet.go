@@ -15,14 +15,14 @@ type Outlet struct {
 	outletID      OutletID
 	stationID     station.StationID
 	connectorType int
-	kilowatts     *int
+	kilowatts     *float64
 	power         int
 }
 
 func NewOutlet(
 	stationID station.StationID,
 	connectorType int,
-	kilowatts *int,
+	kilowatts *float64,
 	power int,
 ) Outlet {
 	outlet := Outlet{
@@ -41,7 +41,7 @@ func NewOutletWithID(
 	outletID OutletID,
 	stationID station.StationID,
 	connectorType int,
-	kilowatts *int,
+	kilowatts *float64,
 	power int,
 ) Outlet {
 	outlet := Outlet{
@@ -68,11 +68,11 @@ func (o Outlet) GetConnector() int {
 	return o.connectorType
 }
 
-func (o Outlet) GetKilowatts() *int {
+func (o Outlet) GetKilowatts() *float64 {
 	return o.kilowatts
 }
 
-func (o *Outlet) SetKilowatts(kilowatts *int) {
+func (o *Outlet) SetKilowatts(kilowatts *float64) {
 	o.kilowatts = kilowatts
 }
 

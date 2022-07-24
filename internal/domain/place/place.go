@@ -18,6 +18,9 @@ type Place struct {
 	longitude float64
 	latitude  float64
 	stations  []stationDomain.Station
+	access    *int
+	iconLink  *string
+	address   *string
 }
 
 func NewPlace(
@@ -26,6 +29,9 @@ func NewPlace(
 	longitude float64,
 	latitude float64,
 	stations []stationDomain.Station,
+	access *int,
+	iconLink *string,
+	address *string,
 ) Place {
 	p := Place{
 		placeID:   PlaceID(uuid.New().String()),
@@ -36,6 +42,9 @@ func NewPlace(
 	}
 
 	p.SetPlaceScore(score)
+	p.SetPlaceAccess(access)
+	p.SetPlaceIconLink(iconLink)
+	p.SetPlaceAddress(address)
 
 	return p
 }
@@ -47,6 +56,9 @@ func NewPlaceWithID(
 	longitude float64,
 	latitude float64,
 	stations []stationDomain.Station,
+	access *int,
+	iconLink *string,
+	address *string,
 ) Place {
 	p := Place{
 		placeID:   placeID,
@@ -57,6 +69,9 @@ func NewPlaceWithID(
 	}
 
 	p.SetPlaceScore(score)
+	p.SetPlaceAccess(access)
+	p.SetPlaceIconLink(iconLink)
+	p.SetPlaceAddress(address)
 
 	return p
 }
@@ -83,4 +98,28 @@ func (p Place) GetPlaceLongitude() float64 {
 
 func (p Place) GetPlaceLatitude() float64 {
 	return p.latitude
+}
+
+func (p Place) GetPlaceAccess() *int {
+	return p.access
+}
+
+func (p *Place) SetPlaceAccess(access *int) {
+	p.access = access
+}
+
+func (p Place) GetPlaceIconLink() *string {
+	return p.iconLink
+}
+
+func (p *Place) SetPlaceIconLink(link *string) {
+	p.iconLink = link
+}
+
+func (p Place) GetPlaceAddress() *string {
+	return p.address
+}
+
+func (p *Place) SetPlaceAddress(address *string) {
+	p.address = address
 }
