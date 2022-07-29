@@ -2,6 +2,7 @@ package station
 
 import (
 	"context"
+	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 
 	"github.com/Masterminds/squirrel"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
@@ -14,6 +15,7 @@ const (
 
 type Storage interface {
 	CreateStation(context.Context, stationDomain.Station) error
+	GetStationsByPlaceID(context.Context, placeDomain.PlaceID) ([]stationDomain.Station, error)
 }
 
 func NewStationStorage(db libdb.DB) Storage {
@@ -42,4 +44,26 @@ func (s *stationStorage) CreateStation(ctx context.Context, station stationDomai
 	}
 
 	return nil
+}
+
+func (s *stationStorage) GetStationsByPlaceID(
+	ctx context.Context,
+	placeID placeDomain.PlaceID,
+) ([]stationDomain.Station, error) {
+	query := squirrel.Select(
+		"id",
+		"location_id",
+	).
+		From(tableStations).
+		Where(squirrel.Eq{"location_id": placeID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result []StationDTO
+
+	err := s.db.Select(ctx, query, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewStationListFromDTO(result), nil
 }

@@ -2,6 +2,7 @@ package outlet
 
 import (
 	"context"
+	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 
 	"github.com/Masterminds/squirrel"
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
@@ -14,6 +15,7 @@ const (
 
 type Storage interface {
 	CreateOutlet(context.Context, outletDomain.Outlet) error
+	GetOutletsByStationID(context.Context, stationDomain.StationID) ([]outletDomain.Outlet, error)
 }
 
 func NewOutletStorage(db libdb.DB) Storage {
@@ -48,4 +50,28 @@ func (o *outletStorage) CreateOutlet(ctx context.Context, outlet outletDomain.Ou
 	}
 
 	return nil
+}
+
+func (o *outletStorage) GetOutletsByStationID(ctx context.Context, stationID stationDomain.StationID) ([]outletDomain.Outlet, error) {
+	query := squirrel.Select(
+		"id",
+		"station_id",
+		"connector",
+		"kilowatts",
+		"power",
+	).
+		From(tableOutlets).
+		Where(squirrel.Eq{"station_id": stationID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result []OutletDTO
+
+	err := o.db.Select(ctx, query, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	outlets := NewOutletListFromDTO(result)
+
+	return outlets, nil
 }
