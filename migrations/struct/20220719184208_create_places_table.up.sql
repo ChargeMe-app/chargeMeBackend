@@ -2,7 +2,7 @@ CREATE TABLE places
 (
     id        TEXT PRIMARY KEY,
     name      TEXT  NOT NULL,
-    score     FLOAT NOT NULL,
+    score     FLOAT,
     longitude FLOAT NOT NULL,
     latitude  FLOAT NOT NULL,
     address   TEXT,

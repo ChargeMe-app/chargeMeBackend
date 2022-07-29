@@ -8,7 +8,7 @@ import (
 type OutletID string
 
 func (o OutletID) String() string {
-	return o.String()
+	return string(o)
 }
 
 type Outlet struct {
