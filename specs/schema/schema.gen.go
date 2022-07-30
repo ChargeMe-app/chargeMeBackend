@@ -13,15 +13,15 @@ import (
 
 // Список станций по адресу
 type AddressStations struct {
-	Access    int32     `json:"access"`
+	Access    int       `json:"access"`
 	Address   string    `json:"address"`
-	Icon      string    `json:"icon"`
-	IconType  string    `json:"icon_type"`
-	Id        int32     `json:"id"`
+	Icon      *string   `json:"icon,omitempty"`
+	IconType  *string   `json:"icon_type,omitempty"`
+	Id        string    `json:"id"`
 	Latitude  float32   `json:"latitude"`
 	Longitude float32   `json:"longitude"`
 	Name      string    `json:"name"`
-	Score     float32   `json:"score"`
+	Score     *float32  `json:"score,omitempty"`
 	Stations  []Station `json:"stations"`
 }
 
@@ -33,16 +33,22 @@ type Error struct {
 
 // Сущность разъема.
 type Outlet struct {
-	Connector int32 `json:"connector"`
-	Id        int32 `json:"id"`
-	Kilowatts int32 `json:"kilowatts"`
-	Power     int32 `json:"power"`
+	Connector int      `json:"connector"`
+	Id        string   `json:"id"`
+	Kilowatts *float32 `json:"kilowatts"`
+	Power     int      `json:"power"`
+}
+
+// ResponseLocations defines model for ResponseLocations.
+type ResponseLocations struct {
+	// Результат запроса.
+	Data []AddressStations `json:"data"`
 }
 
 // Сущность станции.
 type Station struct {
-	Id      int32    `json:"id"`
-	Outlets []Outlet `json:"outlet"`
+	Id      string   `json:"id"`
+	Outlets []Outlet `json:"outlets"`
 }
 
 // GetChargingStationsParams defines parameters for GetChargingStations.

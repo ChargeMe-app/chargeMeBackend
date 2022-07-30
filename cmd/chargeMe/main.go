@@ -54,9 +54,9 @@ func main() {
 
 	storageRegistry := storage.NewStorageRegistry(libDBWrapper)
 
-	_ = service.NewServiceRegistry(storageRegistry)
+	serviceRegistry := service.NewServiceRegistry(storageRegistry)
 
-	apiServer := api.NewApiServer()
+	apiServer := api.NewApiServer(serviceRegistry)
 
 	err = startHttpServer(ctx, apiServer)
 	if err != nil {

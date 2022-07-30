@@ -14,6 +14,7 @@ const (
 
 type Storage interface {
 	CreatePlace(context.Context, placeDomain.Place) error
+	GetPlaces(context.Context, float64, float64, float64, float64) ([]placeDomain.Place, error)
 }
 
 func NewPlaceStorage(db libdb.DB) Storage {
@@ -54,4 +55,36 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 	}
 
 	return nil
+}
+
+func (s *placeStorage) GetPlaces(
+	ctx context.Context,
+	minLongitude float64,
+	maxLongitude float64,
+	minLatitude float64,
+	maxLatitude float64,
+) ([]placeDomain.Place, error) {
+	query := squirrel.Select(
+		"id",
+		"name",
+		"score",
+		"longitude",
+		"latitude",
+		"address",
+		"access",
+		"icon_link",
+	).
+		From(tablePlaces).
+		Where(squirrel.Expr("longitude > ? AND longitude < ?", minLongitude, maxLongitude)).
+		Where(squirrel.Expr("latitude > ? AND latitude < ?", minLatitude, maxLatitude)).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result []PlaceDTO
+
+	err := s.db.Select(ctx, query, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewPlaceListDTO(result), nil
 }
