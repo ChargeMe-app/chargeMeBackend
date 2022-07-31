@@ -13,11 +13,11 @@ func (api *apiServer) GetChargingStations(w http.ResponseWriter, r *http.Request
 	ctx := r.Context()
 	var addresses []schema.AddressStations
 
-	minLongitude := float64(*params.LongitudeMin)
-	maxLongitude := float64(*params.LongitudeMax)
+	minLongitude := *params.LongitudeMin
+	maxLongitude := *params.LongitudeMax
 
-	minLatitude := float64(*params.LatitudeMin)
-	maxLatitude := float64(*params.LatitudeMax)
+	minLatitude := *params.LatitudeMin
+	maxLatitude := *params.LatitudeMax
 
 	places, err := api.placeService.GetPlaces(ctx, minLongitude, maxLongitude, minLatitude, maxLatitude)
 	if err != nil {
@@ -46,6 +46,7 @@ func (api *apiServer) GetChargingStations(w http.ResponseWriter, r *http.Request
 			for _, outlet := range outlets {
 				outletSchema := schema.Outlet{
 					Connector: outlet.GetConnector(),
+					Kilowatts: outlet.GetKilowatts(),
 					Id:        outlet.GetOutletID().String(),
 					Power:     outlet.GetPower(),
 				}
@@ -65,8 +66,8 @@ func (api *apiServer) GetChargingStations(w http.ResponseWriter, r *http.Request
 			Access:    *place.GetPlaceAccess(),
 			Address:   *place.GetPlaceAddress(),
 			Id:        place.GetPlaceID().String(),
-			Latitude:  float32(place.GetPlaceLatitude()),
-			Longitude: float32(place.GetPlaceLongitude()),
+			Latitude:  place.GetPlaceLatitude(),
+			Longitude: place.GetPlaceLongitude(),
 			Name:      place.GetPlaceName(),
 			Stations:  stationResponse,
 		}

@@ -9,7 +9,7 @@ type OutletDTO struct {
 	OutletID  string   `db:"id"`
 	StationID string   `db:"station_id"`
 	Connector int      `db:"connector"`
-	Kilowatts *float64 `db:"kilowatts"`
+	Kilowatts *float32 `db:"kilowatts"`
 	Power     int      `db:"power"`
 }
 
