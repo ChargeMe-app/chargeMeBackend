@@ -13,9 +13,9 @@ func (placeID PlaceID) String() string {
 type Place struct {
 	placeID   PlaceID
 	name      string
-	score     *float64
-	longitude float64
-	latitude  float64
+	score     *float32
+	longitude float32
+	latitude  float32
 	access    *int
 	iconLink  *string
 	address   *string
@@ -23,9 +23,9 @@ type Place struct {
 
 func NewPlace(
 	name string,
-	score *float64,
-	longitude float64,
-	latitude float64,
+	score *float32,
+	longitude float32,
+	latitude float32,
 	access *int,
 	iconLink *string,
 	address *string,
@@ -48,9 +48,9 @@ func NewPlace(
 func NewPlaceWithID(
 	placeID PlaceID,
 	name string,
-	score *float64,
-	longitude float64,
-	latitude float64,
+	score *float32,
+	longitude float32,
+	latitude float32,
 	access *int,
 	iconLink *string,
 	address *string,
@@ -78,19 +78,19 @@ func (p Place) GetPlaceName() string {
 	return p.name
 }
 
-func (p Place) GetPlaceScore() *float64 {
+func (p Place) GetPlaceScore() *float32 {
 	return p.score
 }
 
-func (p *Place) SetPlaceScore(score *float64) {
+func (p *Place) SetPlaceScore(score *float32) {
 	p.score = score
 }
 
-func (p Place) GetPlaceLongitude() float64 {
+func (p Place) GetPlaceLongitude() float32 {
 	return p.longitude
 }
 
-func (p Place) GetPlaceLatitude() float64 {
+func (p Place) GetPlaceLatitude() float32 {
 	return p.latitude
 }
 

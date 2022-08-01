@@ -5,9 +5,9 @@ import placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/p
 type PlaceDTO struct {
 	PlaceID   string   `db:"id"`
 	Name      string   `db:"name"`
-	Score     *float64 `db:"score"`
-	Longitude float64  `db:"longitude"`
-	Latitude  float64  `db:"latitude"`
+	Score     *float32 `db:"score"`
+	Longitude float32  `db:"longitude"`
+	Latitude  float32  `db:"latitude"`
 	Address   *string  `db:"address"`
 	Access    *int     `db:"access"`
 	IconLink  *string  `db:"icon_link"`
