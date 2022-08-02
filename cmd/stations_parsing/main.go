@@ -38,9 +38,9 @@ type LocationDTOJson struct {
 	Name      string            `json:"name"`
 	Access    int               `json:"access,omitempty"`
 	Address   string            `json:"address,omitempty"`
-	Latitude  float64           `json:"latitude"`
-	Longitude float64           `json:"longitude"`
-	Score     *float64          `json:"score,omitempty"`
+	Latitude  float32           `json:"latitude"`
+	Longitude float32           `json:"longitude"`
+	Score     *float32          `json:"score,omitempty"`
 	IconLink  *string           `json:"icon"`
 	Stations  []StationsDTOJson `json:"stations"`
 }
@@ -54,7 +54,7 @@ type StationsDTOJson struct {
 type OutletDTOJson struct {
 	Id            int      `json:"id"`
 	ConnectorType int      `json:"connector_type"`
-	Kilowatts     *float64 `json:"kilowatts,omitempty"`
+	Kilowatts     *float32 `json:"kilowatts,omitempty"`
 	Power         int      `json:"power"`
 }
 
