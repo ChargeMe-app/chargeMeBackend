@@ -35,7 +35,7 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 			"latitude",
 			"address",
 			"access",
-			"icon_link",
+			"icon_type",
 		).
 		Values(
 			place.GetPlaceID().String(),
@@ -45,7 +45,7 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 			place.GetPlaceLatitude(),
 			place.GetPlaceAddress(),
 			place.GetPlaceAccess(),
-			place.GetPlaceIconLink(),
+			place.GetPlaceIconType(),
 		).
 		PlaceholderFormat(squirrel.Dollar)
 
@@ -72,7 +72,7 @@ func (s *placeStorage) GetPlaces(
 		"latitude",
 		"address",
 		"access",
-		"icon_link",
+		"icon_type",
 	).
 		From(tablePlaces).
 		Where(squirrel.Expr("longitude > ? AND longitude < ?", minLongitude, maxLongitude)).

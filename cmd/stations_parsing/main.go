@@ -28,9 +28,9 @@ import (
 const (
 	host     = "localhost"
 	port     = 5432
+	dbname   = "postgres"
 	user     = "postgres"
 	password = "pass"
-	dbname   = "postgres"
 )
 
 type LocationDTOJson struct {
@@ -41,7 +41,7 @@ type LocationDTOJson struct {
 	Latitude  float32           `json:"latitude"`
 	Longitude float32           `json:"longitude"`
 	Score     *float32          `json:"score,omitempty"`
-	IconLink  *string           `json:"icon"`
+	IconType  *string           `json:"icon_type,omitempty"`
 	Stations  []StationsDTOJson `json:"stations"`
 }
 
@@ -91,7 +91,7 @@ func main() {
 func startJob(ctx context.Context, storageRegistry *storage.Storages) error {
 	var dto []LocationDTOJson
 
-	jsonFile, err := os.Open("/Users/almazkhayrullin/Desktop/stationData.json")
+	jsonFile, err := os.Open("/Users/almazkhayrullin/Downloads/stationData.json")
 	if err != nil {
 		log.Fatal("failed to parse json:", err.Error())
 	}
@@ -125,7 +125,7 @@ func NewLocationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistr
 		dto.Longitude,
 		dto.Latitude,
 		&dto.Access,
-		dto.IconLink,
+		dto.IconType,
 		&dto.Address,
 	)
 

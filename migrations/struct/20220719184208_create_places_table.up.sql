@@ -7,7 +7,7 @@ CREATE TABLE places
     latitude  FLOAT NOT NULL,
     address   TEXT,
     access    INTEGER,
-    icon_link TEXT
+    icon_type TEXT
 );
 
 COMMENT ON TABLE places IS 'таблица с локациями зарядных станций';
@@ -18,4 +18,4 @@ COMMENT ON COLUMN places.longitude IS 'долгота';
 COMMENT ON COLUMN places.latitude IS 'широта';
 COMMENT ON COLUMN places.address IS 'адрес';
 COMMENT ON COLUMN places.access IS 'доступность';
-COMMENT ON COLUMN places.icon_link IS 'ссылка на иконку';
+COMMENT ON COLUMN places.icon_type IS 'тип на иконку';

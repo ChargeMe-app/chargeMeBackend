@@ -17,7 +17,7 @@ type Place struct {
 	longitude float32
 	latitude  float32
 	access    *int
-	iconLink  *string
+	iconType  *string
 	address   *string
 }
 
@@ -27,7 +27,7 @@ func NewPlace(
 	longitude float32,
 	latitude float32,
 	access *int,
-	iconLink *string,
+	iconType *string,
 	address *string,
 ) Place {
 	p := Place{
@@ -39,7 +39,7 @@ func NewPlace(
 
 	p.SetPlaceScore(score)
 	p.SetPlaceAccess(access)
-	p.SetPlaceIconLink(iconLink)
+	p.SetPlaceIconType(iconType)
 	p.SetPlaceAddress(address)
 
 	return p
@@ -52,7 +52,7 @@ func NewPlaceWithID(
 	longitude float32,
 	latitude float32,
 	access *int,
-	iconLink *string,
+	iconType *string,
 	address *string,
 ) Place {
 	p := Place{
@@ -64,7 +64,7 @@ func NewPlaceWithID(
 
 	p.SetPlaceScore(score)
 	p.SetPlaceAccess(access)
-	p.SetPlaceIconLink(iconLink)
+	p.SetPlaceIconType(iconType)
 	p.SetPlaceAddress(address)
 
 	return p
@@ -102,12 +102,12 @@ func (p *Place) SetPlaceAccess(access *int) {
 	p.access = access
 }
 
-func (p Place) GetPlaceIconLink() *string {
-	return p.iconLink
+func (p Place) GetPlaceIconType() *string {
+	return p.iconType
 }
 
-func (p *Place) SetPlaceIconLink(link *string) {
-	p.iconLink = link
+func (p *Place) SetPlaceIconType(iconType *string) {
+	p.iconType = iconType
 }
 
 func (p Place) GetPlaceAddress() *string {

@@ -10,7 +10,7 @@ type PlaceDTO struct {
 	Latitude  float32  `db:"latitude"`
 	Address   *string  `db:"address"`
 	Access    *int     `db:"access"`
-	IconLink  *string  `db:"icon_link"`
+	IconType  *string  `db:"icon_type"`
 }
 
 func NewPlaceFromDTO(dto PlaceDTO) placeDomain.Place {
@@ -21,7 +21,7 @@ func NewPlaceFromDTO(dto PlaceDTO) placeDomain.Place {
 		dto.Longitude,
 		dto.Latitude,
 		dto.Access,
-		dto.IconLink,
+		dto.IconType,
 		dto.Address,
 	)
 }
