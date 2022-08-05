@@ -1,13 +1,22 @@
 CREATE TABLE places
 (
-    id        TEXT PRIMARY KEY,
-    name      TEXT  NOT NULL,
-    score     FLOAT,
-    longitude FLOAT NOT NULL,
-    latitude  FLOAT NOT NULL,
-    address   TEXT,
-    access    INTEGER,
-    icon_type TEXT
+    id                             TEXT PRIMARY KEY,
+    name                           TEXT  NOT NULL,
+    score                          FLOAT,
+    longitude                      FLOAT NOT NULL,
+    latitude                       FLOAT NOT NULL,
+    address                        TEXT,
+    icon_type                      TEXT,
+    description                    TEXT,
+    phone_number                   TEXT,
+    access                         INTEGER,
+    access_restriction             TEXT,
+    access_restriction_description TEXT,
+    cost                           BOOL,
+    cost_description               TEXT,
+    hours                          TEXT,
+    open247                        BOOL DEFAULT TRUE,
+    isOpenOrActive                 BOOL DEFAULT TRUE
 );
 
 COMMENT ON TABLE places IS 'таблица с локациями зарядных станций';
