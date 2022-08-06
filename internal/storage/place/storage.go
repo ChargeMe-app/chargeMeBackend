@@ -36,6 +36,16 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 			"address",
 			"access",
 			"icon_type",
+			"description",
+			"access_restriction",
+			"access_restriction_description",
+			"cost",
+			"cost_description",
+			"hours",
+			"open247",
+			"is_open_or_active",
+			"phone_number",
+			"created_at",
 		).
 		Values(
 			place.GetPlaceID().String(),
@@ -46,6 +56,16 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 			place.GetPlaceAddress(),
 			place.GetPlaceAccess(),
 			place.GetPlaceIconType(),
+			place.GetDescription(),
+			place.GetAccessRestriction(),
+			place.GetAccessRestrictionDescription(),
+			place.GetCost(),
+			place.GetCostDescription(),
+			place.GetHours(),
+			place.GetOpen247(),
+			place.GetIsOpenOrActive(),
+			place.GetPhoneNumber(),
+			place.GetCreatedAt(),
 		).
 		PlaceholderFormat(squirrel.Dollar)
 

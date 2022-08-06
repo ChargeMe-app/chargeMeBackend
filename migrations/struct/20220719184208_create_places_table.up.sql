@@ -1,10 +1,10 @@
 CREATE TABLE places
 (
     id                             TEXT PRIMARY KEY,
-    name                           TEXT  NOT NULL,
+    name                           TEXT         NOT NULL,
     score                          FLOAT,
-    longitude                      FLOAT NOT NULL,
-    latitude                       FLOAT NOT NULL,
+    longitude                      FLOAT        NOT NULL,
+    latitude                       FLOAT        NOT NULL,
     address                        TEXT,
     icon_type                      TEXT,
     description                    TEXT,
@@ -16,7 +16,8 @@ CREATE TABLE places
     cost_description               TEXT,
     hours                          TEXT,
     open247                        BOOL DEFAULT TRUE,
-    isOpenOrActive                 BOOL DEFAULT TRUE
+    is_open_or_active              BOOL DEFAULT TRUE,
+    created_at                     TIMESTAMP(0) NOT NULL
 );
 
 COMMENT ON TABLE places IS 'таблица с локациями зарядных станций';

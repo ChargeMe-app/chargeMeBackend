@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-type newModelFromFunc func(createdAt time.Time, updatedAt time.Time, deletedAt *time.Time) Model
+type newModelFromFunc func(createdAt time.Time, deletedAt *time.Time) Model
 
 type newModelFunc func() Model
 
@@ -13,7 +13,6 @@ var (
 
 type Model struct {
 	createdAt time.Time
-	updatedAt time.Time
 	deletedAt *time.Time
 }
 
@@ -22,14 +21,12 @@ func newModel() Model {
 
 	return Model{
 		createdAt: data,
-		updatedAt: data,
 		deletedAt: nil,
 	}
 }
 
 func newModelFrom(
 	createdAt time.Time,
-	updatedAt time.Time,
 	deletedAt *time.Time,
 ) Model {
 	var deleted time.Time
@@ -39,14 +36,13 @@ func newModelFrom(
 
 	return Model{
 		createdAt: createdAt.In(time.UTC),
-		updatedAt: updatedAt.In(time.UTC),
 		deletedAt: &deleted,
 	}
 }
 
-func (m *Model) Update() {
-	m.updatedAt = time.Now().In(time.UTC)
-}
+//func (m *Model) Update() {
+//	m.updatedAt = time.Now().In(time.UTC)
+//}
 
 func (m *Model) Delete() {
 	now := time.Now().In(time.UTC)
@@ -57,9 +53,9 @@ func (m Model) GetCreatedAt() time.Time {
 	return m.createdAt
 }
 
-func (m Model) GetUpdatedAt() time.Time {
-	return m.updatedAt
-}
+//func (m Model) GetUpdatedAt() time.Time {
+//	return m.updatedAt
+//}
 
 func (m Model) GetDeletedAt() *time.Time {
 	return m.deletedAt

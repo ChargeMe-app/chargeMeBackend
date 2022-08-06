@@ -2,6 +2,7 @@ package place
 
 import (
 	"github.com/google/uuid"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 )
 
 type PlaceID string
@@ -19,6 +20,7 @@ type Place struct {
 	access                       *int
 	iconType                     *string
 	address                      *string
+	description                  *string
 	accessRestriction            *string
 	accessRestrictionDescription *string
 	cost                         *bool
@@ -26,6 +28,8 @@ type Place struct {
 	hours                        *string
 	open247                      *bool
 	isOpenOrActive               *bool
+	phoneNumber                  *string
+	domain.Model
 }
 
 func NewPlace(
@@ -36,6 +40,7 @@ func NewPlace(
 	access *int,
 	iconType *string,
 	address *string,
+	description *string,
 	accessRestriction *string,
 	accessRestrictionDescription *string,
 	cost *bool,
@@ -43,27 +48,29 @@ func NewPlace(
 	hours *string,
 	open247 *bool,
 	isOpenOrActive *bool,
+	phoneNumber *string,
+	model domain.Model,
 ) Place {
-	p := Place{
-		placeID:   PlaceID(uuid.New().String()),
-		name:      name,
-		longitude: longitude,
-		latitude:  latitude,
+	return Place{
+		placeID:                      PlaceID(uuid.New().String()),
+		name:                         name,
+		longitude:                    longitude,
+		latitude:                     latitude,
+		score:                        score,
+		access:                       access,
+		iconType:                     iconType,
+		address:                      address,
+		description:                  description,
+		accessRestriction:            accessRestriction,
+		accessRestrictionDescription: accessRestrictionDescription,
+		cost:                         cost,
+		costDescription:              costDescription,
+		hours:                        hours,
+		open247:                      open247,
+		isOpenOrActive:               isOpenOrActive,
+		phoneNumber:                  phoneNumber,
+		Model:                        model,
 	}
-
-	p.SetPlaceScore(score)
-	p.SetPlaceAccess(access)
-	p.SetPlaceIconType(iconType)
-	p.SetPlaceAddress(address)
-	p.SetAccessRestriction(accessRestriction)
-	p.SetAccessRestrictionDescription(accessRestrictionDescription)
-	p.SetCost(cost)
-	p.SetCostDescription(costDescription)
-	p.SetHours(hours)
-	p.SetOpen247(open247)
-	p.SetIsOpenOrActive(isOpenOrActive)
-
-	return p
 }
 
 func NewPlaceWithID(
@@ -75,6 +82,7 @@ func NewPlaceWithID(
 	access *int,
 	iconType *string,
 	address *string,
+	description *string,
 	accessRestriction *string,
 	accessRestrictionDescription *string,
 	cost *bool,
@@ -82,38 +90,40 @@ func NewPlaceWithID(
 	hours *string,
 	open247 *bool,
 	isOpenOrActive *bool,
+	phoneNumber *string,
+	model domain.Model,
 ) Place {
-	p := Place{
-		placeID:   placeID,
-		name:      name,
-		longitude: longitude,
-		latitude:  latitude,
+	return Place{
+		placeID:                      placeID,
+		name:                         name,
+		longitude:                    longitude,
+		latitude:                     latitude,
+		score:                        score,
+		access:                       access,
+		iconType:                     iconType,
+		address:                      address,
+		description:                  description,
+		accessRestriction:            accessRestriction,
+		accessRestrictionDescription: accessRestrictionDescription,
+		cost:                         cost,
+		costDescription:              costDescription,
+		hours:                        hours,
+		open247:                      open247,
+		isOpenOrActive:               isOpenOrActive,
+		phoneNumber:                  phoneNumber,
+		Model:                        model,
 	}
-
-	p.SetPlaceScore(score)
-	p.SetPlaceAccess(access)
-	p.SetPlaceIconType(iconType)
-	p.SetPlaceAddress(address)
-	p.SetAccessRestriction(accessRestriction)
-	p.SetAccessRestrictionDescription(accessRestrictionDescription)
-	p.SetCost(cost)
-	p.SetCostDescription(costDescription)
-	p.SetHours(hours)
-	p.SetOpen247(open247)
-	p.SetIsOpenOrActive(isOpenOrActive)
-
-	return p
 }
 
-func (p Place) GetPlaceID() PlaceID {
+func (p *Place) GetPlaceID() PlaceID {
 	return p.placeID
 }
 
-func (p Place) GetPlaceName() string {
+func (p *Place) GetPlaceName() string {
 	return p.name
 }
 
-func (p Place) GetPlaceScore() *float32 {
+func (p *Place) GetPlaceScore() *float32 {
 	return p.score
 }
 
@@ -121,15 +131,15 @@ func (p *Place) SetPlaceScore(score *float32) {
 	p.score = score
 }
 
-func (p Place) GetPlaceLongitude() float32 {
+func (p *Place) GetPlaceLongitude() float32 {
 	return p.longitude
 }
 
-func (p Place) GetPlaceLatitude() float32 {
+func (p *Place) GetPlaceLatitude() float32 {
 	return p.latitude
 }
 
-func (p Place) GetPlaceAccess() *int {
+func (p *Place) GetPlaceAccess() *int {
 	return p.access
 }
 
@@ -137,7 +147,7 @@ func (p *Place) SetPlaceAccess(access *int) {
 	p.access = access
 }
 
-func (p Place) GetPlaceIconType() *string {
+func (p *Place) GetPlaceIconType() *string {
 	return p.iconType
 }
 
@@ -145,7 +155,7 @@ func (p *Place) SetPlaceIconType(iconType *string) {
 	p.iconType = iconType
 }
 
-func (p Place) GetPlaceAddress() *string {
+func (p *Place) GetPlaceAddress() *string {
 	return p.address
 }
 
@@ -207,4 +217,20 @@ func (p *Place) SetIsOpenOrActive(flag *bool) {
 
 func (p *Place) GetIsOpenOrActive() *bool {
 	return p.isOpenOrActive
+}
+
+func (p *Place) SetPhoneNumber(number *string) {
+	p.phoneNumber = number
+}
+
+func (p *Place) GetPhoneNumber() *string {
+	return p.phoneNumber
+}
+
+func (p *Place) SetDescription(description *string) {
+	p.description = description
+}
+
+func (p *Place) GetDescription() *string {
+	return p.description
 }

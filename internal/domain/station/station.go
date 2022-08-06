@@ -2,6 +2,7 @@ package station
 
 import (
 	"github.com/google/uuid"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 )
 
@@ -21,12 +22,30 @@ type Station struct {
 	costDescription *string
 	hours           *string
 	kilowatts       *float32
+	domain.Model
 }
 
-func NewStation(placeID place.PlaceID) Station {
+func NewStation(
+	placeID place.PlaceID,
+	available *int,
+	cost *int,
+	name *string,
+	manufacturer *string,
+	costDescription *string,
+	hours *string,
+	kilowatts *float32,
+	model domain.Model) Station {
 	return Station{
-		stationID: StationID(uuid.New().String()),
-		placeID:   placeID,
+		stationID:       StationID(uuid.New().String()),
+		placeID:         placeID,
+		available:       available,
+		cost:            cost,
+		name:            name,
+		manufacturer:    manufacturer,
+		costDescription: costDescription,
+		hours:           hours,
+		kilowatts:       kilowatts,
+		Model:           model,
 	}
 }
 
@@ -40,19 +59,20 @@ func NewStationWithID(
 	costDescription *string,
 	hours *string,
 	kilowatts *float32,
+	model domain.Model,
 ) Station {
 	s := Station{
-		stationID: stationID,
-		placeID:   placeID,
+		stationID:       stationID,
+		placeID:         placeID,
+		available:       available,
+		cost:            cost,
+		name:            name,
+		manufacturer:    manufacturer,
+		costDescription: costDescription,
+		hours:           hours,
+		kilowatts:       kilowatts,
+		Model:           model,
 	}
-
-	s.SetStationAvailability(available)
-	s.SetStationCost(cost)
-	s.SetStationName(name)
-	s.SetStationManufacturer(manufacturer)
-	s.SetStationCostDescription(costDescription)
-	s.SetStationWorkingHours(hours)
-	s.SetStationKilowatts(kilowatts)
 
 	return s
 }

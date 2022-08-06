@@ -34,6 +34,7 @@ func (o *outletStorage) CreateOutlet(ctx context.Context, outlet outletDomain.Ou
 			"connector",
 			"kilowatts",
 			"power",
+			"created_at",
 		).
 		Values(
 			outlet.GetOutletID().String(),
@@ -41,6 +42,7 @@ func (o *outletStorage) CreateOutlet(ctx context.Context, outlet outletDomain.Ou
 			outlet.GetConnector(),
 			outlet.GetKilowatts(),
 			outlet.GetPower(),
+			outlet.GetCreatedAt(),
 		).
 		PlaceholderFormat(squirrel.Dollar)
 

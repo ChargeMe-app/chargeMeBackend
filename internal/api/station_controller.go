@@ -70,6 +70,7 @@ func (api *apiServer) GetChargingStations(w http.ResponseWriter, r *http.Request
 			Longitude: place.GetPlaceLongitude(),
 			Name:      place.GetPlaceName(),
 			Score:     place.GetPlaceScore(),
+			IconType:  place.GetPlaceIconType(),
 			Stations:  stationResponse,
 		}
 
