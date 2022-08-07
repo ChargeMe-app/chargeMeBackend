@@ -2,15 +2,21 @@ package review
 
 import (
 	"context"
+	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
+	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 )
 
 type ReviewService interface {
 	CreateReview(context.Context, reviewDomain.Review) error
+	GetReviewsListByStationID(context.Context, stationDomain.StationID) ([]reviewDomain.Review, error)
+	GetReviewsListByLocationID(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
 }
 
 type ReviewStorage interface {
 	CreateReview(context.Context, reviewDomain.Review) error
+	GetReviewsListByStationID(context.Context, stationDomain.StationID) ([]reviewDomain.Review, error)
+	GetReviewsListByLocationID(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
 }
 
 type service struct {
@@ -25,4 +31,18 @@ func NewReviewService(reviewStorage ReviewStorage) ReviewService {
 
 func (s *service) CreateReview(ctx context.Context, review reviewDomain.Review) error {
 	return s.CreateReview(ctx, review)
+}
+
+func (s *service) GetReviewsListByStationID(
+	ctx context.Context,
+	stationID stationDomain.StationID,
+) ([]reviewDomain.Review, error) {
+	return s.reviewStorage.GetReviewsListByStationID(ctx, stationID)
+}
+
+func (s *service) GetReviewsListByLocationID(
+	ctx context.Context,
+	placeID placeDomain.PlaceID,
+) ([]reviewDomain.Review, error) {
+	return s.reviewStorage.GetReviewsListByLocationID(ctx, placeID)
 }

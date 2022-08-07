@@ -87,8 +87,8 @@ type AmenitiesDTOJson struct {
 }
 
 type ReviewDTOJson struct {
-	StationID int     `json:"station_id,omitempty"`
-	OutletID  int     `json:"outlet_id,omitempty"`
+	StationID int     `json:"station_id"`
+	OutletID  int     `json:"outlet_id"`
 	Comment   *string `json:"comment,omitempty"`
 	Rating    *int    `json:"rating,omitempty"`
 }

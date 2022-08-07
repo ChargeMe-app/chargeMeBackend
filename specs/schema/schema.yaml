@@ -19,13 +19,13 @@ paths:
         '200':
           description: Сервис работает
 
-  /v1/stations:
+  /v1/locations:
     get:
       tags:
-        - charging stations
-      operationId: getChargingStations
-      summary: Получение списка зарядных станций в пределах координат
-      description: Получение списка зарядных станций в пределах координат
+        - locations with stations
+      operationId: getLocations
+      summary: Получение списка локаций с зарядками в пределах координат.
+      description: Получение списка локаций с зарядками в пределах координат.
       parameters:
         - name: latitudeMin
           in: query
@@ -69,15 +69,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /v1/locations/stations:
+    get:
+      tags:
+        - charging stations on location
+      operationId: getChargingStations
+      summary: Получение списка зарядных станций и удобств на локации.
+      description: Получение списка зарядных станций и удобств на локации.
+      parameters:
+        - name: locationId
+          required: true
+          in: query
+          schema:
+            description: >-
+              Идентификатор локации.
+            type: string
+            example: "1234"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                 $ref: '#/components/schemas/ResponseStations'
+
 
 components:
   schemas:
     ResponseLocations:
       type: object
       required:
-        - data
+        - locations
       properties:
-        data:
+        locations:
           type: array
           description: Результат запроса.
           items:
@@ -116,9 +140,9 @@ components:
         stations:
           type: array
           items:
-            $ref: '#/components/schemas/Station'
+            $ref: '#/components/schemas/StationPreliminary'
 
-    Station:
+    StationPreliminary:
       description: Сущность станции.
       type: object
       required:
@@ -130,15 +154,14 @@ components:
         outlets:
           type: array
           items:
-            $ref: '#/components/schemas/Outlet'
+            $ref: '#/components/schemas/OutletPreliminary'
 
-    Outlet:
+    OutletPreliminary:
       description: Сущность разъема.
       type: object
       required:
         - connector
         - id
-        - kilowatts
         - power
       properties:
         connector:
@@ -149,6 +172,90 @@ components:
           type: number
           nullable: true
         power:
+          type: integer
+
+    ResponseStations:
+      type: object
+      required:
+        - stations
+        - reviews
+        - amenities
+      properties:
+        stations:
+          type: array
+          description: Результат запроса.
+          items:
+            $ref: '#/components/schemas/StationFull'
+        reviews:
+          type: array
+          description: Отзывы о локации
+          items:
+            $ref: '#/components/schemas/Review'
+        amenities:
+          type: array
+          description: Удобства
+          items:
+            $ref: '#/components/schemas/Amenity'
+
+    StationFull:
+      description: Полная информация о станции.
+      type: object
+      required:
+        - id
+        - outlets
+      properties:
+        id:
+          type: string
+        outlets:
+          type: array
+          items:
+            $ref: "#/components/schemas/OutletPreliminary"
+        available:
+          type: integer
+        cost:
+          type: integer
+        name:
+          type: string
+        manufacturer:
+          type: string
+        cost_description:
+          type: string
+        hours:
+          type: string
+        kilowatts:
+          type: number
+
+    Review:
+      description: Отзыв о локации.
+      type: object
+      required:
+        - id
+        - station_id
+        - outlet_id
+      properties:
+        id:
+          type: string
+        station_id:
+          type: string
+        outlet_id:
+          type: string
+        comment:
+          type: string
+        rating:
+          type: integer
+
+    Amenity:
+      description: Удобсва.
+      type: object
+      required:
+        - id
+        - location_id
+      properties:
+        id:
+          type: string
+        location_id:
+          type: string
+        form:
           type: integer
 
     Error:

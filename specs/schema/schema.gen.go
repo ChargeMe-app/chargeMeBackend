@@ -13,16 +13,23 @@ import (
 
 // Список станций по адресу
 type AddressStations struct {
-	Access    int       `json:"access"`
-	Address   string    `json:"address"`
-	Icon      *string   `json:"icon,omitempty"`
-	IconType  *string   `json:"icon_type,omitempty"`
-	Id        string    `json:"id"`
-	Latitude  float32   `json:"latitude"`
-	Longitude float32   `json:"longitude"`
-	Name      string    `json:"name"`
-	Score     *float32  `json:"score,omitempty"`
-	Stations  []Station `json:"stations"`
+	Access    int                  `json:"access"`
+	Address   string               `json:"address"`
+	Icon      *string              `json:"icon,omitempty"`
+	IconType  *string              `json:"icon_type,omitempty"`
+	Id        string               `json:"id"`
+	Latitude  float32              `json:"latitude"`
+	Longitude float32              `json:"longitude"`
+	Name      string               `json:"name"`
+	Score     *float32             `json:"score,omitempty"`
+	Stations  []StationPreliminary `json:"stations"`
+}
+
+// Удобсва.
+type Amenity struct {
+	Form       *int   `json:"form,omitempty"`
+	Id         string `json:"id"`
+	LocationId string `json:"location_id"`
 }
 
 // Error defines model for Error.
@@ -32,7 +39,7 @@ type Error struct {
 }
 
 // Сущность разъема.
-type Outlet struct {
+type OutletPreliminary struct {
 	Connector int      `json:"connector"`
 	Id        string   `json:"id"`
 	Kilowatts *float32 `json:"kilowatts"`
@@ -42,21 +49,60 @@ type Outlet struct {
 // ResponseLocations defines model for ResponseLocations.
 type ResponseLocations struct {
 	// Результат запроса.
-	Data []AddressStations `json:"data"`
+	Locations []AddressStations `json:"locations"`
+}
+
+// ResponseStations defines model for ResponseStations.
+type ResponseStations struct {
+	// Удобства
+	Amenities []Amenity `json:"amenities"`
+
+	// Отзывы о локации
+	Reviews []Review `json:"reviews"`
+
+	// Результат запроса.
+	Stations []StationFull `json:"stations"`
+}
+
+// Отзыв о локации.
+type Review struct {
+	Comment   *string `json:"comment,omitempty"`
+	Id        string  `json:"id"`
+	OutletId  string  `json:"outlet_id"`
+	Rating    *int    `json:"rating,omitempty"`
+	StationId string  `json:"station_id"`
+}
+
+// Полная информация о станции.
+type StationFull struct {
+	Available       *int                `json:"available,omitempty"`
+	Cost            *int                `json:"cost,omitempty"`
+	CostDescription *string             `json:"cost_description,omitempty"`
+	Hours           *string             `json:"hours,omitempty"`
+	Id              string              `json:"id"`
+	Kilowatts       *float32            `json:"kilowatts,omitempty"`
+	Manufacturer    *string             `json:"manufacturer,omitempty"`
+	Name            *string             `json:"name,omitempty"`
+	Outlets         []OutletPreliminary `json:"outlets"`
 }
 
 // Сущность станции.
-type Station struct {
-	Id      string   `json:"id"`
-	Outlets []Outlet `json:"outlets"`
+type StationPreliminary struct {
+	Id      string              `json:"id"`
+	Outlets []OutletPreliminary `json:"outlets"`
 }
 
-// GetChargingStationsParams defines parameters for GetChargingStations.
-type GetChargingStationsParams struct {
+// GetLocationsParams defines parameters for GetLocations.
+type GetLocationsParams struct {
 	LatitudeMin  *float32 `form:"latitudeMin,omitempty" json:"latitudeMin,omitempty"`
 	LongitudeMin *float32 `form:"longitudeMin,omitempty" json:"longitudeMin,omitempty"`
 	LatitudeMax  *float32 `form:"latitudeMax,omitempty" json:"latitudeMax,omitempty"`
 	LongitudeMax *float32 `form:"longitudeMax,omitempty" json:"longitudeMax,omitempty"`
+}
+
+// GetChargingStationsParams defines parameters for GetChargingStations.
+type GetChargingStationsParams struct {
+	LocationId string `form:"locationId" json:"locationId"`
 }
 
 // ServerInterface represents all server handlers.
@@ -64,8 +110,11 @@ type ServerInterface interface {
 	// Проверка сервиса
 	// (GET /healthz)
 	HealthCheck(w http.ResponseWriter, r *http.Request)
-	// Получение списка зарядных станций в пределах координат
-	// (GET /v1/stations)
+	// Получение списка локаций с зарядками в пределах координат.
+	// (GET /v1/locations)
+	GetLocations(w http.ResponseWriter, r *http.Request, params GetLocationsParams)
+	// Получение списка зарядных станций и удобств на локации.
+	// (GET /v1/locations/stations)
 	GetChargingStations(w http.ResponseWriter, r *http.Request, params GetChargingStationsParams)
 }
 
@@ -93,14 +142,14 @@ func (siw *ServerInterfaceWrapper) HealthCheck(w http.ResponseWriter, r *http.Re
 	handler(w, r.WithContext(ctx))
 }
 
-// GetChargingStations operation middleware
-func (siw *ServerInterfaceWrapper) GetChargingStations(w http.ResponseWriter, r *http.Request) {
+// GetLocations operation middleware
+func (siw *ServerInterfaceWrapper) GetLocations(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetChargingStationsParams
+	var params GetLocationsParams
 
 	// ------------- Optional query parameter "latitudeMin" -------------
 	if paramValue := r.URL.Query().Get("latitudeMin"); paramValue != "" {
@@ -143,6 +192,40 @@ func (siw *ServerInterfaceWrapper) GetChargingStations(w http.ResponseWriter, r 
 	err = runtime.BindQueryParameter("form", true, false, "longitudeMax", r.URL.Query(), &params.LongitudeMax)
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "longitudeMax", Err: err})
+		return
+	}
+
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetLocations(w, r, params)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
+}
+
+// GetChargingStations operation middleware
+func (siw *ServerInterfaceWrapper) GetChargingStations(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetChargingStationsParams
+
+	// ------------- Required query parameter "locationId" -------------
+	if paramValue := r.URL.Query().Get("locationId"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "locationId"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "locationId", r.URL.Query(), &params.LocationId)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "locationId", Err: err})
 		return
 	}
 
@@ -274,7 +357,10 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/healthz", wrapper.HealthCheck)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/v1/stations", wrapper.GetChargingStations)
+		r.Get(options.BaseURL+"/v1/locations", wrapper.GetLocations)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/locations/stations", wrapper.GetChargingStations)
 	})
 
 	return r
