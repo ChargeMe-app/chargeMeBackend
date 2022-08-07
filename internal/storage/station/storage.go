@@ -31,10 +31,26 @@ func (s *stationStorage) CreateStation(ctx context.Context, station stationDomai
 		Columns(
 			"id",
 			"location_id",
+			"available",
+			"cost",
+			"name",
+			"manufacturer",
+			"cost_description",
+			"hours",
+			"kilowatts",
+			"created_at",
 		).
 		Values(
 			station.GetStationID().String(),
 			station.GetPlaceID().String(),
+			station.GetStationAvailability(),
+			station.GetStationCost(),
+			station.GetStationName(),
+			station.GetStationManufacturer(),
+			station.GetStationCostDescription(),
+			station.GetStationWorkingHours(),
+			station.GetStationKilowatts(),
+			station.GetCreatedAt(),
 		).
 		PlaceholderFormat(squirrel.Dollar)
 

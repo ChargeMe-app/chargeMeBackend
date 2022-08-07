@@ -1,26 +1,34 @@
 package outlet
 
 import (
+	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
+	"time"
 )
 
 type OutletDTO struct {
-	OutletID  string   `db:"id"`
-	StationID string   `db:"station_id"`
-	Connector int      `db:"connector"`
-	Kilowatts *float32 `db:"kilowatts"`
-	Power     int      `db:"power"`
+	OutletID  string    `db:"id"`
+	StationID string    `db:"station_id"`
+	Connector int       `db:"connector"`
+	Kilowatts *float32  `db:"kilowatts"`
+	Power     int       `db:"power"`
+	CreatedAt time.Time `db:"created_at"`
 }
 
 func NewOutletFromDTO(dto OutletDTO) outletDomain.Outlet {
-	return outletDomain.NewOutletWithID(
+	model := domain.NewModelFrom(dto.CreatedAt, nil)
+
+	o := outletDomain.NewOutletWithID(
 		outletDomain.OutletID(dto.OutletID),
 		stationDomain.StationID(dto.StationID),
 		dto.Connector,
 		dto.Kilowatts,
 		dto.Power,
+		model,
 	)
+
+	return o
 }
 
 func NewOutletListFromDTO(dto []OutletDTO) []outletDomain.Outlet {

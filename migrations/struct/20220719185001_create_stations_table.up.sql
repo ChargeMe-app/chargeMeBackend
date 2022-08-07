@@ -1,6 +1,15 @@
-CREATE TABLE stations(
-    id TEXT PRIMARY KEY,
-    location_id TEXT NOT NULL REFERENCES places (id) ON DELETE CASCADE
+CREATE TABLE stations
+(
+    id               TEXT PRIMARY KEY,
+    location_id      TEXT         NOT NULL REFERENCES places (id) ON DELETE CASCADE,
+    available        INTEGER,
+    cost             INTEGER,
+    name             TEXT,
+    manufacturer     TEXT,
+    cost_description TEXT,
+    hours            TEXT,
+    kilowatts        FLOAT,
+    created_at       TIMESTAMP(0) NOT NULL
 );
 
 COMMENT ON TABLE stations IS 'таблица с зарядными станциями';

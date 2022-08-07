@@ -5,6 +5,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
+	amenity2 "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
+	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
+	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	"io/ioutil"
 	"log"
 	"os"
@@ -34,21 +39,39 @@ const (
 )
 
 type LocationDTOJson struct {
-	PlaceID   int               `json:"id,omitempty"`
-	Name      string            `json:"name"`
-	Access    int               `json:"access,omitempty"`
-	Address   string            `json:"address,omitempty"`
-	Latitude  float32           `json:"latitude"`
-	Longitude float32           `json:"longitude"`
-	Score     *float32          `json:"score,omitempty"`
-	IconType  *string           `json:"icon_type,omitempty"`
-	Stations  []StationsDTOJson `json:"stations"`
+	PlaceID                      int                `json:"id,omitempty"`
+	Name                         string             `json:"name"`
+	Access                       int                `json:"access,omitempty"`
+	Address                      string             `json:"address,omitempty"`
+	Latitude                     float32            `json:"latitude"`
+	Longitude                    float32            `json:"longitude"`
+	Score                        *float32           `json:"score,omitempty"`
+	IconType                     *string            `json:"icon_type,omitempty"`
+	Description                  *string            `json:"description,omitempty"`
+	AccessRestriction            *string            `json:"access_restriction,omitempty"`
+	AccessRestrictionDescription *string            `json:"access_restriction_description,omitempty"`
+	Cost                         *bool              `json:"cost,omitempty"`
+	CostDescription              *string            `json:"cost_description,omitempty"`
+	Hours                        *string            `json:"hours,omitempty"`
+	Open247                      *bool              `json:"open247,omitempty"`
+	IsOpenOrActive               *bool              `json:"is_open_or_active,omitempty"`
+	PhoneNumber                  *string            `json:"e164_phone_number"`
+	Stations                     []StationsDTOJson  `json:"stations"`
+	Reviews                      []ReviewDTOJson    `json:"reviews"`
+	Amenities                    []AmenitiesDTOJson `json:"amenities"`
 }
 
 type StationsDTOJson struct {
-	Id         int             `json:"id"`
-	LocationID int             `json:"location_id"`
-	Outlets    []OutletDTOJson `json:"outlets"`
+	Id              int             `json:"id"`
+	LocationID      int             `json:"location_id"`
+	Available       *int            `json:"available,omitempty"`
+	Cost            *int            `json:"cost,omitempty"`
+	Name            *string         `json:"name,omitempty"`
+	Manufacturer    *string         `json:"manufacturer,omitempty"`
+	CostDescription *string         `json:"cost_description,omitempty"`
+	Hours           *string         `json:"hours,omitempty"`
+	Kilowatts       *float32        `json:"kilowatts,omitempty"`
+	Outlets         []OutletDTOJson `json:"outlets"`
 }
 
 type OutletDTOJson struct {
@@ -56,6 +79,18 @@ type OutletDTOJson struct {
 	ConnectorType int      `json:"connector_type"`
 	Kilowatts     *float32 `json:"kilowatts,omitempty"`
 	Power         int      `json:"power"`
+}
+
+type AmenitiesDTOJson struct {
+	LocationID int  `json:"location_id,omitempty"`
+	Form       *int `json:"type,omitempty"`
+}
+
+type ReviewDTOJson struct {
+	StationID int     `json:"station_id,omitempty"`
+	OutletID  int     `json:"outlet_id,omitempty"`
+	Comment   *string `json:"comment,omitempty"`
+	Rating    *int    `json:"rating,omitempty"`
 }
 
 func main() {
@@ -84,14 +119,14 @@ func main() {
 
 	err = startJob(ctx, storageRegistry)
 	if err != nil {
-		log.Fatal("failure:")
+		log.Fatal("failure:", err.Error())
 	}
 }
 
 func startJob(ctx context.Context, storageRegistry *storage.Storages) error {
 	var dto []LocationDTOJson
 
-	jsonFile, err := os.Open("/Users/almazkhayrullin/Downloads/stationData.json")
+	jsonFile, err := os.Open("/Users/almazkhayrullin/Desktop/chargeMe/stationData.json")
 	if err != nil {
 		log.Fatal("failed to parse json:", err.Error())
 	}
@@ -112,6 +147,16 @@ func startJob(ctx context.Context, storageRegistry *storage.Storages) error {
 		if err != nil {
 			return err
 		}
+
+		err = NewReviewFromDTO(ctx, dto[i], storageRegistry)
+		if err != nil {
+			return err
+		}
+
+		err = NewAmenityFromDTO(ctx, dto[i], storageRegistry)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -127,6 +172,16 @@ func NewLocationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistr
 		&dto.Access,
 		dto.IconType,
 		&dto.Address,
+		dto.Description,
+		dto.AccessRestriction,
+		dto.AccessRestrictionDescription,
+		dto.Cost,
+		dto.CostDescription,
+		dto.Hours,
+		dto.Open247,
+		dto.IsOpenOrActive,
+		dto.PhoneNumber,
+		domain.NewModel(),
 	)
 
 	err := storageRegistry.PlaceStorage.CreatePlace(ctx, place)
@@ -140,10 +195,18 @@ func NewLocationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistr
 func NewStationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry *storage.Storages) error {
 	var err error
 
-	for _, i := range dto.Stations {
+	for _, stationDTO := range dto.Stations {
 		station := stationDomain.NewStationWithID(
-			stationDomain.StationID(strconv.Itoa(i.Id)),
+			stationDomain.StationID(strconv.Itoa(stationDTO.Id)),
 			placeDomain.PlaceID(strconv.Itoa(dto.PlaceID)),
+			stationDTO.Available,
+			stationDTO.Cost,
+			stationDTO.Name,
+			stationDTO.Manufacturer,
+			stationDTO.CostDescription,
+			stationDTO.Hours,
+			stationDTO.Kilowatts,
+			domain.NewModel(),
 		)
 
 		err = storageRegistry.StationStorage.CreateStation(ctx, station)
@@ -151,7 +214,7 @@ func NewStationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry
 			return err
 		}
 
-		err = NewOutletsFromDTO(ctx, i, storageRegistry)
+		err = NewOutletsFromDTO(ctx, stationDTO, storageRegistry)
 		if err != nil {
 			return err
 		}
@@ -163,13 +226,14 @@ func NewStationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry
 func NewOutletsFromDTO(ctx context.Context, stationDTO StationsDTOJson, storageRegistry *storage.Storages) error {
 	var err error
 
-	for _, i := range stationDTO.Outlets {
+	for _, outletDTO := range stationDTO.Outlets {
 		outlet := outletDomain.NewOutletWithID(
-			outletDomain.OutletID(strconv.Itoa(i.Id)),
+			outletDomain.OutletID(strconv.Itoa(outletDTO.Id)),
 			stationDomain.StationID(strconv.Itoa(stationDTO.Id)),
-			i.ConnectorType,
-			i.Kilowatts,
-			i.Power,
+			outletDTO.ConnectorType,
+			outletDTO.Kilowatts,
+			outletDTO.Power,
+			domain.NewModel(),
 		)
 
 		err = storageRegistry.OutletStorage.CreateOutlet(ctx, outlet)
@@ -177,6 +241,50 @@ func NewOutletsFromDTO(ctx context.Context, stationDTO StationsDTOJson, storageR
 			return err
 		}
 
+	}
+
+	return nil
+}
+
+func NewReviewFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry *storage.Storages) error {
+	var err error
+
+	for _, reviewDTO := range dto.Reviews {
+		review := reviewDomain.NewReviewWithID(
+			reviewDomain.ReviewID(uuid.New().String()),
+			stationDomain.StationID(strconv.Itoa(reviewDTO.StationID)),
+			outletDomain.OutletID(strconv.Itoa(reviewDTO.OutletID)),
+			reviewDTO.Comment,
+			reviewDTO.Rating,
+			nil,
+			nil,
+			domain.NewModel(),
+		)
+
+		err = storageRegistry.ReviewStorage.CreateReview(ctx, review)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func NewAmenityFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry *storage.Storages) error {
+	var err error
+
+	for _, amenityDTO := range dto.Amenities {
+		amenity := amenity2.NewAmenityWithID(
+			amenityDomain.AmenityID(uuid.New().String()),
+			placeDomain.PlaceID(strconv.Itoa(amenityDTO.LocationID)),
+			amenityDTO.Form,
+			domain.NewModel(),
+		)
+
+		err = storageRegistry.AmenityStorage.CreateAmenity(ctx, amenity)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

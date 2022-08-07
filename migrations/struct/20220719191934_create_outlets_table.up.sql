@@ -1,9 +1,11 @@
-CREATE TABLE outlets (
-    id TEXT PRIMARY KEY,
-    station_id TEXT NOT NULL REFERENCES stations (id) ON DELETE CASCADE,
-    connector INTEGER,
-    kilowatts FLOAT,
-    power INTEGER
+CREATE TABLE outlets
+(
+    id         TEXT PRIMARY KEY,
+    station_id TEXT         NOT NULL REFERENCES stations (id) ON DELETE CASCADE,
+    connector  INTEGER,
+    kilowatts  FLOAT,
+    power      INTEGER,
+    created_at TIMESTAMP(0) NOT NULL
 );
 
 COMMENT ON TABLE outlets IS 'таблица с разъемами';
