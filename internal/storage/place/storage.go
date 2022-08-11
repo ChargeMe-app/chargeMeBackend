@@ -14,7 +14,8 @@ const (
 
 type Storage interface {
 	CreatePlace(context.Context, placeDomain.Place) error
-	GetPlaces(context.Context, float32, float32, float32, float32) ([]placeDomain.Place, error)
+	GetPlacesByCoordinates(context.Context, float32, float32, float32, float32) ([]placeDomain.Place, error)
+	GetFullPlaceByID(context.Context, placeDomain.PlaceID) (placeDomain.Place, error)
 }
 
 func NewPlaceStorage(db libdb.DB) Storage {
@@ -77,7 +78,7 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 	return nil
 }
 
-func (s *placeStorage) GetPlaces(
+func (s *placeStorage) GetPlacesByCoordinates(
 	ctx context.Context,
 	minLongitude float32,
 	maxLongitude float32,
@@ -107,4 +108,39 @@ func (s *placeStorage) GetPlaces(
 	}
 
 	return NewPlaceListDTO(result), nil
+}
+
+func (s *placeStorage) GetFullPlaceByID(ctx context.Context, placeID placeDomain.PlaceID) (placeDomain.Place, error) {
+	query := squirrel.Select(
+		"id",
+		"name",
+		"score",
+		"longitude",
+		"latitude",
+		"address",
+		"access",
+		"icon_type",
+		"description",
+		"access_restriction",
+		"access_restriction_description",
+		"cost",
+		"cost_description",
+		"hours",
+		"open247",
+		"is_open_or_active",
+		"phone_number",
+		"created_at",
+	).
+		From(tablePlaces).
+		Where(squirrel.Eq{"id": placeID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result PlaceDTO
+
+	err := s.db.Get(ctx, query, &result)
+	if err != nil {
+		return placeDomain.Place{}, err
+	}
+
+	return NewPlaceFromDTO(result), nil
 }

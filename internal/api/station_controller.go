@@ -12,7 +12,7 @@ import (
 // (GET /v1/locations)
 func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, params schema.GetLocationsParams) {
 	ctx := r.Context()
-	var addresses []schema.AddressStations
+	var addresses []schema.AddressStationsPreliminary
 
 	minLongitude := *params.LongitudeMin
 	maxLongitude := *params.LongitudeMax
@@ -20,7 +20,7 @@ func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, param
 	minLatitude := *params.LatitudeMin
 	maxLatitude := *params.LatitudeMax
 
-	places, err := api.placeService.GetPlaces(ctx, minLongitude, maxLongitude, minLatitude, maxLatitude)
+	places, err := api.placeService.GetPlacesByCoordinates(ctx, minLongitude, maxLongitude, minLatitude, maxLatitude)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -63,7 +63,7 @@ func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, param
 			stationResponse = append(stationResponse, stationSchema)
 		}
 
-		addressSchema := schema.AddressStations{
+		addressSchema := schema.AddressStationsPreliminary{
 			Access:    *place.GetPlaceAccess(),
 			Address:   *place.GetPlaceAddress(),
 			Id:        place.GetPlaceID().String(),
@@ -93,6 +93,12 @@ func (api *apiServer) GetChargingStations(w http.ResponseWriter, r *http.Request
 	var reviewsResponse []schema.Review
 	var stationsResponse []schema.StationFull
 	var amenitiesResponse []schema.Amenity
+
+	place, err := api.placeService.GetFullPlaceByID(ctx, placeID)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 
 	reviews, err := api.reviewService.GetReviewsListByLocationID(ctx, placeID)
 	if err != nil {
@@ -169,8 +175,29 @@ func (api *apiServer) GetChargingStations(w http.ResponseWriter, r *http.Request
 		amenitiesResponse = append(amenitiesResponse, a)
 	}
 
+	locationResponse := schema.AddressStationsFull{
+		Access:                       place.GetPlaceAccess(),
+		Address:                      *place.GetPlaceAddress(),
+		IconType:                     place.GetPlaceIconType(),
+		Id:                           place.GetPlaceID().String(),
+		Latitude:                     place.GetPlaceLatitude(),
+		Longitude:                    place.GetPlaceLongitude(),
+		Name:                         place.GetPlaceName(),
+		Score:                        place.GetPlaceScore(),
+		Description:                  place.GetDescription(),
+		AccessRestriction:            place.GetAccessRestriction(),
+		AccessRestrictionDescription: place.GetAccessRestrictionDescription(),
+		Cost:                         place.GetCost(),
+		CostDescription:              place.GetCostDescription(),
+		Hours:                        place.GetHours(),
+		Open247:                      place.GetOpen247(),
+		IsOpenOrActive:               place.GetIsOpenOrActive(),
+		PhoneNumber:                  place.GetPhoneNumber(),
+		Stations:                     stationsResponse,
+	}
+
 	response := schema.ResponseStations{
-		Stations:  stationsResponse,
+		Locations: locationResponse,
 		Reviews:   reviewsResponse,
 		Amenities: amenitiesResponse,
 	}
