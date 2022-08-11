@@ -12,7 +12,29 @@ import (
 )
 
 // Список станций по адресу
-type AddressStations struct {
+type AddressStationsFull struct {
+	Access                       *int          `json:"access,omitempty"`
+	AccessRestriction            *string       `json:"accessRestriction,omitempty"`
+	AccessRestrictionDescription *string       `json:"accessRestrictionDescription,omitempty"`
+	Address                      string        `json:"address"`
+	Cost                         *bool         `json:"cost,omitempty"`
+	CostDescription              *string       `json:"costDescription,omitempty"`
+	Description                  *string       `json:"description,omitempty"`
+	Hours                        *string       `json:"hours,omitempty"`
+	IconType                     *string       `json:"icon_type,omitempty"`
+	Id                           string        `json:"id"`
+	IsOpenOrActive               *bool         `json:"isOpenOrActive,omitempty"`
+	Latitude                     float32       `json:"latitude"`
+	Longitude                    float32       `json:"longitude"`
+	Name                         string        `json:"name"`
+	Open247                      *bool         `json:"open247,omitempty"`
+	PhoneNumber                  *string       `json:"phoneNumber,omitempty"`
+	Score                        *float32      `json:"score,omitempty"`
+	Stations                     []StationFull `json:"stations"`
+}
+
+// Список станций по адресу
+type AddressStationsPreliminary struct {
 	Access    int                  `json:"access"`
 	Address   string               `json:"address"`
 	Icon      *string              `json:"icon,omitempty"`
@@ -49,7 +71,7 @@ type OutletPreliminary struct {
 // ResponseLocations defines model for ResponseLocations.
 type ResponseLocations struct {
 	// Результат запроса.
-	Locations []AddressStations `json:"locations"`
+	Locations []AddressStationsPreliminary `json:"locations"`
 }
 
 // ResponseStations defines model for ResponseStations.
@@ -57,11 +79,11 @@ type ResponseStations struct {
 	// Удобства
 	Amenities []Amenity `json:"amenities"`
 
+	// Список станций по адресу
+	Locations AddressStationsFull `json:"locations"`
+
 	// Отзывы о локации
 	Reviews []Review `json:"reviews"`
-
-	// Результат запроса.
-	Stations []StationFull `json:"stations"`
 }
 
 // Отзыв о локации.

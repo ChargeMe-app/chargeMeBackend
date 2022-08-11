@@ -91,7 +91,7 @@ paths:
           content:
             application/json:
               schema:
-                 $ref: '#/components/schemas/ResponseStations'
+                $ref: '#/components/schemas/ResponseStations'
 
 
 components:
@@ -105,9 +105,9 @@ components:
           type: array
           description: Результат запроса.
           items:
-            $ref: '#/components/schemas/AddressStations'
+            $ref: '#/components/schemas/AddressStationsPreliminary'
 
-    AddressStations:
+    AddressStationsPreliminary:
       description: Список станций по адресу
       type: object
       required:
@@ -177,15 +177,12 @@ components:
     ResponseStations:
       type: object
       required:
-        - stations
+        - locations
         - reviews
         - amenities
       properties:
-        stations:
-          type: array
-          description: Результат запроса.
-          items:
-            $ref: '#/components/schemas/StationFull'
+        locations:
+            $ref: '#/components/schemas/AddressStationsFull'
         reviews:
           type: array
           description: Отзывы о локации
@@ -196,6 +193,56 @@ components:
           description: Удобства
           items:
             $ref: '#/components/schemas/Amenity'
+
+    AddressStationsFull:
+      description: Список станций по адресу
+      type: object
+      required:
+        - address
+        - id
+        - latitude
+        - longitude
+        - name
+        - stations
+      properties:
+        access:
+          type: integer
+        address:
+          type: string
+        icon_type:
+          type: string
+        id:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        name:
+          type: string
+        score:
+          type: number
+        description:
+          type: string
+        accessRestriction:
+          type: string
+        accessRestrictionDescription:
+          type: string
+        cost:
+          type: boolean
+        costDescription:
+          type: string
+        hours:
+          type: string
+        open247:
+          type: boolean
+        isOpenOrActive:
+          type: boolean
+        phoneNumber:
+          type: string
+        stations:
+          type: array
+          items:
+            $ref: '#/components/schemas/StationFull'
 
     StationFull:
       description: Полная информация о станции.
