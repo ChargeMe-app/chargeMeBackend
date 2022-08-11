@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	tableStations = "stations"
+	TableStations = "stations"
 )
 
 type Storage interface {
@@ -27,7 +27,7 @@ type stationStorage struct {
 }
 
 func (s *stationStorage) CreateStation(ctx context.Context, station stationDomain.Station) error {
-	query := squirrel.Insert(tableStations).
+	query := squirrel.Insert(TableStations).
 		Columns(
 			"id",
 			"location_id",
@@ -70,7 +70,7 @@ func (s *stationStorage) GetStationsByPlaceID(
 		"id",
 		"location_id",
 	).
-		From(tableStations).
+		From(TableStations).
 		Where(squirrel.Eq{"location_id": placeID.String()}).
 		PlaceholderFormat(squirrel.Dollar)
 
