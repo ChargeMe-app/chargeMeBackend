@@ -6,6 +6,7 @@ package schema
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/go-chi/chi/v5"
@@ -14,21 +15,21 @@ import (
 // Список станций по адресу
 type AddressStationsFull struct {
 	Access                       *int          `json:"access,omitempty"`
-	AccessRestriction            *string       `json:"accessRestriction,omitempty"`
-	AccessRestrictionDescription *string       `json:"accessRestrictionDescription,omitempty"`
+	AccessRestriction            *string       `json:"access_restriction,omitempty"`
+	AccessRestrictionDescription *string       `json:"access_restriction_description,omitempty"`
 	Address                      string        `json:"address"`
 	Cost                         *bool         `json:"cost,omitempty"`
-	CostDescription              *string       `json:"costDescription,omitempty"`
+	CostDescription              *string       `json:"cost_description,omitempty"`
 	Description                  *string       `json:"description,omitempty"`
 	Hours                        *string       `json:"hours,omitempty"`
 	IconType                     *string       `json:"icon_type,omitempty"`
 	Id                           string        `json:"id"`
-	IsOpenOrActive               *bool         `json:"isOpenOrActive,omitempty"`
+	IsOpenOrActive               *bool         `json:"is_open_or_active,omitempty"`
 	Latitude                     float32       `json:"latitude"`
 	Longitude                    float32       `json:"longitude"`
 	Name                         string        `json:"name"`
 	Open247                      *bool         `json:"open247,omitempty"`
-	PhoneNumber                  *string       `json:"phoneNumber,omitempty"`
+	PhoneNumber                  *string       `json:"phone_number,omitempty"`
 	Score                        *float32      `json:"score,omitempty"`
 	Stations                     []StationFull `json:"stations"`
 }
@@ -80,7 +81,7 @@ type ResponseStations struct {
 	Amenities []Amenity `json:"amenities"`
 
 	// Список станций по адресу
-	Locations AddressStationsFull `json:"locations"`
+	Location AddressStationsFull `json:"location"`
 
 	// Отзывы о локации
 	Reviews []Review `json:"reviews"`
@@ -88,11 +89,16 @@ type ResponseStations struct {
 
 // Отзыв о локации.
 type Review struct {
-	Comment   *string `json:"comment,omitempty"`
-	Id        string  `json:"id"`
-	OutletId  string  `json:"outlet_id"`
-	Rating    *int    `json:"rating,omitempty"`
-	StationId string  `json:"station_id"`
+	Comment       *string   `json:"comment,omitempty"`
+	ConnectorType *int      `json:"connector_type,omitempty"`
+	CreatedAt     time.Time `json:"created_at"`
+	Id            string    `json:"id"`
+	OutletId      string    `json:"outlet_id"`
+	Rating        *int      `json:"rating,omitempty"`
+	StationId     string    `json:"station_id"`
+	UserName      *string   `json:"user_name,omitempty"`
+	VehicleName   *string   `json:"vehicle_name,omitempty"`
+	VehicleType   *string   `json:"vehicle_type,omitempty"`
 }
 
 // Полная информация о станции.

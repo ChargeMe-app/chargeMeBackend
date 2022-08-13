@@ -108,11 +108,16 @@ func (api *apiServer) GetChargingStations(w http.ResponseWriter, r *http.Request
 
 	for _, review := range reviews {
 		r := schema.Review{
-			Id:        review.GetReviewID().String(),
-			StationId: review.GetStationID().String(),
-			OutletId:  review.GetOutletID().String(),
-			Comment:   review.GetComment(),
-			Rating:    review.GetRating(),
+			Id:            review.GetReviewID().String(),
+			StationId:     review.GetStationID().String(),
+			OutletId:      review.GetOutletID().String(),
+			Comment:       review.GetComment(),
+			Rating:        review.GetRating(),
+			ConnectorType: review.GetConnectorType(),
+			UserName:      review.GetUserName(),
+			VehicleName:   review.GetVehicleName(),
+			VehicleType:   review.GetVehicleType(),
+			CreatedAt:     review.GetCreatedAt(),
 		}
 
 		reviewsResponse = append(reviewsResponse, r)
@@ -197,7 +202,7 @@ func (api *apiServer) GetChargingStations(w http.ResponseWriter, r *http.Request
 	}
 
 	response := schema.ResponseStations{
-		Locations: locationResponse,
+		Location:  locationResponse,
 		Reviews:   reviewsResponse,
 		Amenities: amenitiesResponse,
 	}

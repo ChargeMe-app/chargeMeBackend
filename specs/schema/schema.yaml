@@ -177,11 +177,11 @@ components:
     ResponseStations:
       type: object
       required:
-        - locations
+        - location
         - reviews
         - amenities
       properties:
-        locations:
+        location:
             $ref: '#/components/schemas/AddressStationsFull'
         reviews:
           type: array
@@ -223,21 +223,21 @@ components:
           type: number
         description:
           type: string
-        accessRestriction:
+        access_restriction:
           type: string
-        accessRestrictionDescription:
+        access_restriction_description:
           type: string
         cost:
           type: boolean
-        costDescription:
+        cost_description:
           type: string
         hours:
           type: string
         open247:
           type: boolean
-        isOpenOrActive:
+        is_open_or_active:
           type: boolean
-        phoneNumber:
+        phone_number:
           type: string
         stations:
           type: array
@@ -279,6 +279,7 @@ components:
         - id
         - station_id
         - outlet_id
+        - created_at
       properties:
         id:
           type: string
@@ -290,6 +291,17 @@ components:
           type: string
         rating:
           type: integer
+        connector_type:
+          type: integer
+        user_name:
+          type: string
+        vehicle_name:
+          type: string
+        vehicle_type:
+          type: string
+        created_at:
+          type: string
+          format: date-time
 
     Amenity:
       description: Удобсва.

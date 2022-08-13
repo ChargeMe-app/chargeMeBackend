@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
-	amenity2 "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
 	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	"io/ioutil"
@@ -16,6 +15,7 @@ import (
 	"os/signal"
 	"strconv"
 	"syscall"
+	"time"
 
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 
@@ -87,10 +87,19 @@ type AmenitiesDTOJson struct {
 }
 
 type ReviewDTOJson struct {
-	StationID int     `json:"station_id"`
-	OutletID  int     `json:"outlet_id"`
-	Comment   *string `json:"comment,omitempty"`
-	Rating    *int    `json:"rating,omitempty"`
+	StationID     int         `json:"station_id"`
+	OutletID      int         `json:"outlet_id"`
+	Comment       *string     `json:"comment,omitempty"`
+	Rating        *int        `json:"rating,omitempty"`
+	ConnectorType *int        `json:"connector_type"`
+	VehicleName   *string     `json:"vehicle_name"`
+	VehicleType   *string     `json:"vehicle_type"`
+	User          UserDTOJSOn `json:"user"`
+	CreatedAT     string      `json:"created_at"`
+}
+
+type UserDTOJSOn struct {
+	FirstName *string `json:"first_name"`
 }
 
 func main() {
@@ -250,15 +259,20 @@ func NewReviewFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry 
 	var err error
 
 	for _, reviewDTO := range dto.Reviews {
+
+		createdAt, _ := time.Parse("2006-01-02T15:04:05Z", reviewDTO.CreatedAT)
+
 		review := reviewDomain.NewReviewWithID(
 			reviewDomain.ReviewID(uuid.New().String()),
 			stationDomain.StationID(strconv.Itoa(reviewDTO.StationID)),
 			outletDomain.OutletID(strconv.Itoa(reviewDTO.OutletID)),
 			reviewDTO.Comment,
 			reviewDTO.Rating,
-			nil,
-			nil,
-			domain.NewModel(),
+			reviewDTO.ConnectorType,
+			reviewDTO.User.FirstName,
+			reviewDTO.VehicleName,
+			reviewDTO.VehicleType,
+			domain.NewModelFrom(createdAt, nil),
 		)
 
 		err = storageRegistry.ReviewStorage.CreateReview(ctx, review)
@@ -274,7 +288,7 @@ func NewAmenityFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry
 	var err error
 
 	for _, amenityDTO := range dto.Amenities {
-		amenity := amenity2.NewAmenityWithID(
+		amenity := amenityDomain.NewAmenityWithID(
 			amenityDomain.AmenityID(uuid.New().String()),
 			placeDomain.PlaceID(strconv.Itoa(amenityDTO.LocationID)),
 			amenityDTO.Form,
