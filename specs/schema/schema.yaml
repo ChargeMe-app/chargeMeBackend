@@ -223,21 +223,21 @@ components:
           type: number
         description:
           type: string
-        accessRestriction:
+        access_restriction:
           type: string
-        accessRestrictionDescription:
+        access_restriction_description:
           type: string
         cost:
           type: boolean
-        costDescription:
+        cost_description:
           type: string
         hours:
           type: string
         open247:
           type: boolean
-        isOpenOrActive:
+        is_open_or_active:
           type: boolean
-        phoneNumber:
+        phone_number:
           type: string
         stations:
           type: array
