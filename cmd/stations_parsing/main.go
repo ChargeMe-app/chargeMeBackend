@@ -126,7 +126,7 @@ func main() {
 func startJob(ctx context.Context, storageRegistry *storage.Storages) error {
 	var dto []LocationDTOJson
 
-	jsonFile, err := os.Open("/Users/almazkhayrullin/Desktop/chargeMe/stationData.json")
+	jsonFile, err := os.Open("/Users/almazkhayrullin/Desktop/full.json")
 	if err != nil {
 		log.Fatal("failed to parse json:", err.Error())
 	}
