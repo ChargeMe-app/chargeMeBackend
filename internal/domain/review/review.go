@@ -14,13 +14,15 @@ func (reviewID ReviewID) String() string {
 }
 
 type Review struct {
-	id          ReviewID
-	stationID   stationDomain.StationID
-	outletID    outletDomain.OutletID
-	comment     *string
-	rating      *int
-	vehicleName *string
-	vehicleType *string
+	id            ReviewID
+	stationID     stationDomain.StationID
+	outletID      outletDomain.OutletID
+	comment       *string
+	rating        *int
+	connectorType *int
+	userName      *string
+	vehicleName   *string
+	vehicleType   *string
 	domain.Model
 }
 
@@ -29,19 +31,23 @@ func NewReview(
 	outletID outletDomain.OutletID,
 	comment *string,
 	rating *int,
+	connectorType *int,
+	userName *string,
 	vehicleName *string,
 	vehicleType *string,
 	model domain.Model,
 ) Review {
 	return Review{
-		id:          ReviewID(uuid.New().String()),
-		stationID:   stationID,
-		outletID:    outletID,
-		comment:     comment,
-		rating:      rating,
-		vehicleName: vehicleName,
-		vehicleType: vehicleType,
-		Model:       model,
+		id:            ReviewID(uuid.New().String()),
+		stationID:     stationID,
+		outletID:      outletID,
+		comment:       comment,
+		rating:        rating,
+		connectorType: connectorType,
+		userName:      userName,
+		vehicleName:   vehicleName,
+		vehicleType:   vehicleType,
+		Model:         model,
 	}
 }
 
@@ -51,19 +57,23 @@ func NewReviewWithID(
 	outletID outletDomain.OutletID,
 	comment *string,
 	rating *int,
+	connectorType *int,
+	userName *string,
 	vehicleName *string,
 	vehicleType *string,
 	model domain.Model,
 ) Review {
 	return Review{
-		id:          reviewID,
-		stationID:   stationID,
-		outletID:    outletID,
-		comment:     comment,
-		rating:      rating,
-		vehicleName: vehicleName,
-		vehicleType: vehicleType,
-		Model:       model,
+		id:            reviewID,
+		stationID:     stationID,
+		outletID:      outletID,
+		comment:       comment,
+		rating:        rating,
+		connectorType: connectorType,
+		userName:      userName,
+		vehicleName:   vehicleName,
+		vehicleType:   vehicleType,
+		Model:         model,
 	}
 }
 
@@ -109,4 +119,20 @@ func (r *Review) SetVehicleType(vehicleType *string) {
 
 func (r *Review) GetVehicleType() *string {
 	return r.vehicleType
+}
+
+func (r *Review) GetConnectorType() *int {
+	return r.connectorType
+}
+
+func (r *Review) SetConnectorType(connectorType *int) {
+	r.connectorType = connectorType
+}
+
+func (r *Review) GetUserName() *string {
+	return r.userName
+}
+
+func (r *Review) SetUserName(userName *string) {
+	r.userName = userName
 }

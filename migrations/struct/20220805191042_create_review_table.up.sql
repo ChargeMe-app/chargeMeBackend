@@ -5,6 +5,8 @@ CREATE TABLE reviews
     station_id   TEXT,
     outlet_id    TEXT,
     rating       INT,
+    connector_type    INT,
+    user_name    TEXT,
     vehicle_name TEXT,
     vehicle_type TEXT,
     created_at   TIMESTAMP(0) NOT NULL

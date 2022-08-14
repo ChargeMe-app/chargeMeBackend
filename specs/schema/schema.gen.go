@@ -6,6 +6,7 @@ package schema
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/go-chi/chi/v5"
@@ -80,7 +81,7 @@ type ResponseStations struct {
 	Amenities []Amenity `json:"amenities"`
 
 	// Список станций по адресу
-	Locations AddressStationsFull `json:"locations"`
+	Location AddressStationsFull `json:"location"`
 
 	// Отзывы о локации
 	Reviews []Review `json:"reviews"`
@@ -88,11 +89,16 @@ type ResponseStations struct {
 
 // Отзыв о локации.
 type Review struct {
-	Comment   *string `json:"comment,omitempty"`
-	Id        string  `json:"id"`
-	OutletId  string  `json:"outlet_id"`
-	Rating    *int    `json:"rating,omitempty"`
-	StationId string  `json:"station_id"`
+	Comment       *string   `json:"comment,omitempty"`
+	ConnectorType *int      `json:"connector_type,omitempty"`
+	CreatedAt     time.Time `json:"created_at"`
+	Id            string    `json:"id"`
+	OutletId      string    `json:"outlet_id"`
+	Rating        *int      `json:"rating,omitempty"`
+	StationId     string    `json:"station_id"`
+	UserName      *string   `json:"user_name,omitempty"`
+	VehicleName   *string   `json:"vehicle_name,omitempty"`
+	VehicleType   *string   `json:"vehicle_type,omitempty"`
 }
 
 // Полная информация о станции.
