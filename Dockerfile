@@ -13,4 +13,5 @@ RUN go build -o main ./cmd/chargeMe
 
 
 EXPOSE 8080
+EXPOSE 5432
 ENTRYPOINT ["./main"]
