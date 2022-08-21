@@ -31,11 +31,11 @@ import (
 )
 
 const (
-	host     = "localhost"
+	host     = "109.120.189.195"
 	port     = 5432
+	user     = "averageUser"
+	password = "n\"ZLi4J0494bS87x"
 	dbname   = "postgres"
-	user     = "postgres"
-	password = "pass"
 )
 
 type LocationDTOJson struct {
@@ -119,6 +119,8 @@ func main() {
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatal("failed to connect to database:", err.Error())
+	} else {
+		fmt.Println("connected to db")
 	}
 
 	dbx := sqlx.NewDb(db, "pgx")
