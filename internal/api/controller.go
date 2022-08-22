@@ -8,6 +8,7 @@ import (
 	placeService "github.com/poorfrombabylon/chargeMeBackend/internal/service/place"
 	reviewService "github.com/poorfrombabylon/chargeMeBackend/internal/service/review"
 	stationService "github.com/poorfrombabylon/chargeMeBackend/internal/service/station"
+	userService "github.com/poorfrombabylon/chargeMeBackend/internal/service/user"
 	"net/http"
 
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
@@ -21,6 +22,7 @@ type apiServer struct {
 	outletService  outletService.OutletService
 	reviewService  reviewService.ReviewService
 	amenityService amenityService.AmenityService
+	userService    userService.UserService
 }
 
 func NewApiServer(serviceRegistry *service.Services) schema.ServerInterface {
@@ -30,6 +32,7 @@ func NewApiServer(serviceRegistry *service.Services) schema.ServerInterface {
 		serviceRegistry.Outlet,
 		serviceRegistry.Review,
 		serviceRegistry.Amenity,
+		serviceRegistry.User,
 	}
 }
 

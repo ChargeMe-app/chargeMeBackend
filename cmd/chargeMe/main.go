@@ -22,6 +22,14 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+//const (
+//	host     = "109.120.189.195"
+//	port     = 5432
+//	user     = "averageUser"
+//	password = "n\"ZLi4J0494bS87x"
+//	dbname   = "PostgresChrageMe"
+//)
+
 const (
 	host     = "localhost"
 	port     = 5432
@@ -55,6 +63,8 @@ func main() {
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatal("failed to connect to database:", err.Error())
+	} else {
+		fmt.Println("connected to db")
 	}
 
 	dbx := sqlx.NewDb(db, "pgx")

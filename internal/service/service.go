@@ -6,6 +6,7 @@ import (
 	placeService "github.com/poorfrombabylon/chargeMeBackend/internal/service/place"
 	reviewService "github.com/poorfrombabylon/chargeMeBackend/internal/service/review"
 	stationService "github.com/poorfrombabylon/chargeMeBackend/internal/service/station"
+	userService "github.com/poorfrombabylon/chargeMeBackend/internal/service/user"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/storage"
 )
 
@@ -15,6 +16,7 @@ type Services struct {
 	Outlet  outletService.OutletService
 	Review  reviewService.ReviewService
 	Amenity amenityService.AmenityService
+	User    userService.UserService
 }
 
 func NewServiceRegistry(storages *storage.Storages) *Services {
@@ -23,6 +25,7 @@ func NewServiceRegistry(storages *storage.Storages) *Services {
 	outlet := outletService.NewOutletService(storages.OutletStorage)
 	review := reviewService.NewReviewService(storages.ReviewStorage)
 	amenity := amenityService.NewAmenityService(storages.AmenityStorage)
+	user := userService.NewUserService(storages.UserStorage)
 
 	return &Services{
 		Place:   place,
@@ -30,5 +33,6 @@ func NewServiceRegistry(storages *storage.Storages) *Services {
 		Outlet:  outlet,
 		Review:  review,
 		Amenity: amenity,
+		User:    user,
 	}
 }

@@ -13,6 +13,30 @@ import (
 )
 
 // Список станций по адресу
+type AddressStationsFull struct {
+	Access                       *int          `json:"access,omitempty"`
+	AccessRestriction            *string       `json:"access_restriction,omitempty"`
+	AccessRestrictionDescription *string       `json:"access_restriction_description,omitempty"`
+	Address                      string        `json:"address"`
+	Amenities                    *[]Amenity    `json:"amenities,omitempty"`
+	ComingSoon                   *bool         `json:"coming_soon,omitempty"`
+	Cost                         *bool         `json:"cost,omitempty"`
+	CostDescription              *string       `json:"cost_description,omitempty"`
+	Description                  *string       `json:"description,omitempty"`
+	Hours                        *string       `json:"hours,omitempty"`
+	IconType                     *string       `json:"icon_type,omitempty"`
+	Id                           string        `json:"id"`
+	Latitude                     float32       `json:"latitude"`
+	Longitude                    float32       `json:"longitude"`
+	Name                         string        `json:"name"`
+	Open247                      *bool         `json:"open247,omitempty"`
+	PhoneNumber                  *string       `json:"phone_number,omitempty"`
+	Reviews                      *[]Review     `json:"reviews,omitempty"`
+	Score                        *float32      `json:"score,omitempty"`
+	Stations                     []StationFull `json:"stations"`
+}
+
+// Список станций по адресу
 type AddressStationsPreliminary struct {
 	Access    int                  `json:"access"`
 	Address   string               `json:"address"`
@@ -33,10 +57,22 @@ type Amenity struct {
 	LocationId string `json:"location_id"`
 }
 
+// AppleAuthCredentials defines model for AppleAuthCredentials.
+type AppleAuthCredentials struct {
+	AuthorizationCode string `json:"authorization_code"`
+	IdentityToken     string `json:"identity_token"`
+}
+
 // Error defines model for Error.
 type Error struct {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`
+}
+
+// GoogleAuthCredentials defines model for GoogleAuthCredentials.
+type GoogleAuthCredentials struct {
+	AccessToken string `json:"access_token"`
+	IdToken     string `json:"id_token"`
 }
 
 // Сущность разъема.
@@ -67,6 +103,17 @@ type Review struct {
 	VehicleType   *string   `json:"vehicle_type,omitempty"`
 }
 
+// SignInRequest defines model for SignInRequest.
+type SignInRequest struct {
+	AppleCredentials  *AppleAuthCredentials  `json:"apple_credentials,omitempty"`
+	DisplayName       *string                `json:"display_name,omitempty"`
+	Email             *string                `json:"email,omitempty"`
+	GoogleCredentials *GoogleAuthCredentials `json:"google_credentials,omitempty"`
+	PhotoUrl          *string                `json:"photo_url,omitempty"`
+	SignType          string                 `json:"sign_type"`
+	UserIdentifier    string                 `json:"user_identifier"`
+}
+
 // Полная информация о станции.
 type StationFull struct {
 	Available       *int                `json:"available,omitempty"`
@@ -86,29 +133,19 @@ type StationPreliminary struct {
 	Outlets []OutletPreliminary `json:"outlets"`
 }
 
-// Список станций по адресу
-type StationsFull struct {
-	Access                       *int          `json:"access,omitempty"`
-	AccessRestriction            *string       `json:"access_restriction,omitempty"`
-	AccessRestrictionDescription *string       `json:"access_restriction_description,omitempty"`
-	Address                      string        `json:"address"`
-	Amenities                    *[]Amenity    `json:"amenities,omitempty"`
-	ComingSoon                   *bool         `json:"coming_soon,omitempty"`
-	Cost                         *bool         `json:"cost,omitempty"`
-	CostDescription              *string       `json:"cost_description,omitempty"`
-	Description                  *string       `json:"description,omitempty"`
-	Hours                        *string       `json:"hours,omitempty"`
-	IconType                     *string       `json:"icon_type,omitempty"`
-	Id                           string        `json:"id"`
-	Latitude                     float32       `json:"latitude"`
-	Longitude                    float32       `json:"longitude"`
-	Name                         string        `json:"name"`
-	Open247                      *bool         `json:"open247,omitempty"`
-	PhoneNumber                  *string       `json:"phone_number,omitempty"`
-	Reviews                      *[]Review     `json:"reviews,omitempty"`
-	Score                        *float32      `json:"score,omitempty"`
-	Stations                     []StationFull `json:"stations"`
+// Идентификатор пользователя.
+type UserId struct {
+	UserId string `json:"user_id"`
 }
+
+// Сущность автомобиля
+type Vehicle struct {
+	UserId      string `json:"user_id"`
+	VehicleType string `json:"vehicle_type"`
+}
+
+// AuthenticateJSONBody defines parameters for Authenticate.
+type AuthenticateJSONBody = SignInRequest
 
 // GetLocationsParams defines parameters for GetLocations.
 type GetLocationsParams struct {
@@ -119,21 +156,33 @@ type GetLocationsParams struct {
 }
 
 // CreateFullLocationJSONBody defines parameters for CreateFullLocation.
-type CreateFullLocationJSONBody = StationsFull
+type CreateFullLocationJSONBody = AddressStationsFull
 
 // GetChargingStationsByLocationIDParams defines parameters for GetChargingStationsByLocationID.
 type GetChargingStationsByLocationIDParams struct {
 	LocationId string `form:"locationId" json:"locationId"`
 }
 
+// AddVehicleJSONBody defines parameters for AddVehicle.
+type AddVehicleJSONBody = Vehicle
+
+// AuthenticateJSONRequestBody defines body for Authenticate for application/json ContentType.
+type AuthenticateJSONRequestBody = AuthenticateJSONBody
+
 // CreateFullLocationJSONRequestBody defines body for CreateFullLocation for application/json ContentType.
 type CreateFullLocationJSONRequestBody = CreateFullLocationJSONBody
+
+// AddVehicleJSONRequestBody defines body for AddVehicle for application/json ContentType.
+type AddVehicleJSONRequestBody = AddVehicleJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Проверка сервиса
 	// (GET /healthz)
 	HealthCheck(w http.ResponseWriter, r *http.Request)
+	// Аутентификация с помощью AppleId.
+	// (POST /v1/auth)
+	Authenticate(w http.ResponseWriter, r *http.Request)
 	// Получение списка локаций с зарядками в пределах координат.
 	// (GET /v1/locations)
 	GetLocations(w http.ResponseWriter, r *http.Request, params GetLocationsParams)
@@ -143,6 +192,9 @@ type ServerInterface interface {
 	// Получение списка зарядных станций и удобств на локации.
 	// (GET /v1/locations/stations)
 	GetChargingStationsByLocationID(w http.ResponseWriter, r *http.Request, params GetChargingStationsByLocationIDParams)
+	// Добавление автомобиля пользователя.
+	// (POST /v1/user/vehicle)
+	AddVehicle(w http.ResponseWriter, r *http.Request)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -160,6 +212,21 @@ func (siw *ServerInterfaceWrapper) HealthCheck(w http.ResponseWriter, r *http.Re
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.HealthCheck(w, r)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
+}
+
+// Authenticate operation middleware
+func (siw *ServerInterfaceWrapper) Authenticate(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.Authenticate(w, r)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -273,6 +340,21 @@ func (siw *ServerInterfaceWrapper) GetChargingStationsByLocationID(w http.Respon
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetChargingStationsByLocationID(w, r, params)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
+}
+
+// AddVehicle operation middleware
+func (siw *ServerInterfaceWrapper) AddVehicle(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AddVehicle(w, r)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -399,6 +481,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/healthz", wrapper.HealthCheck)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth", wrapper.Authenticate)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/locations", wrapper.GetLocations)
 	})
 	r.Group(func(r chi.Router) {
@@ -406,6 +491,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/locations/stations", wrapper.GetChargingStationsByLocationID)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/user/vehicle", wrapper.AddVehicle)
 	})
 
 	return r
