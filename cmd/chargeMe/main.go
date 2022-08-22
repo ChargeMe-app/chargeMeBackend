@@ -27,7 +27,7 @@ const (
 	port     = 5432
 	user     = "averageUser"
 	password = "n\"ZLi4J0494bS87x"
-	dbname   = "postgres"
+	dbname   = "PostgresChrageMe"
 )
 
 func main() {
