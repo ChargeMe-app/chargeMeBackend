@@ -69,11 +69,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+    post:
+      tags:
+        - creating place
+      summary: Создания локации со станциями.
+      description: >-
+        Создания локации со станциями.
+      operationId: createFullLocation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StationsFull'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseLocations'
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+
   /v1/locations/stations:
     get:
       tags:
         - charging stations on location
-      operationId: getChargingStations
+      operationId: getChargingStationsByLocationID
       summary: Получение списка зарядных станций и удобств на локации.
       description: Получение списка зарядных станций и удобств на локации.
       parameters:
@@ -91,7 +120,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseStations'
+                $ref: '#/components/schemas/LocationWithFullStation'
 
 
 components:
@@ -174,7 +203,7 @@ components:
         power:
           type: integer
 
-    ResponseStations:
+    LocationWithFullStation:
       type: object
       required:
         - location
@@ -182,7 +211,7 @@ components:
         - amenities
       properties:
         location:
-            $ref: '#/components/schemas/AddressStationsFull'
+          $ref: '#/components/schemas/StationsFull'
         reviews:
           type: array
           description: Отзывы о локации
@@ -194,7 +223,7 @@ components:
           items:
             $ref: '#/components/schemas/Amenity'
 
-    AddressStationsFull:
+    StationsFull:
       description: Список станций по адресу
       type: object
       required:
@@ -235,7 +264,7 @@ components:
           type: string
         open247:
           type: boolean
-        is_open_or_active:
+        coming_soon:
           type: boolean
         phone_number:
           type: string
@@ -243,6 +272,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StationFull'
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+        amenities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Amenity'
+
 
     StationFull:
       description: Полная информация о станции.
