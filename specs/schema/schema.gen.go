@@ -39,18 +39,6 @@ type Error struct {
 	Message string `json:"message"`
 }
 
-// LocationWithFullStation defines model for LocationWithFullStation.
-type LocationWithFullStation struct {
-	// Удобства
-	Amenities []Amenity `json:"amenities"`
-
-	// Список станций по адресу
-	Location StationsFull `json:"location"`
-
-	// Отзывы о локации
-	Reviews []Review `json:"reviews"`
-}
-
 // Сущность разъема.
 type OutletPreliminary struct {
 	Connector int      `json:"connector"`
