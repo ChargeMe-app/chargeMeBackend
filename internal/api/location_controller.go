@@ -198,7 +198,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		amenitiesResponse = append(amenitiesResponse, a)
 	}
 
-	locationResponse := schema.StationsFull{
+	response := schema.StationsFull{
 		Access:                       place.GetPlaceAccess(),
 		Address:                      place.GetPlaceAddress(),
 		IconType:                     place.GetPlaceIconType(),
@@ -217,12 +217,8 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		ComingSoon:                   place.IsComingSoon(),
 		PhoneNumber:                  place.GetPhoneNumber(),
 		Stations:                     stationsResponse,
-	}
-
-	response := schema.LocationWithFullStation{
-		Location:  locationResponse,
-		Reviews:   reviewsResponse,
-		Amenities: amenitiesResponse,
+		Reviews:                      &reviewsResponse,
+		Amenities:                    &amenitiesResponse,
 	}
 
 	fmt.Println(response)
