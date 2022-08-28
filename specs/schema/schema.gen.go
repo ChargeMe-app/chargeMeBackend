@@ -13,28 +13,6 @@ import (
 )
 
 // Список станций по адресу
-type AddressStationsFull struct {
-	Access                       *int          `json:"access,omitempty"`
-	AccessRestriction            *string       `json:"access_restriction,omitempty"`
-	AccessRestrictionDescription *string       `json:"access_restriction_description,omitempty"`
-	Address                      string        `json:"address"`
-	Cost                         *bool         `json:"cost,omitempty"`
-	CostDescription              *string       `json:"cost_description,omitempty"`
-	Description                  *string       `json:"description,omitempty"`
-	Hours                        *string       `json:"hours,omitempty"`
-	IconType                     *string       `json:"icon_type,omitempty"`
-	Id                           string        `json:"id"`
-	IsOpenOrActive               *bool         `json:"is_open_or_active,omitempty"`
-	Latitude                     float32       `json:"latitude"`
-	Longitude                    float32       `json:"longitude"`
-	Name                         string        `json:"name"`
-	Open247                      *bool         `json:"open247,omitempty"`
-	PhoneNumber                  *string       `json:"phone_number,omitempty"`
-	Score                        *float32      `json:"score,omitempty"`
-	Stations                     []StationFull `json:"stations"`
-}
-
-// Список станций по адресу
 type AddressStationsPreliminary struct {
 	Access    int                  `json:"access"`
 	Address   string               `json:"address"`
@@ -61,6 +39,18 @@ type Error struct {
 	Message string `json:"message"`
 }
 
+// LocationWithFullStation defines model for LocationWithFullStation.
+type LocationWithFullStation struct {
+	// Удобства
+	Amenities []Amenity `json:"amenities"`
+
+	// Список станций по адресу
+	Location StationsFull `json:"location"`
+
+	// Отзывы о локации
+	Reviews []Review `json:"reviews"`
+}
+
 // Сущность разъема.
 type OutletPreliminary struct {
 	Connector int      `json:"connector"`
@@ -73,18 +63,6 @@ type OutletPreliminary struct {
 type ResponseLocations struct {
 	// Результат запроса.
 	Locations []AddressStationsPreliminary `json:"locations"`
-}
-
-// ResponseStations defines model for ResponseStations.
-type ResponseStations struct {
-	// Удобства
-	Amenities []Amenity `json:"amenities"`
-
-	// Список станций по адресу
-	Location AddressStationsFull `json:"location"`
-
-	// Отзывы о локации
-	Reviews []Review `json:"reviews"`
 }
 
 // Отзыв о локации.
@@ -120,6 +98,30 @@ type StationPreliminary struct {
 	Outlets []OutletPreliminary `json:"outlets"`
 }
 
+// Список станций по адресу
+type StationsFull struct {
+	Access                       *int          `json:"access,omitempty"`
+	AccessRestriction            *string       `json:"access_restriction,omitempty"`
+	AccessRestrictionDescription *string       `json:"access_restriction_description,omitempty"`
+	Address                      string        `json:"address"`
+	Amenities                    *[]Amenity    `json:"amenities,omitempty"`
+	ComingSoon                   *bool         `json:"coming_soon,omitempty"`
+	Cost                         *bool         `json:"cost,omitempty"`
+	CostDescription              *string       `json:"cost_description,omitempty"`
+	Description                  *string       `json:"description,omitempty"`
+	Hours                        *string       `json:"hours,omitempty"`
+	IconType                     *string       `json:"icon_type,omitempty"`
+	Id                           string        `json:"id"`
+	Latitude                     float32       `json:"latitude"`
+	Longitude                    float32       `json:"longitude"`
+	Name                         string        `json:"name"`
+	Open247                      *bool         `json:"open247,omitempty"`
+	PhoneNumber                  *string       `json:"phone_number,omitempty"`
+	Reviews                      *[]Review     `json:"reviews,omitempty"`
+	Score                        *float32      `json:"score,omitempty"`
+	Stations                     []StationFull `json:"stations"`
+}
+
 // GetLocationsParams defines parameters for GetLocations.
 type GetLocationsParams struct {
 	LatitudeMin  *float32 `form:"latitudeMin,omitempty" json:"latitudeMin,omitempty"`
@@ -128,10 +130,16 @@ type GetLocationsParams struct {
 	LongitudeMax *float32 `form:"longitudeMax,omitempty" json:"longitudeMax,omitempty"`
 }
 
-// GetChargingStationsParams defines parameters for GetChargingStations.
-type GetChargingStationsParams struct {
+// CreateFullLocationJSONBody defines parameters for CreateFullLocation.
+type CreateFullLocationJSONBody = StationsFull
+
+// GetChargingStationsByLocationIDParams defines parameters for GetChargingStationsByLocationID.
+type GetChargingStationsByLocationIDParams struct {
 	LocationId string `form:"locationId" json:"locationId"`
 }
+
+// CreateFullLocationJSONRequestBody defines body for CreateFullLocation for application/json ContentType.
+type CreateFullLocationJSONRequestBody = CreateFullLocationJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -141,9 +149,12 @@ type ServerInterface interface {
 	// Получение списка локаций с зарядками в пределах координат.
 	// (GET /v1/locations)
 	GetLocations(w http.ResponseWriter, r *http.Request, params GetLocationsParams)
+	// Создания локации со станциями.
+	// (POST /v1/locations)
+	CreateFullLocation(w http.ResponseWriter, r *http.Request)
 	// Получение списка зарядных станций и удобств на локации.
 	// (GET /v1/locations/stations)
-	GetChargingStations(w http.ResponseWriter, r *http.Request, params GetChargingStationsParams)
+	GetChargingStationsByLocationID(w http.ResponseWriter, r *http.Request, params GetChargingStationsByLocationIDParams)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -234,14 +245,29 @@ func (siw *ServerInterfaceWrapper) GetLocations(w http.ResponseWriter, r *http.R
 	handler(w, r.WithContext(ctx))
 }
 
-// GetChargingStations operation middleware
-func (siw *ServerInterfaceWrapper) GetChargingStations(w http.ResponseWriter, r *http.Request) {
+// CreateFullLocation operation middleware
+func (siw *ServerInterfaceWrapper) CreateFullLocation(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateFullLocation(w, r)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
+}
+
+// GetChargingStationsByLocationID operation middleware
+func (siw *ServerInterfaceWrapper) GetChargingStationsByLocationID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetChargingStationsParams
+	var params GetChargingStationsByLocationIDParams
 
 	// ------------- Required query parameter "locationId" -------------
 	if paramValue := r.URL.Query().Get("locationId"); paramValue != "" {
@@ -258,7 +284,7 @@ func (siw *ServerInterfaceWrapper) GetChargingStations(w http.ResponseWriter, r 
 	}
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetChargingStations(w, r, params)
+		siw.Handler.GetChargingStationsByLocationID(w, r, params)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -388,7 +414,10 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/v1/locations", wrapper.GetLocations)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/v1/locations/stations", wrapper.GetChargingStations)
+		r.Post(options.BaseURL+"/v1/locations", wrapper.CreateFullLocation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/locations/stations", wrapper.GetChargingStationsByLocationID)
 	})
 
 	return r

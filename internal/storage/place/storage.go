@@ -64,7 +64,7 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 			place.GetCostDescription(),
 			place.GetHours(),
 			place.GetOpen247(),
-			place.GetIsOpenOrActive(),
+			place.IsComingSoon(),
 			place.GetPhoneNumber(),
 			place.GetCreatedAt(),
 		).

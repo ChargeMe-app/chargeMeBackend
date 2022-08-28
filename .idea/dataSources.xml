@@ -8,11 +8,11 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="remote" uuid="a2badb75-8465-4344-9e2c-291f8dbd05db">
+    <data-source source="LOCAL" name="remote" uuid="49208299-245f-4509-b6a7-a7f5684cd85b">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://109.120.189.195:5432/postgres</jdbc-url>
+      <jdbc-url>jdbc:postgresql://109.120.189.195:5432/PostgresChrageMe</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

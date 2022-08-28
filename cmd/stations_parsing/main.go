@@ -31,12 +31,20 @@ import (
 )
 
 const (
-	host     = "109.120.189.195"
+	host     = "localhost"
 	port     = 5432
-	user     = "averageUser"
-	password = "n\"ZLi4J0494bS87x"
-	dbname   = "PostgresChrageMe"
+	user     = "postgres"
+	password = "pass"
+	dbname   = "postgres"
 )
+
+//const (
+//	host     = "109.120.189.195"
+//	port     = 5432
+//	user     = "averageUser"
+//	password = "n\"ZLi4J0494bS87x"
+//	dbname   = "PostgresChrageMe"
+//)
 
 type LocationDTOJson struct {
 	PlaceID                      int                `json:"id,omitempty"`

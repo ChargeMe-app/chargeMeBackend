@@ -19,7 +19,7 @@ type Place struct {
 	latitude                     float32
 	access                       *int
 	iconType                     *string
-	address                      *string
+	address                      string
 	description                  *string
 	accessRestriction            *string
 	accessRestrictionDescription *string
@@ -27,7 +27,7 @@ type Place struct {
 	costDescription              *string
 	hours                        *string
 	open247                      *bool
-	isOpenOrActive               *bool
+	isComingSoon                 *bool
 	phoneNumber                  *string
 	domain.Model
 }
@@ -39,7 +39,7 @@ func NewPlace(
 	latitude float32,
 	access *int,
 	iconType *string,
-	address *string,
+	address string,
 	description *string,
 	accessRestriction *string,
 	accessRestrictionDescription *string,
@@ -47,7 +47,7 @@ func NewPlace(
 	costDescription *string,
 	hours *string,
 	open247 *bool,
-	isOpenOrActive *bool,
+	isComingSoon *bool,
 	phoneNumber *string,
 	model domain.Model,
 ) Place {
@@ -67,7 +67,7 @@ func NewPlace(
 		costDescription:              costDescription,
 		hours:                        hours,
 		open247:                      open247,
-		isOpenOrActive:               isOpenOrActive,
+		isComingSoon:                 isComingSoon,
 		phoneNumber:                  phoneNumber,
 		Model:                        model,
 	}
@@ -81,7 +81,7 @@ func NewPlaceWithID(
 	latitude float32,
 	access *int,
 	iconType *string,
-	address *string,
+	address string,
 	description *string,
 	accessRestriction *string,
 	accessRestrictionDescription *string,
@@ -89,7 +89,7 @@ func NewPlaceWithID(
 	costDescription *string,
 	hours *string,
 	open247 *bool,
-	isOpenOrActive *bool,
+	isComingSoon *bool,
 	phoneNumber *string,
 	model domain.Model,
 ) Place {
@@ -109,7 +109,7 @@ func NewPlaceWithID(
 		costDescription:              costDescription,
 		hours:                        hours,
 		open247:                      open247,
-		isOpenOrActive:               isOpenOrActive,
+		isComingSoon:                 isComingSoon,
 		phoneNumber:                  phoneNumber,
 		Model:                        model,
 	}
@@ -155,12 +155,8 @@ func (p *Place) SetPlaceIconType(iconType *string) {
 	p.iconType = iconType
 }
 
-func (p *Place) GetPlaceAddress() *string {
+func (p *Place) GetPlaceAddress() string {
 	return p.address
-}
-
-func (p *Place) SetPlaceAddress(address *string) {
-	p.address = address
 }
 
 func (p *Place) SetAccessRestriction(accessRestriction *string) {
@@ -211,12 +207,12 @@ func (p *Place) GetOpen247() *bool {
 	return p.open247
 }
 
-func (p *Place) SetIsOpenOrActive(flag *bool) {
-	p.isOpenOrActive = flag
+func (p *Place) SetIsComingSoon(flag *bool) {
+	p.isComingSoon = flag
 }
 
-func (p *Place) GetIsOpenOrActive() *bool {
-	return p.isOpenOrActive
+func (p *Place) IsComingSoon() *bool {
+	return p.isComingSoon
 }
 
 func (p *Place) SetPhoneNumber(number *string) {
