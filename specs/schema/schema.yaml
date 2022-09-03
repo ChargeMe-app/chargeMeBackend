@@ -81,7 +81,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StationsFull'
+              $ref: '#/components/schemas/AddressStationsFull'
       responses:
         '200':
           description: Success
@@ -122,9 +122,102 @@ paths:
               schema:
                 $ref: '#/components/schemas/StationFull'
 
+  /v1/auth:
+    post:
+      tags:
+        - authentication with apple
+      operationId: authenticate
+      summary: Аутентификация с помощью AppleId.
+      description: Аутентификация с помощью AppleId.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserId"
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/user/vehicle:
+    post:
+      tags:
+        - add user's vehicle
+      operationId: addVehicle
+      summary: Добавление автомобиля пользователя.
+      description: Добавление автомобиля пользователя.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Vehicle"
+      responses:
+        '200':
+          description: success
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 
 components:
   schemas:
+    SignInRequest:
+      type: object
+      required:
+        - user_identifier
+        - sign_type
+      properties:
+        sign_type:
+          type: string
+        photo_url:
+          type: string
+        display_name:
+          type: string
+        email:
+          type: string
+        user_identifier:
+          type: string
+        apple_credentials:
+          $ref: "#/components/schemas/AppleAuthCredentials"
+        google_credentials:
+          $ref: "#/components/schemas/GoogleAuthCredentials"
+
+
+    AppleAuthCredentials:
+      type: object
+      required:
+        - authorization_code
+        - identity_token
+      properties:
+        authorization_code:
+          type: string
+        identity_token:
+          type: string
+
+    GoogleAuthCredentials:
+      type: object
+      required:
+        - id_token
+        - access_token
+      properties:
+        id_token:
+          type: string
+        access_token:
+          type: string
+
+
     ResponseLocations:
       type: object
       required:
@@ -171,6 +264,18 @@ components:
           items:
             $ref: '#/components/schemas/StationPreliminary'
 
+    Vehicle:
+      description: Сущность автомобиля
+      type: object
+      required:
+        - user_id
+        - vehicle_type
+      properties:
+        user_id:
+          type: string
+        vehicle_type:
+          type: string
+
     StationPreliminary:
       description: Сущность станции.
       type: object
@@ -211,7 +316,7 @@ components:
         - amenities
       properties:
         location:
-          $ref: '#/components/schemas/StationsFull'
+          $ref: '#/components/schemas/AddressStationsFull'
         reviews:
           type: array
           description: Отзывы о локации
@@ -223,7 +328,7 @@ components:
           items:
             $ref: '#/components/schemas/Amenity'
 
-    StationsFull:
+    AddressStationsFull:
       description: Список станций по адресу
       type: object
       required:
@@ -354,6 +459,15 @@ components:
           type: string
         form:
           type: integer
+
+    UserId:
+      description: Идентификатор пользователя.
+      type: object
+      required:
+        - user_id
+      properties:
+        user_id:
+          type: string
 
     Error:
       type: object

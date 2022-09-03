@@ -6,6 +6,7 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/internal/storage/place"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/storage/review"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/storage/station"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/storage/user"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 )
 
@@ -15,6 +16,7 @@ type Storages struct {
 	OutletStorage  outlet.Storage
 	ReviewStorage  review.Storage
 	AmenityStorage amenity.Storage
+	UserStorage    user.Storage
 }
 
 func NewStorageRegistry(db libdb.DB) *Storages {
@@ -24,5 +26,6 @@ func NewStorageRegistry(db libdb.DB) *Storages {
 		OutletStorage:  outlet.NewOutletStorage(db),
 		ReviewStorage:  review.NewReviewStorage(db),
 		AmenityStorage: amenity.NewAmenityStorage(db),
+		UserStorage:    user.NewUserStorage(db),
 	}
 }

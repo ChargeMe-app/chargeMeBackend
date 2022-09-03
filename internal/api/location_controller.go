@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"github.com/ignishub/terr/transport/httperror"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
@@ -16,7 +17,7 @@ import (
 // Получение списка локаций с зарядками в пределах координат
 // (GET /v1/locations)
 func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, params schema.GetLocationsParams) {
-	fmt.Println("api.GetLocations")
+	fmt.Println("api.station.GetStations")
 	ctx := r.Context()
 	var addresses []schema.AddressStationsPreliminary
 
@@ -101,7 +102,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 	r *http.Request,
 	params schema.GetChargingStationsByLocationIDParams,
 ) {
-	fmt.Println("api.GetChargingStationsByLocationID")
+	fmt.Println("api.station.GetChargingStationsByLocationID")
 	ctx := r.Context()
 	placeID := placeDomain.PlaceID(params.LocationId)
 	var reviewsResponse []schema.Review
@@ -110,6 +111,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 
 	place, err := api.placeService.GetFullPlaceByID(ctx, placeID)
 	if err != nil {
+		httperror.ServeError(w, err)
 		w.Write([]byte(err.Error()))
 		fmt.Println(err.Error())
 		return
@@ -117,7 +119,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 
 	reviews, err := api.reviewService.GetReviewsListByLocationID(ctx, placeID)
 	if err != nil {
-		fmt.Println(err.Error())
+		httperror.ServeError(w, err)
 		return
 	}
 
@@ -198,7 +200,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		amenitiesResponse = append(amenitiesResponse, a)
 	}
 
-	response := schema.StationsFull{
+	response := schema.AddressStationsFull{
 		Access:                       place.GetPlaceAccess(),
 		Address:                      place.GetPlaceAddress(),
 		IconType:                     place.GetPlaceIconType(),
