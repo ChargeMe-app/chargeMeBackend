@@ -39,11 +39,11 @@ const (
 )
 
 //const (
-//	host     = "109.120.189.195"
+//	host     = "176.119.158.240"
 //	port     = 5432
-//	user     = "averageUser"
-//	password = "n\"ZLi4J0494bS87x"
-//	dbname   = "PostgresChrageMe"
+//	user     = "postgres"
+//	password = "pass"
+//	dbname   = "postgres"
 //)
 
 type LocationDTOJson struct {
@@ -190,7 +190,7 @@ func NewLocationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistr
 		dto.Latitude,
 		&dto.Access,
 		dto.IconType,
-		&dto.Address,
+		dto.Address,
 		dto.Description,
 		dto.AccessRestriction,
 		dto.AccessRestrictionDescription,
