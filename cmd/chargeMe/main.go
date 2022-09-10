@@ -22,21 +22,21 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-//const (
-//	host     = "109.120.189.195"
-//	port     = 5432
-//	user     = "averageUser"
-//	password = "n\"ZLi4J0494bS87x"
-//	dbname   = "PostgresChrageMe"
-//)
-
 const (
-	host     = "localhost"
+	host     = "176.119.158.240"
 	port     = 5432
 	user     = "postgres"
 	password = "pass"
 	dbname   = "postgres"
 )
+
+//const (
+//	host     = "localhost"
+//	port     = 5432
+//	user     = "postgres"
+//	password = "pass"
+//	dbname   = "postgres"
+//)
 
 //const (
 //	host     = "109.120.189.195"
