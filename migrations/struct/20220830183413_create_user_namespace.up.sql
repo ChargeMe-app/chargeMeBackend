@@ -11,14 +11,14 @@ CREATE TABLE users
 
 CREATE TABLE apple_users
 (
-    user_id            TEXT REFERENCES users (id) ON DELETE CASCADE,
+    user_id            uuid REFERENCES users (id) ON DELETE CASCADE,
     authorization_code TEXT NOT NULL,
     identity_token     TEXT NOT NULL
 );
 
 CREATE TABLE google_users
 (
-    user_id      TEXT REFERENCES users (id) ON DELETE CASCADE,
+    user_id      uuid REFERENCES users (id) ON DELETE CASCADE,
     id_token     TEXT NOT NULL,
     access_token TEXT NOT NULL
 );

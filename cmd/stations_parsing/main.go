@@ -30,21 +30,21 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "pass"
-	dbname   = "postgres"
-)
-
 //const (
-//	host     = "176.119.158.240"
+//	host     = "localhost"
 //	port     = 5432
 //	user     = "postgres"
 //	password = "pass"
 //	dbname   = "postgres"
 //)
+
+const (
+	host     = "176.119.158.240"
+	port     = 5432
+	user     = "postgres"
+	password = "pass"
+	dbname   = "postgres"
+)
 
 type LocationDTOJson struct {
 	PlaceID                      int                `json:"id,omitempty"`
@@ -62,7 +62,7 @@ type LocationDTOJson struct {
 	CostDescription              *string            `json:"cost_description,omitempty"`
 	Hours                        *string            `json:"hours,omitempty"`
 	Open247                      *bool              `json:"open247,omitempty"`
-	IsOpenOrActive               *bool              `json:"is_open_or_active,omitempty"`
+	ComingSoon                   *bool              `json:"coming_soon,omitempty"`
 	PhoneNumber                  *string            `json:"e164_phone_number"`
 	Stations                     []StationsDTOJson  `json:"stations"`
 	Reviews                      []ReviewDTOJson    `json:"reviews"`
@@ -198,7 +198,7 @@ func NewLocationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistr
 		dto.CostDescription,
 		dto.Hours,
 		dto.Open247,
-		dto.IsOpenOrActive,
+		dto.ComingSoon,
 		dto.PhoneNumber,
 		domain.NewModel(),
 	)
