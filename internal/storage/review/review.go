@@ -6,6 +6,7 @@ import (
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
+	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	station "github.com/poorfrombabylon/chargeMeBackend/internal/storage/station"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 )
@@ -17,6 +18,7 @@ const (
 type Storage interface {
 	CreateReview(context.Context, reviewDomain.Review) error
 	GetReviewsListByStationID(context.Context, stationDomain.StationID) ([]reviewDomain.Review, error)
+	GetReviewsListByUserID(context.Context, userDomain.UserId) ([]reviewDomain.Review, error)
 	GetReviewsListByLocationID(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
 }
 
@@ -35,6 +37,7 @@ func (r *reviewStorage) CreateReview(ctx context.Context, review reviewDomain.Re
 			"comment",
 			"station_id",
 			"outlet_id",
+			"user_id",
 			"rating",
 			"connector_type",
 			"user_name",
@@ -47,6 +50,7 @@ func (r *reviewStorage) CreateReview(ctx context.Context, review reviewDomain.Re
 			review.GetComment(),
 			review.GetStationID().String(),
 			review.GetOutletID().String(),
+			review.GetUserID().String(),
 			review.GetRating(),
 			review.GetConnectorType(),
 			review.GetUserName(),
@@ -113,6 +117,37 @@ func (r *reviewStorage) GetReviewsListByLocationID(
 		From(tableReviews + " as r").
 		Join(station.TableStations + " as s ON s.id = r.station_id").
 		Where(squirrel.Eq{"s.location_id": placeID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result []ReviewDTO
+
+	err := r.db.Select(ctx, query, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewReviewsListFromDTO(result), nil
+}
+
+func (r *reviewStorage) GetReviewsListByUserID(
+	ctx context.Context,
+	userId userDomain.UserId,
+) ([]reviewDomain.Review, error) {
+	query := squirrel.Select(
+		"id",
+		"comment",
+		"station_id",
+		"outlet_id",
+		"user_id",
+		"rating",
+		"connector_type",
+		"user_name",
+		"vehicle_name",
+		"vehicle_type",
+		"created_at",
+	).
+		From(tableReviews).
+		Where(squirrel.Eq{"user_id": userId.String()}).
 		PlaceholderFormat(squirrel.Dollar)
 
 	var result []ReviewDTO

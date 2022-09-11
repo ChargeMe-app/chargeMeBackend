@@ -13,8 +13,8 @@ func (u UserId) String() string {
 
 type User struct {
 	id             UserId
-	displayName    string
-	email          string
+	displayName    *string
+	email          *string
 	userIdentifier string
 	photoUrl       *string
 	signType       string
@@ -22,8 +22,8 @@ type User struct {
 }
 
 func NewUser(
-	displayName string,
-	email string,
+	displayName *string,
+	email *string,
 	userIdentifier string,
 	photoUrl *string,
 	signType string,
@@ -41,8 +41,8 @@ func NewUser(
 
 func NewUserWithId(
 	id UserId,
-	displayName string,
-	email string,
+	displayName *string,
+	email *string,
 	userIdentifier string,
 	photoUrl *string,
 	signType string,
@@ -63,11 +63,11 @@ func (u *User) GetUserId() UserId {
 	return u.id
 }
 
-func (u *User) GetDisplayName() string {
+func (u *User) GetDisplayName() *string {
 	return u.displayName
 }
 
-func (u *User) GetEmail() string {
+func (u *User) GetEmail() *string {
 	return u.email
 }
 

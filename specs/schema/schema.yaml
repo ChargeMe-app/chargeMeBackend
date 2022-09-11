@@ -140,7 +140,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserId"
+                $ref: "#/components/schemas/AuthResponse"
         '500':
           description: internal server error
           content:
@@ -159,7 +159,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Vehicle"
+              $ref: "#/components/schemas/VehicleWithUserId"
       responses:
         '200':
           description: success
@@ -264,7 +264,7 @@ components:
           items:
             $ref: '#/components/schemas/StationPreliminary'
 
-    Vehicle:
+    VehicleWithUserId:
       description: Сущность автомобиля
       type: object
       required:
@@ -273,6 +273,15 @@ components:
       properties:
         user_id:
           type: string
+        vehicle_type:
+          type: string
+
+    Vehicle:
+      description: Сущность автомобиля
+      type: object
+      required:
+        - vehicle_type
+      properties:
         vehicle_type:
           type: string
 
@@ -459,6 +468,64 @@ components:
           type: string
         form:
           type: integer
+
+    AuthResponse:
+      description: ответ на авторизацию.
+      type: object
+      required:
+        - user_id
+      properties:
+        user_id:
+          $ref: '#/components/schemas/UserId'
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      description: Информация пользователя.
+      type: object
+      required:
+        - display_name
+        - sign_in_service
+        - vehicle_type
+      properties:
+        display_name:
+          type: string
+        photo_url:
+          type: string
+        sign_in_service:
+          type: string
+        vehicle_type:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vehicle'
+        favourites:
+          type: array
+          items:
+            type: string
+        recent_places:
+          type: array
+          items:
+            type: string
+        total_reviews:
+          type: integer
+        photos:
+          type: integer
+        contacts:
+          $ref: '#/components/schemas/UserContacts'
+        stats:
+          type: string
+
+
+    UserContacts:
+      description: Контакты пользователя.
+      type: object
+      properties:
+        phone_number:
+          type: string
+        email:
+          type: string
+        telegram:
+          type: string
 
     UserId:
       description: Идентификатор пользователя.

@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"github.com/Masterminds/squirrel"
+	"github.com/ignishub/terr"
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 )
@@ -19,6 +20,7 @@ type Storage interface {
 	IsUserExist(context.Context, userDomain.User) (*bool, error)
 	GetUserByIdentifier(context.Context, string) (userDomain.User, error)
 	CreateVehicle(context.Context, userDomain.Vehicle) error
+	GetVehiclesByUserId(context.Context, userDomain.UserId) ([]userDomain.Vehicle, error)
 	CreateAppleCredentials(context.Context, userDomain.AppleCredentials) error
 	CreateGoogleCredentials(context.Context, userDomain.GoogleCredentials) error
 }
@@ -121,6 +123,27 @@ func (u *userStorage) CreateVehicle(ctx context.Context, vehicle userDomain.Vehi
 	}
 
 	return nil
+}
+
+func (u *userStorage) GetVehiclesByUserId(ctx context.Context, userId userDomain.UserId) ([]userDomain.Vehicle, error) {
+	queru := squirrel.Select(
+		"user_id",
+		"vehicle_type",
+	).
+		From(TableVehicles).
+		Where(squirrel.Eq{"user_id": userId.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result []VehicleDTO
+
+	err := u.db.Select(ctx, queru, &result)
+	if err != nil && err == terr.NotFound() {
+		return nil, nil
+	} else if err != nil && err != terr.NotFound() {
+		return nil, err
+	}
+
+	return NewVehiclesFromDTO(result), nil
 }
 
 func (u *userStorage) CreateAppleCredentials(ctx context.Context, creds userDomain.AppleCredentials) error {

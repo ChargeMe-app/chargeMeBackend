@@ -8,6 +8,7 @@ import (
 type UserService interface {
 	GetOrCreateUser(context.Context, userDomain.User) (*userDomain.User, error)
 	CreateVehicle(context.Context, userDomain.Vehicle) error
+	GetVehiclesByUserId(context.Context, userDomain.UserId) ([]userDomain.Vehicle, error)
 	CreateAppleCredentials(context.Context, userDomain.AppleCredentials) error
 	CreateGoogleCredentials(context.Context, userDomain.GoogleCredentials) error
 }
@@ -17,6 +18,7 @@ type UserStorage interface {
 	IsUserExist(context.Context, userDomain.User) (*bool, error)
 	GetUserByIdentifier(context.Context, string) (userDomain.User, error)
 	CreateVehicle(context.Context, userDomain.Vehicle) error
+	GetVehiclesByUserId(context.Context, userDomain.UserId) ([]userDomain.Vehicle, error)
 	CreateAppleCredentials(context.Context, userDomain.AppleCredentials) error
 	CreateGoogleCredentials(context.Context, userDomain.GoogleCredentials) error
 }
@@ -56,4 +58,8 @@ func (s *service) CreateAppleCredentials(ctx context.Context, creds userDomain.A
 
 func (s *service) CreateGoogleCredentials(ctx context.Context, creds userDomain.GoogleCredentials) error {
 	return s.userStorage.CreateGoogleCredentials(ctx, creds)
+}
+
+func (s *service) GetVehiclesByUserId(ctx context.Context, userId userDomain.UserId) ([]userDomain.Vehicle, error) {
+	return s.userStorage.GetVehiclesByUserId(ctx, userId)
 }

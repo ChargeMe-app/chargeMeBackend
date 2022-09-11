@@ -276,6 +276,7 @@ func NewReviewFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry 
 			reviewDomain.ReviewID(uuid.New().String()),
 			stationDomain.StationID(strconv.Itoa(reviewDTO.StationID)),
 			outletDomain.OutletID(strconv.Itoa(reviewDTO.OutletID)),
+			nil,
 			reviewDTO.Comment,
 			reviewDTO.Rating,
 			reviewDTO.ConnectorType,
