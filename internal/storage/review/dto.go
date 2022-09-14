@@ -1,10 +1,12 @@
 package review
 
 import (
+	"github.com/google/uuid"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
+	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	"time"
 )
 
@@ -12,6 +14,7 @@ type ReviewDTO struct {
 	ReviewID      string    `db:"id"`
 	StationID     string    `db:"station_id"`
 	OutletID      string    `db:"outlet_id"`
+	UserID        *string   `db:"user_id"`
 	Comment       *string   `db:"comment"`
 	Rating        *int      `db:"rating"`
 	ConnectorType *int      `db:"connector_type"`
@@ -22,10 +25,13 @@ type ReviewDTO struct {
 }
 
 func NewReviewFromDTO(dto ReviewDTO) reviewDomain.Review {
+	userId := userDomain.UserId(uuid.MustParse(*dto.UserID))
+
 	return reviewDomain.NewReviewWithID(
 		reviewDomain.ReviewID(dto.ReviewID),
 		stationDomain.StationID(dto.StationID),
 		outletDomain.OutletID(dto.OutletID),
+		&userId,
 		dto.Comment,
 		dto.Rating,
 		dto.ConnectorType,

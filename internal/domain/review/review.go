@@ -5,6 +5,7 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
+	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 )
 
 type ReviewID string
@@ -17,6 +18,7 @@ type Review struct {
 	id            ReviewID
 	stationID     stationDomain.StationID
 	outletID      outletDomain.OutletID
+	userID        *userDomain.UserId
 	comment       *string
 	rating        *int
 	connectorType *int
@@ -29,6 +31,7 @@ type Review struct {
 func NewReview(
 	stationID stationDomain.StationID,
 	outletID outletDomain.OutletID,
+	userID *userDomain.UserId,
 	comment *string,
 	rating *int,
 	connectorType *int,
@@ -41,6 +44,7 @@ func NewReview(
 		id:            ReviewID(uuid.New().String()),
 		stationID:     stationID,
 		outletID:      outletID,
+		userID:        userID,
 		comment:       comment,
 		rating:        rating,
 		connectorType: connectorType,
@@ -55,6 +59,7 @@ func NewReviewWithID(
 	reviewID ReviewID,
 	stationID stationDomain.StationID,
 	outletID outletDomain.OutletID,
+	userID *userDomain.UserId,
 	comment *string,
 	rating *int,
 	connectorType *int,
@@ -67,6 +72,7 @@ func NewReviewWithID(
 		id:            reviewID,
 		stationID:     stationID,
 		outletID:      outletID,
+		userID:        userID,
 		comment:       comment,
 		rating:        rating,
 		connectorType: connectorType,
@@ -79,6 +85,10 @@ func NewReviewWithID(
 
 func (r *Review) GetReviewID() ReviewID {
 	return r.id
+}
+
+func (r *Review) GetUserID() *userDomain.UserId {
+	return r.userID
 }
 
 func (r *Review) GetStationID() stationDomain.StationID {

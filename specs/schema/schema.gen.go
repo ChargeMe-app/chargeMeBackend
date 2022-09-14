@@ -63,6 +63,15 @@ type AppleAuthCredentials struct {
 	IdentityToken     string `json:"identity_token"`
 }
 
+// ответ на авторизацию.
+type AuthResponse struct {
+	// Информация пользователя.
+	User *User `json:"user,omitempty"`
+
+	// Идентификатор пользователя.
+	UserId UserId `json:"user_id"`
+}
+
 // Error defines model for Error.
 type Error struct {
 	Code    int32  `json:"code"`
@@ -133,6 +142,28 @@ type StationPreliminary struct {
 	Outlets []OutletPreliminary `json:"outlets"`
 }
 
+// Информация пользователя.
+type User struct {
+	// Контакты пользователя.
+	Contacts      *UserContacts `json:"contacts,omitempty"`
+	DisplayName   string        `json:"display_name"`
+	Favourites    *[]string     `json:"favourites,omitempty"`
+	PhotoUrl      *string       `json:"photo_url,omitempty"`
+	Photos        *int          `json:"photos,omitempty"`
+	RecentPlaces  *[]string     `json:"recent_places,omitempty"`
+	SignInService string        `json:"sign_in_service"`
+	Stats         *string       `json:"stats,omitempty"`
+	TotalReviews  *int          `json:"total_reviews,omitempty"`
+	VehicleType   []Vehicle     `json:"vehicle_type"`
+}
+
+// Контакты пользователя.
+type UserContacts struct {
+	Email       *string `json:"email,omitempty"`
+	PhoneNumber *string `json:"phone_number,omitempty"`
+	Telegram    *string `json:"telegram,omitempty"`
+}
+
 // Идентификатор пользователя.
 type UserId struct {
 	UserId string `json:"user_id"`
@@ -140,6 +171,11 @@ type UserId struct {
 
 // Сущность автомобиля
 type Vehicle struct {
+	VehicleType string `json:"vehicle_type"`
+}
+
+// Сущность автомобиля
+type VehicleWithUserId struct {
 	UserId      string `json:"user_id"`
 	VehicleType string `json:"vehicle_type"`
 }
@@ -164,7 +200,7 @@ type GetChargingStationsByLocationIDParams struct {
 }
 
 // AddVehicleJSONBody defines parameters for AddVehicle.
-type AddVehicleJSONBody = Vehicle
+type AddVehicleJSONBody = VehicleWithUserId
 
 // AuthenticateJSONRequestBody defines body for Authenticate for application/json ContentType.
 type AuthenticateJSONRequestBody = AuthenticateJSONBody

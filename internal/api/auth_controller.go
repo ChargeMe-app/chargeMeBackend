@@ -21,8 +21,8 @@ func (api *apiServer) Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := userDomain.NewUser(
-		*req.DisplayName,
-		*req.Email,
+		req.DisplayName,
+		req.Email,
 		req.UserIdentifier,
 		req.PhotoUrl,
 		req.SignType,
@@ -35,7 +35,31 @@ func (api *apiServer) Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if u != nil {
-		libhttp.SendJSON(ctx, w, schema.UserId{UserId: u.GetUserId().String()})
+
+		userVehicles, err := api.userService.GetVehiclesByUserId(ctx, u.GetUserId())
+		if err != nil {
+			httperror.ServeError(w, err)
+			return
+		}
+
+		userReviews, err := api.reviewService.GetReviewsListByUserID(ctx, u.GetUserId())
+		if err != nil {
+			httperror.ServeError(w, err)
+			return
+		}
+
+		userResponse := &schema.User{
+			DisplayName:   *u.GetDisplayName(),
+			SignInService: u.GetSignType(),
+			VehicleType:   transformUserVehicles(userVehicles),
+			PhotoUrl:      u.GetPhotoUrl(),
+			TotalReviews:  transformReviewsNumber(userReviews),
+		}
+
+		libhttp.SendJSON(ctx, w, schema.AuthResponse{
+			UserId: schema.UserId{u.GetUserId().String()},
+			User:   userResponse,
+		})
 	} else {
 		if req.GoogleCredentials != nil {
 			credentials := convertGoogleCredentials(user.GetUserId(), req.GoogleCredentials)

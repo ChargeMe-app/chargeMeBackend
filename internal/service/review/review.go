@@ -5,17 +5,20 @@ import (
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
+	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 )
 
 type ReviewService interface {
 	CreateReview(context.Context, reviewDomain.Review) error
 	GetReviewsListByStationID(context.Context, stationDomain.StationID) ([]reviewDomain.Review, error)
+	GetReviewsListByUserID(context.Context, userDomain.UserId) ([]reviewDomain.Review, error)
 	GetReviewsListByLocationID(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
 }
 
 type ReviewStorage interface {
 	CreateReview(context.Context, reviewDomain.Review) error
 	GetReviewsListByStationID(context.Context, stationDomain.StationID) ([]reviewDomain.Review, error)
+	GetReviewsListByUserID(context.Context, userDomain.UserId) ([]reviewDomain.Review, error)
 	GetReviewsListByLocationID(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
 }
 
@@ -45,4 +48,8 @@ func (s *service) GetReviewsListByLocationID(
 	placeID placeDomain.PlaceID,
 ) ([]reviewDomain.Review, error) {
 	return s.reviewStorage.GetReviewsListByLocationID(ctx, placeID)
+}
+
+func (s *service) GetReviewsListByUserID(ctx context.Context, userId userDomain.UserId) ([]reviewDomain.Review, error) {
+	return s.reviewStorage.GetReviewsListByUserID(ctx, userId)
 }

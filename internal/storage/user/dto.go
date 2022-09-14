@@ -10,11 +10,16 @@ import (
 type UserDTO struct {
 	UserId         uuid.UUID `db:"id"`
 	UserIdentifier string    `db:"user_identifier"`
-	DisplayName    string    `db:"display_name"`
-	Email          string    `db:"email"`
+	DisplayName    *string   `db:"display_name"`
+	Email          *string   `db:"email"`
 	PhotoUrl       *string   `db:"photo_url"`
 	SignType       string    `db:"sign_type"`
 	CreatedAt      time.Time `db:"created_at"`
+}
+
+type VehicleDTO struct {
+	UserId      uuid.UUID `db:"user_id"`
+	VehicleType string    `db:"vehicle_type"`
 }
 
 func NewUserFromDTO(dto UserDTO) userDomain.User {
@@ -29,4 +34,21 @@ func NewUserFromDTO(dto UserDTO) userDomain.User {
 		dto.SignType,
 		model,
 	)
+}
+
+func NewVehicleFromDTO(dto VehicleDTO) userDomain.Vehicle {
+	return userDomain.NewVehicle(
+		userDomain.UserId(dto.UserId),
+		dto.VehicleType,
+	)
+}
+
+func NewVehiclesFromDTO(dto []VehicleDTO) []userDomain.Vehicle {
+	var vehicles []userDomain.Vehicle
+
+	for _, i := range dto {
+		vehicles = append(vehicles, NewVehicleFromDTO(i))
+	}
+
+	return vehicles
 }
