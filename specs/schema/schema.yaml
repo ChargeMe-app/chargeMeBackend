@@ -565,7 +565,6 @@ components:
       required:
         - display_name
         - sign_in_service
-        - vehicle_type
       properties:
         id:
           type: string

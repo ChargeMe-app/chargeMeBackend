@@ -168,7 +168,7 @@ type User struct {
 	SignInService string        `json:"sign_in_service"`
 	Stats         *string       `json:"stats,omitempty"`
 	TotalReviews  *int          `json:"total_reviews,omitempty"`
-	VehicleType   []Vehicle     `json:"vehicle_type"`
+	VehicleType   *[]Vehicle    `json:"vehicle_type,omitempty"`
 }
 
 // Контакты пользователя.
