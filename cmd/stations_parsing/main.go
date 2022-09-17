@@ -30,21 +30,21 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 )
 
-//const (
-//	host     = "localhost"
-//	port     = 5432
-//	user     = "postgres"
-//	password = "pass"
-//	dbname   = "postgres"
-//)
-
 const (
-	host     = "176.119.158.240"
+	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
 	password = "pass"
 	dbname   = "postgres"
 )
+
+//const (
+//	host     = "176.119.158.240"
+//	port     = 5432
+//	user     = "postgres"
+//	password = "pass"
+//	dbname   = "postgres"
+//)
 
 type LocationDTOJson struct {
 	PlaceID                      int                `json:"id,omitempty"`
@@ -100,6 +100,7 @@ type ReviewDTOJson struct {
 	Comment       *string     `json:"comment,omitempty"`
 	Rating        *int        `json:"rating,omitempty"`
 	ConnectorType *int        `json:"connector_type"`
+	Kilowatts     *int        `json:"kilowatts"`
 	VehicleName   *string     `json:"vehicle_name"`
 	VehicleType   *string     `json:"vehicle_type"`
 	User          UserDTOJSOn `json:"user"`
@@ -280,6 +281,7 @@ func NewReviewFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry 
 			reviewDTO.Comment,
 			reviewDTO.Rating,
 			reviewDTO.ConnectorType,
+			reviewDTO.Kilowatts,
 			reviewDTO.User.FirstName,
 			reviewDTO.VehicleName,
 			reviewDTO.VehicleType,

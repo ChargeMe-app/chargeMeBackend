@@ -5,14 +5,14 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 )
 
-type UserId uuid.UUID
+type UserID uuid.UUID
 
-func (u UserId) String() string {
+func (u UserID) String() string {
 	return uuid.UUID(u).String()
 }
 
 type User struct {
-	id             UserId
+	id             UserID
 	displayName    *string
 	email          *string
 	userIdentifier string
@@ -29,7 +29,7 @@ func NewUser(
 	signType string,
 ) User {
 	return User{
-		UserId(uuid.New()),
+		UserID(uuid.New()),
 		displayName,
 		email,
 		userIdentifier,
@@ -40,7 +40,7 @@ func NewUser(
 }
 
 func NewUserWithId(
-	id UserId,
+	id UserID,
 	displayName *string,
 	email *string,
 	userIdentifier string,
@@ -59,7 +59,7 @@ func NewUserWithId(
 	}
 }
 
-func (u *User) GetUserId() UserId {
+func (u *User) GetUserId() UserID {
 	return u.id
 }
 

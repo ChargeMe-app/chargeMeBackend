@@ -1,13 +1,13 @@
 package user
 
 type AppleCredentials struct {
-	userId            UserId
+	userId            UserID
 	authorizationCode string
 	identityToken     string
 }
 
 func NewAppleCredentials(
-	userId UserId,
+	userId UserID,
 	authorizationCode string,
 	identityToken string,
 ) AppleCredentials {
@@ -18,7 +18,7 @@ func NewAppleCredentials(
 	}
 }
 
-func (a *AppleCredentials) GetUserId() UserId {
+func (a *AppleCredentials) GetUserId() UserID {
 	return a.userId
 }
 
@@ -31,13 +31,13 @@ func (a *AppleCredentials) GetIdentityToken() string {
 }
 
 type GoogleCredentials struct {
-	userId      UserId
+	userId      UserID
 	idToken     string
 	accessToken string
 }
 
 func NewGoogleCredentials(
-	userId UserId,
+	userId UserID,
 	IdToken string,
 	AccessToken string,
 ) GoogleCredentials {
@@ -48,7 +48,7 @@ func NewGoogleCredentials(
 	}
 }
 
-func (g *GoogleCredentials) GetUserId() UserId {
+func (g *GoogleCredentials) GetUserId() UserID {
 	return g.userId
 }
 

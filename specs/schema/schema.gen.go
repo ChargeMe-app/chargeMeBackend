@@ -72,6 +72,18 @@ type AuthResponse struct {
 	UserId UserId `json:"user_id"`
 }
 
+// Сущность чекина.
+type Checkin struct {
+	Comment     *string  `json:"comment,omitempty"`
+	Duration    int      `json:"duration"`
+	Kilowatts   *float32 `json:"kilowatts,omitempty"`
+	OutletId    string   `json:"outlet_id"`
+	Rating      int      `json:"rating"`
+	StationId   string   `json:"station_id"`
+	UserId      string   `json:"user_id"`
+	VehicleType *int     `json:"vehicle_type,omitempty"`
+}
+
 // Error defines model for Error.
 type Error struct {
 	Code    int32  `json:"code"`
@@ -172,17 +184,20 @@ type UserId struct {
 
 // Сущность автомобиля
 type Vehicle struct {
-	VehicleType string `json:"vehicle_type"`
+	VehicleType int `json:"vehicle_type"`
 }
 
 // Сущность автомобиля
 type VehicleWithUserId struct {
 	UserId      string `json:"user_id"`
-	VehicleType string `json:"vehicle_type"`
+	VehicleType int    `json:"vehicle_type"`
 }
 
 // AuthenticateJSONBody defines parameters for Authenticate.
 type AuthenticateJSONBody = SignInRequest
+
+// CreateCheckinJSONBody defines parameters for CreateCheckin.
+type CreateCheckinJSONBody = Checkin
 
 // GetLocationsParams defines parameters for GetLocations.
 type GetLocationsParams struct {
@@ -206,6 +221,9 @@ type AddVehicleJSONBody = VehicleWithUserId
 // AuthenticateJSONRequestBody defines body for Authenticate for application/json ContentType.
 type AuthenticateJSONRequestBody = AuthenticateJSONBody
 
+// CreateCheckinJSONRequestBody defines body for CreateCheckin for application/json ContentType.
+type CreateCheckinJSONRequestBody = CreateCheckinJSONBody
+
 // CreateFullLocationJSONRequestBody defines body for CreateFullLocation for application/json ContentType.
 type CreateFullLocationJSONRequestBody = CreateFullLocationJSONBody
 
@@ -220,6 +238,9 @@ type ServerInterface interface {
 	// Аутентификация с помощью AppleId.
 	// (POST /v1/auth)
 	Authenticate(w http.ResponseWriter, r *http.Request)
+	// Создание чекина.
+	// (POST /v1/checkin)
+	CreateCheckin(w http.ResponseWriter, r *http.Request)
 	// Получение списка локаций с зарядками в пределах координат.
 	// (GET /v1/locations)
 	GetLocations(w http.ResponseWriter, r *http.Request, params GetLocationsParams)
@@ -267,6 +288,21 @@ func (siw *ServerInterfaceWrapper) Authenticate(w http.ResponseWriter, r *http.R
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.Authenticate(w, r)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
+}
+
+// CreateCheckin operation middleware
+func (siw *ServerInterfaceWrapper) CreateCheckin(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateCheckin(w, r)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -548,6 +584,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/v1/auth", wrapper.Authenticate)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/checkin", wrapper.CreateCheckin)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/locations", wrapper.GetLocations)

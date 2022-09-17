@@ -19,14 +19,14 @@ type UserDTO struct {
 
 type VehicleDTO struct {
 	UserId      uuid.UUID `db:"user_id"`
-	VehicleType string    `db:"vehicle_type"`
+	VehicleType int       `db:"vehicle_type"`
 }
 
 func NewUserFromDTO(dto UserDTO) userDomain.User {
 	model := domain.NewModelFrom(dto.CreatedAt, nil)
 
 	return userDomain.NewUserWithId(
-		userDomain.UserId(dto.UserId),
+		userDomain.UserID(dto.UserId),
 		dto.DisplayName,
 		dto.Email,
 		dto.UserIdentifier,
@@ -38,7 +38,7 @@ func NewUserFromDTO(dto UserDTO) userDomain.User {
 
 func NewVehicleFromDTO(dto VehicleDTO) userDomain.Vehicle {
 	return userDomain.NewVehicle(
-		userDomain.UserId(dto.UserId),
+		userDomain.UserID(dto.UserId),
 		dto.VehicleType,
 	)
 }
