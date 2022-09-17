@@ -56,7 +56,7 @@ func (api *apiServer) GetUserByIdentifier(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	userIdentifierResponse := user.GetUserIdentifier()
+	userIdentifierResponse := user.GetUserId().String()
 
 	userResponse := &schema.User{
 		Id:            &userIdentifierResponse,
