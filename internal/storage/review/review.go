@@ -60,7 +60,7 @@ func (r *reviewStorage) CreateReview(ctx context.Context, review reviewDomain.Re
 
 	if review.GetUserID() != nil {
 		query = query.Columns(
-			"iser_id",
+			"user_id",
 		).
 			Values(
 				review.GetUserID().String(),
