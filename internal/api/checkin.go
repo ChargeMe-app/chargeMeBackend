@@ -29,6 +29,7 @@ func (api *apiServer) CreateCheckin(w http.ResponseWriter, r *http.Request) {
 		userDomain.UserID(uuid.MustParse(req.UserId)),
 		stationDomain.StationID(req.StationId),
 		outletDomain.OutletID(req.OutletId),
+		req.UserName,
 		req.Duration,
 		req.VehicleType,
 		req.Comment,

@@ -81,6 +81,7 @@ type Checkin struct {
 	Rating      int      `json:"rating"`
 	StationId   string   `json:"station_id"`
 	UserId      string   `json:"user_id"`
+	UserName    string   `json:"user_name"`
 	VehicleType *int     `json:"vehicle_type,omitempty"`
 }
 

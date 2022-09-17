@@ -19,6 +19,7 @@ type Checkin struct {
 	userId      userDomain.UserID
 	stationId   stationDomain.StationID
 	outletId    outletDomain.OutletID
+	userName    string
 	duration    int
 	vehicleType *int
 	comment     *string
@@ -31,6 +32,7 @@ func NewCheckin(
 	userId userDomain.UserID,
 	stationId stationDomain.StationID,
 	outletId outletDomain.OutletID,
+	userName string,
 	duration int,
 	vehicleType *int,
 	comment *string,
@@ -42,6 +44,7 @@ func NewCheckin(
 		userId:      userId,
 		stationId:   stationId,
 		outletId:    outletId,
+		userName:    userName,
 		duration:    duration,
 		vehicleType: vehicleType,
 		comment:     comment,
@@ -56,6 +59,7 @@ func NewCheckinWithID(
 	userId userDomain.UserID,
 	stationId stationDomain.StationID,
 	outletId outletDomain.OutletID,
+	userName string,
 	duration int,
 	vehicleType *int,
 	comment *string,
@@ -68,6 +72,7 @@ func NewCheckinWithID(
 		userId:      userId,
 		stationId:   stationId,
 		outletId:    outletId,
+		userName:    userName,
 		duration:    duration,
 		vehicleType: vehicleType,
 		comment:     comment,
@@ -123,4 +128,8 @@ func (c Checkin) SetKilowatts(kilowatts *float32) {
 
 func (c Checkin) GetRating() int {
 	return c.rating
+}
+
+func (c Checkin) GetUserName() string {
+	return c.userName
 }
