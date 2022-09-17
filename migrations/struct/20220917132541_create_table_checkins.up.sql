@@ -8,6 +8,7 @@ CREATE TABLE checkins
     comment      TEXT,
     kilowatts    FLOAT,
     rating       INTEGER,
+    user_name    TEXT             NOT NULL,
     started_at   TIMESTAMP(0)     NOT NULL,
     finished_at  TIMESTAMP(0)     NOT NULL
 );
