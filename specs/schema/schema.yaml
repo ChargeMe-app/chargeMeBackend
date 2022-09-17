@@ -148,6 +148,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /v1/user/{userIdentifier}:
+    parameters:
+      - name: userIdentifier
+        required: true
+        in: path
+        schema:
+          type: string
+    get:
+      tags:
+        - get user by id.
+      operationId: getUserByIdentifier
+      summary: Получение польной информации о юзере по идентификатору.
+      description: Получение польной информации о юзере по идентификатору.
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /v1/user/vehicle:
     post:
       tags:
@@ -488,6 +515,8 @@ components:
         - sign_in_service
         - vehicle_type
       properties:
+        id:
+          type: string
         display_name:
           type: string
         photo_url:

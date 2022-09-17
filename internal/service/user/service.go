@@ -10,6 +10,7 @@ type UserService interface {
 	CreateVehicle(context.Context, userDomain.Vehicle) error
 	GetVehiclesByUserId(context.Context, userDomain.UserId) ([]userDomain.Vehicle, error)
 	CreateAppleCredentials(context.Context, userDomain.AppleCredentials) error
+	GetUserByIdentifier(context.Context, string) (userDomain.User, error)
 	CreateGoogleCredentials(context.Context, userDomain.GoogleCredentials) error
 }
 
@@ -62,4 +63,8 @@ func (s *service) CreateGoogleCredentials(ctx context.Context, creds userDomain.
 
 func (s *service) GetVehiclesByUserId(ctx context.Context, userId userDomain.UserId) ([]userDomain.Vehicle, error) {
 	return s.userStorage.GetVehiclesByUserId(ctx, userId)
+}
+
+func (s *service) GetUserByIdentifier(ctx context.Context, identifier string) (userDomain.User, error) {
+	return s.userStorage.GetUserByIdentifier(ctx, identifier)
 }

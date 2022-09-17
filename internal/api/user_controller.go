@@ -32,5 +32,40 @@ func (api *apiServer) AddVehicle(w http.ResponseWriter, r *http.Request) {
 		httperror.ServeError(w, err)
 		return
 	}
+}
 
+func (api *apiServer) GetUserByIdentifier(w http.ResponseWriter, r *http.Request, userIdentifier string) {
+	fmt.Println("api.user.GetUserByID")
+	ctx := r.Context()
+
+	user, err := api.userService.GetUserByIdentifier(ctx, userIdentifier)
+	if err != nil {
+		httperror.ServeError(w, err)
+		return
+	}
+
+	userVehicles, err := api.userService.GetVehiclesByUserId(ctx, user.GetUserId())
+	if err != nil {
+		httperror.ServeError(w, err)
+		return
+	}
+
+	userReviews, err := api.reviewService.GetReviewsListByUserID(ctx, user.GetUserId())
+	if err != nil {
+		httperror.ServeError(w, err)
+		return
+	}
+
+	userIdentifierResponse := user.GetUserIdentifier()
+
+	userResponse := &schema.User{
+		Id:            &userIdentifierResponse,
+		DisplayName:   *user.GetDisplayName(),
+		SignInService: user.GetSignType(),
+		VehicleType:   transformUserVehicles(userVehicles),
+		PhotoUrl:      user.GetPhotoUrl(),
+		TotalReviews:  transformReviewsNumber(userReviews),
+	}
+
+	libhttp.SendJSON(ctx, w, userResponse)
 }

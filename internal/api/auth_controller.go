@@ -35,7 +35,6 @@ func (api *apiServer) Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if u != nil {
-
 		userVehicles, err := api.userService.GetVehiclesByUserId(ctx, u.GetUserId())
 		if err != nil {
 			httperror.ServeError(w, err)
