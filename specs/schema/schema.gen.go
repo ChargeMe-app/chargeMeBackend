@@ -148,6 +148,7 @@ type User struct {
 	Contacts      *UserContacts `json:"contacts,omitempty"`
 	DisplayName   string        `json:"display_name"`
 	Favourites    *[]string     `json:"favourites,omitempty"`
+	Id            *string       `json:"id,omitempty"`
 	PhotoUrl      *string       `json:"photo_url,omitempty"`
 	Photos        *int          `json:"photos,omitempty"`
 	RecentPlaces  *[]string     `json:"recent_places,omitempty"`
@@ -231,6 +232,9 @@ type ServerInterface interface {
 	// Добавление автомобиля пользователя.
 	// (POST /v1/user/vehicle)
 	AddVehicle(w http.ResponseWriter, r *http.Request)
+	// Получение польной информации о юзере по идентификатору.
+	// (GET /v1/user/{userIdentifier})
+	GetUserByIdentifier(w http.ResponseWriter, r *http.Request, userIdentifier string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -400,6 +404,32 @@ func (siw *ServerInterfaceWrapper) AddVehicle(w http.ResponseWriter, r *http.Req
 	handler(w, r.WithContext(ctx))
 }
 
+// GetUserByIdentifier operation middleware
+func (siw *ServerInterfaceWrapper) GetUserByIdentifier(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "userIdentifier" -------------
+	var userIdentifier string
+
+	err = runtime.BindStyledParameter("simple", false, "userIdentifier", chi.URLParam(r, "userIdentifier"), &userIdentifier)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userIdentifier", Err: err})
+		return
+	}
+
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetUserByIdentifier(w, r, userIdentifier)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -530,6 +560,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/v1/user/vehicle", wrapper.AddVehicle)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/user/{userIdentifier}", wrapper.GetUserByIdentifier)
 	})
 
 	return r
