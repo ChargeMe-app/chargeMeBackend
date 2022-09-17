@@ -22,21 +22,21 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-//const (
-//	host     = "176.119.158.240"
-//	port     = 5432
-//	user     = "postgres"
-//	password = "pass"
-//	dbname   = "postgres"
-//)
-
 const (
-	host     = "localhost"
+	host     = "176.119.158.240"
 	port     = 5432
 	user     = "postgres"
 	password = "pass"
 	dbname   = "postgres"
 )
+
+//const (
+//	host     = "localhost"
+//	port     = 5432
+//	user     = "postgres"
+//	password = "pass"
+//	dbname   = "postgres"
+//)
 
 func main() {
 	ctx, cancel := signal.NotifyContext(
