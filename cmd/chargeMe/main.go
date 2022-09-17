@@ -96,7 +96,7 @@ func startHttpServer(
 	router.Handle("/*", handler)
 
 	httpServer := http.Server{
-		Addr:    ":8080",
+		Addr:    ":8081",
 		Handler: router,
 	}
 
