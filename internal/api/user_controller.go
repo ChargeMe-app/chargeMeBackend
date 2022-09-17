@@ -23,7 +23,7 @@ func (api *apiServer) AddVehicle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vehicle := userDomain.NewVehicle(
-		userDomain.UserId(uuid.MustParse(req.UserId)),
+		userDomain.UserID(uuid.MustParse(req.UserId)),
 		req.VehicleType,
 	)
 

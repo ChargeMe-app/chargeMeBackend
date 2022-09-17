@@ -7,7 +7,7 @@ import (
 )
 
 func convertGoogleCredentials(
-	userId userDomain.UserId,
+	userId userDomain.UserID,
 	credentials *schema.GoogleAuthCredentials,
 ) userDomain.GoogleCredentials {
 	return userDomain.NewGoogleCredentials(
@@ -18,7 +18,7 @@ func convertGoogleCredentials(
 }
 
 func convertAppleCredentials(
-	userId userDomain.UserId,
+	userId userDomain.UserID,
 	credentials *schema.AppleAuthCredentials,
 ) userDomain.AppleCredentials {
 	return userDomain.NewAppleCredentials(

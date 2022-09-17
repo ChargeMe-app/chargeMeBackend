@@ -122,6 +122,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/StationFull'
 
+  /v1/checkin:
+    post:
+      tags:
+        - create checkin
+      operationId: createCheckin
+      summary: Создание чекина.
+      description: Создание чекина.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Checkin"
+      responses:
+        '200':
+          description: success
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
   /v1/auth:
     post:
       tags:
@@ -244,7 +267,6 @@ components:
         access_token:
           type: string
 
-
     ResponseLocations:
       type: object
       required:
@@ -301,7 +323,7 @@ components:
         user_id:
           type: string
         vehicle_type:
-          type: string
+          type: integer
 
     Vehicle:
       description: Сущность автомобиля
@@ -310,7 +332,34 @@ components:
         - vehicle_type
       properties:
         vehicle_type:
+          type: integer
+
+    Checkin:
+      description: Сущность чекина.
+      type: object
+      required:
+        - user_id
+        - station_id
+        - outlet_id
+        - rating
+        - duration
+      properties:
+        user_id:
           type: string
+        station_id:
+          type: string
+        outlet_id:
+          type: string
+        vehicle_type:
+          type: integer
+        comment:
+          type: string
+        kilowatts:
+          type: number
+        rating:
+          type: integer
+        duration:
+          type: integer
 
     StationPreliminary:
       description: Сущность станции.

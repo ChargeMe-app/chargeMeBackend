@@ -18,7 +18,7 @@ const (
 type Storage interface {
 	CreateReview(context.Context, reviewDomain.Review) error
 	GetReviewsListByStationID(context.Context, stationDomain.StationID) ([]reviewDomain.Review, error)
-	GetReviewsListByUserID(context.Context, userDomain.UserId) ([]reviewDomain.Review, error)
+	GetReviewsListByUserID(context.Context, userDomain.UserID) ([]reviewDomain.Review, error)
 	GetReviewsListByLocationID(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
 }
 
@@ -37,7 +37,6 @@ func (r *reviewStorage) CreateReview(ctx context.Context, review reviewDomain.Re
 			"comment",
 			"station_id",
 			"outlet_id",
-			"user_id",
 			"rating",
 			"connector_type",
 			"user_name",
@@ -50,7 +49,6 @@ func (r *reviewStorage) CreateReview(ctx context.Context, review reviewDomain.Re
 			review.GetComment(),
 			review.GetStationID().String(),
 			review.GetOutletID().String(),
-			review.GetUserID().String(),
 			review.GetRating(),
 			review.GetConnectorType(),
 			review.GetUserName(),
@@ -59,6 +57,15 @@ func (r *reviewStorage) CreateReview(ctx context.Context, review reviewDomain.Re
 			review.GetCreatedAt(),
 		).
 		PlaceholderFormat(squirrel.Dollar)
+
+	if review.GetUserID() != nil {
+		query = query.Columns(
+			"iser_id",
+		).
+			Values(
+				review.GetUserID().String(),
+			)
+	}
 
 	err := r.db.Insert(ctx, query)
 	if err != nil {
@@ -131,7 +138,7 @@ func (r *reviewStorage) GetReviewsListByLocationID(
 
 func (r *reviewStorage) GetReviewsListByUserID(
 	ctx context.Context,
-	userId userDomain.UserId,
+	userId userDomain.UserID,
 ) ([]reviewDomain.Review, error) {
 	query := squirrel.Select(
 		"id",

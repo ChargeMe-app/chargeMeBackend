@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/service"
 	amenityService "github.com/poorfrombabylon/chargeMeBackend/internal/service/amenity"
+	checkinService "github.com/poorfrombabylon/chargeMeBackend/internal/service/checkin"
 	outletService "github.com/poorfrombabylon/chargeMeBackend/internal/service/outlet"
 	placeService "github.com/poorfrombabylon/chargeMeBackend/internal/service/place"
 	reviewService "github.com/poorfrombabylon/chargeMeBackend/internal/service/review"
@@ -21,6 +22,7 @@ type apiServer struct {
 	stationService stationService.StationService
 	outletService  outletService.OutletService
 	reviewService  reviewService.ReviewService
+	checkinService checkinService.CheckinService
 	amenityService amenityService.AmenityService
 	userService    userService.UserService
 }
@@ -31,6 +33,7 @@ func NewApiServer(serviceRegistry *service.Services) schema.ServerInterface {
 		serviceRegistry.Station,
 		serviceRegistry.Outlet,
 		serviceRegistry.Review,
+		serviceRegistry.Checkin,
 		serviceRegistry.Amenity,
 		serviceRegistry.User,
 	}
