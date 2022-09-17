@@ -1,21 +1,21 @@
 package user
 
 type Vehicle struct {
-	userId      UserId
-	vehicleType string
+	userId      UserID
+	vehicleType int
 }
 
-func NewVehicle(userId UserId, vehicleType string) Vehicle {
+func NewVehicle(userId UserID, vehicleType int) Vehicle {
 	return Vehicle{
 		userId:      userId,
 		vehicleType: vehicleType,
 	}
 }
 
-func (v *Vehicle) GetUserId() UserId {
+func (v *Vehicle) GetUserId() UserID {
 	return v.userId
 }
 
-func (v *Vehicle) GetVehicleType() string {
+func (v *Vehicle) GetVehicleType() int {
 	return v.vehicleType
 }

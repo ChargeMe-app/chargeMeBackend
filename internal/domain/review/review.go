@@ -18,10 +18,11 @@ type Review struct {
 	id            ReviewID
 	stationID     stationDomain.StationID
 	outletID      outletDomain.OutletID
-	userID        *userDomain.UserId
+	userID        *userDomain.UserID
 	comment       *string
 	rating        *int
 	connectorType *int
+	kilowatts     *int
 	userName      *string
 	vehicleName   *string
 	vehicleType   *string
@@ -31,10 +32,11 @@ type Review struct {
 func NewReview(
 	stationID stationDomain.StationID,
 	outletID outletDomain.OutletID,
-	userID *userDomain.UserId,
+	userID *userDomain.UserID,
 	comment *string,
 	rating *int,
 	connectorType *int,
+	kilowatts *int,
 	userName *string,
 	vehicleName *string,
 	vehicleType *string,
@@ -48,6 +50,7 @@ func NewReview(
 		comment:       comment,
 		rating:        rating,
 		connectorType: connectorType,
+		kilowatts:     kilowatts,
 		userName:      userName,
 		vehicleName:   vehicleName,
 		vehicleType:   vehicleType,
@@ -59,10 +62,11 @@ func NewReviewWithID(
 	reviewID ReviewID,
 	stationID stationDomain.StationID,
 	outletID outletDomain.OutletID,
-	userID *userDomain.UserId,
+	userID *userDomain.UserID,
 	comment *string,
 	rating *int,
 	connectorType *int,
+	kilowatts *int,
 	userName *string,
 	vehicleName *string,
 	vehicleType *string,
@@ -76,6 +80,7 @@ func NewReviewWithID(
 		comment:       comment,
 		rating:        rating,
 		connectorType: connectorType,
+		kilowatts:     kilowatts,
 		userName:      userName,
 		vehicleName:   vehicleName,
 		vehicleType:   vehicleType,
@@ -87,7 +92,7 @@ func (r *Review) GetReviewID() ReviewID {
 	return r.id
 }
 
-func (r *Review) GetUserID() *userDomain.UserId {
+func (r *Review) GetUserID() *userDomain.UserID {
 	return r.userID
 }
 
@@ -145,4 +150,12 @@ func (r *Review) GetUserName() *string {
 
 func (r *Review) SetUserName(userName *string) {
 	r.userName = userName
+}
+
+func (r *Review) SetKilowatts(kilowatts *int) {
+	r.kilowatts = kilowatts
+}
+
+func (r *Review) GetKilowatts() *int {
+	return r.kilowatts
 }

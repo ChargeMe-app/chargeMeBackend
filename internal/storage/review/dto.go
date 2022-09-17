@@ -25,10 +25,10 @@ type ReviewDTO struct {
 }
 
 func NewReviewFromDTO(dto ReviewDTO) reviewDomain.Review {
-	var userId userDomain.UserId
+	var userId userDomain.UserID
 
 	if dto.UserID != nil {
-		userId = userDomain.UserId(uuid.MustParse(*dto.UserID))
+		userId = userDomain.UserID(uuid.MustParse(*dto.UserID))
 	}
 
 	return reviewDomain.NewReviewWithID(
@@ -39,6 +39,7 @@ func NewReviewFromDTO(dto ReviewDTO) reviewDomain.Review {
 		dto.Comment,
 		dto.Rating,
 		dto.ConnectorType,
+		dto.Rating,
 		dto.UserName,
 		dto.VehicleName,
 		dto.VehicleType,
