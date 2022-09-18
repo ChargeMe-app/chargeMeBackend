@@ -255,8 +255,8 @@ type ServerInterface interface {
 	// (POST /v1/user/vehicle)
 	AddVehicle(w http.ResponseWriter, r *http.Request)
 	// Получение польной информации о юзере по идентификатору.
-	// (GET /v1/user/{userIdentifier})
-	GetUserByIdentifier(w http.ResponseWriter, r *http.Request, userIdentifier string)
+	// (GET /v1/user/{userId})
+	GetUserByUserId(w http.ResponseWriter, r *http.Request, userId string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -441,23 +441,23 @@ func (siw *ServerInterfaceWrapper) AddVehicle(w http.ResponseWriter, r *http.Req
 	handler(w, r.WithContext(ctx))
 }
 
-// GetUserByIdentifier operation middleware
-func (siw *ServerInterfaceWrapper) GetUserByIdentifier(w http.ResponseWriter, r *http.Request) {
+// GetUserByUserId operation middleware
+func (siw *ServerInterfaceWrapper) GetUserByUserId(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
 
-	// ------------- Path parameter "userIdentifier" -------------
-	var userIdentifier string
+	// ------------- Path parameter "userId" -------------
+	var userId string
 
-	err = runtime.BindStyledParameter("simple", false, "userIdentifier", chi.URLParam(r, "userIdentifier"), &userIdentifier)
+	err = runtime.BindStyledParameter("simple", false, "userId", chi.URLParam(r, "userId"), &userId)
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userIdentifier", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
 		return
 	}
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetUserByIdentifier(w, r, userIdentifier)
+		siw.Handler.GetUserByUserId(w, r, userId)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -602,7 +602,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/v1/user/vehicle", wrapper.AddVehicle)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/v1/user/{userIdentifier}", wrapper.GetUserByIdentifier)
+		r.Get(options.BaseURL+"/v1/user/{userId}", wrapper.GetUserByUserId)
 	})
 
 	return r

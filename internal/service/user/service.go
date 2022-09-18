@@ -9,6 +9,7 @@ type UserService interface {
 	GetOrCreateUser(context.Context, userDomain.User) (*userDomain.User, error)
 	CreateVehicle(context.Context, userDomain.Vehicle) error
 	GetVehiclesByUserId(context.Context, userDomain.UserID) ([]userDomain.Vehicle, error)
+	GetUserByUserId(context.Context, userDomain.UserID) (userDomain.User, error)
 	CreateAppleCredentials(context.Context, userDomain.AppleCredentials) error
 	GetUserByIdentifier(context.Context, string) (userDomain.User, error)
 	CreateGoogleCredentials(context.Context, userDomain.GoogleCredentials) error
@@ -18,6 +19,7 @@ type UserStorage interface {
 	CreateUser(context.Context, userDomain.User) error
 	IsUserExist(context.Context, userDomain.User) (*bool, error)
 	GetUserByIdentifier(context.Context, string) (userDomain.User, error)
+	GetUserByUserId(context.Context, userDomain.UserID) (userDomain.User, error)
 	CreateVehicle(context.Context, userDomain.Vehicle) error
 	GetVehiclesByUserId(context.Context, userDomain.UserID) ([]userDomain.Vehicle, error)
 	CreateAppleCredentials(context.Context, userDomain.AppleCredentials) error
@@ -67,4 +69,8 @@ func (s *service) GetVehiclesByUserId(ctx context.Context, userId userDomain.Use
 
 func (s *service) GetUserByIdentifier(ctx context.Context, identifier string) (userDomain.User, error) {
 	return s.userStorage.GetUserByIdentifier(ctx, identifier)
+}
+
+func (s *service) GetUserByUserId(ctx context.Context, userId userDomain.UserID) (userDomain.User, error) {
+	return s.userStorage.GetUserByUserId(ctx, userId)
 }

@@ -171,9 +171,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /v1/user/{userIdentifier}:
+  /v1/user/{userId}:
     parameters:
-      - name: userIdentifier
+      - name: userId
         required: true
         in: path
         schema:
@@ -181,7 +181,7 @@ paths:
     get:
       tags:
         - get user by id.
-      operationId: getUserByIdentifier
+      operationId: getUserByUserId
       summary: Получение польной информации о юзере по идентификатору.
       description: Получение польной информации о юзере по идентификатору.
       responses:

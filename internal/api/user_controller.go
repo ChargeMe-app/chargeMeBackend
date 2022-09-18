@@ -34,11 +34,11 @@ func (api *apiServer) AddVehicle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (api *apiServer) GetUserByIdentifier(w http.ResponseWriter, r *http.Request, userIdentifier string) {
+func (api *apiServer) GetUserByUserId(w http.ResponseWriter, r *http.Request, userId string) {
 	fmt.Println("api.user.GetUserByID")
 	ctx := r.Context()
 
-	user, err := api.userService.GetUserByIdentifier(ctx, userIdentifier)
+	user, err := api.userService.GetUserByUserId(ctx, userDomain.UserID(uuid.MustParse(userId)))
 	if err != nil {
 		httperror.ServeError(w, err)
 		return

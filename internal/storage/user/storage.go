@@ -19,6 +19,7 @@ type Storage interface {
 	CreateUser(context.Context, userDomain.User) error
 	IsUserExist(context.Context, userDomain.User) (*bool, error)
 	GetUserByIdentifier(context.Context, string) (userDomain.User, error)
+	GetUserByUserId(context.Context, userDomain.UserID) (userDomain.User, error)
 	CreateVehicle(context.Context, userDomain.Vehicle) error
 	GetVehiclesByUserId(context.Context, userDomain.UserID) ([]userDomain.Vehicle, error)
 	CreateAppleCredentials(context.Context, userDomain.AppleCredentials) error
@@ -188,4 +189,28 @@ func (u *userStorage) CreateGoogleCredentials(ctx context.Context, creds userDom
 	}
 
 	return nil
+}
+
+func (u *userStorage) GetUserByUserId(ctx context.Context, userId userDomain.UserID) (userDomain.User, error) {
+	query := squirrel.Select(
+		"id",
+		"user_identifier",
+		"display_name",
+		"email",
+		"photo_url",
+		"sign_type",
+		"created_at",
+	).
+		From(TableUsers).
+		Where(squirrel.Eq{"id": userId.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result UserDTO
+
+	err := u.db.Get(ctx, query, &result)
+	if err != nil {
+		return userDomain.User{}, err
+	}
+
+	return NewUserFromDTO(result), nil
 }
