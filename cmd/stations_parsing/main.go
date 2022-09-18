@@ -30,21 +30,21 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "pass"
-	dbname   = "postgres"
-)
-
 //const (
-//	host     = "176.119.158.240"
+//	host     = "localhost"
 //	port     = 5432
 //	user     = "postgres"
 //	password = "pass"
 //	dbname   = "postgres"
 //)
+
+const (
+	host     = "176.119.158.240"
+	port     = 5432
+	user     = "postgres"
+	password = "pass"
+	dbname   = "postgres"
+)
 
 type LocationDTOJson struct {
 	PlaceID                      int                `json:"id,omitempty"`

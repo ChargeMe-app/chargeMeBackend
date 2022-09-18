@@ -102,8 +102,8 @@ func (c Checkin) GetDuration() int {
 	return c.duration
 }
 
-func (c Checkin) GetVehicleType() *string {
-	return c.comment
+func (c Checkin) GetVehicleType() *int {
+	return c.vehicleType
 }
 
 func (c Checkin) SetVehicleType(vehicleType *int) {
