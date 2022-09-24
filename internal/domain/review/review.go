@@ -22,10 +22,10 @@ type Review struct {
 	comment       *string
 	rating        *int
 	connectorType *int
-	kilowatts     *int
+	kilowatts     *float32
 	userName      *string
 	vehicleName   *string
-	vehicleType   *string
+	vehicleType   *int
 	domain.Model
 }
 
@@ -36,10 +36,10 @@ func NewReview(
 	comment *string,
 	rating *int,
 	connectorType *int,
-	kilowatts *int,
+	kilowatts *float32,
 	userName *string,
 	vehicleName *string,
-	vehicleType *string,
+	vehicleType *int,
 	model domain.Model,
 ) Review {
 	return Review{
@@ -66,10 +66,10 @@ func NewReviewWithID(
 	comment *string,
 	rating *int,
 	connectorType *int,
-	kilowatts *int,
+	kilowatts *float32,
 	userName *string,
 	vehicleName *string,
-	vehicleType *string,
+	vehicleType *int,
 	model domain.Model,
 ) Review {
 	return Review{
@@ -128,11 +128,11 @@ func (r *Review) GetVehicleName() *string {
 	return r.vehicleName
 }
 
-func (r *Review) SetVehicleType(vehicleType *string) {
+func (r *Review) SetVehicleType(vehicleType *int) {
 	r.vehicleType = vehicleType
 }
 
-func (r *Review) GetVehicleType() *string {
+func (r *Review) GetVehicleType() *int {
 	return r.vehicleType
 }
 
@@ -152,10 +152,10 @@ func (r *Review) SetUserName(userName *string) {
 	r.userName = userName
 }
 
-func (r *Review) SetKilowatts(kilowatts *int) {
+func (r *Review) SetKilowatts(kilowatts *float32) {
 	r.kilowatts = kilowatts
 }
 
-func (r *Review) GetKilowatts() *int {
+func (r *Review) GetKilowatts() *float32 {
 	return r.kilowatts
 }

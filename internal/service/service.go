@@ -26,7 +26,10 @@ func NewServiceRegistry(storages *storage.Storages) *Services {
 	station := stationService.NewStationService(storages.StationStorage)
 	outlet := outletService.NewOutletService(storages.OutletStorage)
 	review := reviewService.NewReviewService(storages.ReviewStorage)
-	checkin := checkinService.NewCheckinService(storages.CheckinStorage)
+	checkin := checkinService.NewCheckinService(
+		storages.CheckinStorage,
+		storages.ReviewStorage,
+		storages.OutletStorage)
 	amenity := amenityService.NewAmenityService(storages.AmenityStorage)
 	user := userService.NewUserService(storages.UserStorage)
 

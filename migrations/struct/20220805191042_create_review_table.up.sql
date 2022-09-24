@@ -2,15 +2,15 @@ CREATE TABLE reviews
 (
     id             TEXT PRIMARY KEY,
     user_id        uuid REFERENCES users (id) ON DELETE CASCADE,
-    comment        TEXT,
     station_id     TEXT,
     outlet_id      TEXT,
-    rating         INT,
-    connector_type INT,
+    vehicle_type   INTEGER,
+    comment        TEXT,
     kilowatts      FLOAT,
+    rating         INT,
     user_name      TEXT,
+    connector_type INT,
     vehicle_name   TEXT,
-    vehicle_type   TEXT,
     created_at     TIMESTAMP(0) NOT NULL
 );
 

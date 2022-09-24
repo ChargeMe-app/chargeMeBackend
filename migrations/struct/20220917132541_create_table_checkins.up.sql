@@ -9,6 +9,8 @@ CREATE TABLE checkins
     kilowatts    FLOAT,
     rating       INTEGER,
     user_name    TEXT             NOT NULL,
+    duration     INT              NOT NULL,
     started_at   TIMESTAMP(0)     NOT NULL,
-    finished_at  TIMESTAMP(0)     NOT NULL
+    finished_at  TIMESTAMP(0)     NOT NULL,
+    deleted_at   TIMESTAMP(0)
 );
