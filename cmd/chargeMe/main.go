@@ -12,12 +12,12 @@ import (
 
 	_ "github.com/lib/pq"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/jmoiron/sqlx"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/service"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/storage"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/api"
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
 	"golang.org/x/sync/errgroup"
@@ -67,18 +67,9 @@ func main() {
 
 	serviceRegistry := service.NewServiceRegistry(storageRegistry)
 
-	for {
-		err := serviceRegistry.Checkin.MoveFinishedCheckinsToReviews(ctx)
-		if err != nil {
-			log.Println("error while moving chekins to reviews:", err.Error())
-		}
-
-		time.Sleep(time.Minute)
-	}
-
 	apiServer := api.NewApiServer(serviceRegistry)
 
-	err = startHttpServer(ctx, apiServer)
+	err = startHttpServer(ctx, apiServer, serviceRegistry)
 	if err != nil {
 		log.Fatal("failed to start httpServer:", err)
 	}
@@ -87,6 +78,7 @@ func main() {
 func startHttpServer(
 	ctx context.Context,
 	apiServer schema.ServerInterface,
+	serviceRegistry *service.Services,
 	middlewares ...schema.MiddlewareFunc,
 ) error {
 	handler := schema.HandlerWithOptions(apiServer, schema.ChiServerOptions{
@@ -114,6 +106,17 @@ func startHttpServer(
 	group.Go(func() error {
 		<-ctx.Done()
 		return httpServer.Shutdown(ctx)
+	})
+
+	group.Go(func() error {
+		for {
+			err := serviceRegistry.Checkin.MoveFinishedCheckinsToReviews(ctx)
+			if err != nil {
+				log.Println("error while moving chekins to reviews:", err.Error())
+			}
+
+			time.Sleep(time.Minute)
+		}
 	})
 
 	return group.Wait()

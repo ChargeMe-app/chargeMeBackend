@@ -19,6 +19,7 @@ type ReviewDTO struct {
 	Rating        *int      `db:"rating"`
 	ConnectorType *int      `db:"connector_type"`
 	UserName      *string   `db:"user_name"`
+	Kilowatts     *float32  `db:"kilowatts"`
 	VehicleName   *string   `db:"vehicle_name"`
 	VehicleType   *int      `db:"vehicle_type"`
 	CreatedAt     time.Time `db:"created_at"`
@@ -39,7 +40,7 @@ func NewReviewFromDTO(dto ReviewDTO) reviewDomain.Review {
 		dto.Comment,
 		dto.Rating,
 		dto.ConnectorType,
-		dto.Rating,
+		dto.Kilowatts,
 		dto.UserName,
 		dto.VehicleName,
 		dto.VehicleType,

@@ -16,6 +16,7 @@ const (
 type Storage interface {
 	CreateOutlet(context.Context, outletDomain.Outlet) error
 	GetOutletsByStationID(context.Context, stationDomain.StationID) ([]outletDomain.Outlet, error)
+	GetOutletByID(context.Context, outletDomain.OutletID) (outletDomain.Outlet, error)
 }
 
 func NewOutletStorage(db libdb.DB) Storage {
@@ -76,4 +77,28 @@ func (o *outletStorage) GetOutletsByStationID(ctx context.Context, stationID sta
 	outlets := NewOutletListFromDTO(result)
 
 	return outlets, nil
+}
+
+func (o *outletStorage) GetOutletByID(ctx context.Context, outletId outletDomain.OutletID) (outletDomain.Outlet, error) {
+	query := squirrel.Select(
+		"id",
+		"station_id",
+		"connector",
+		"kilowatts",
+		"power",
+	).
+		From(tableOutlets).
+		Where(squirrel.Eq{"id": outletId.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result OutletDTO
+
+	err := o.db.Get(ctx, query, &result)
+	if err != nil {
+		return outletDomain.Outlet{}, err
+	}
+
+	outlet := NewOutletFromDTO(result)
+
+	return outlet, nil
 }
