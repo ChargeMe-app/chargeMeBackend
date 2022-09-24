@@ -133,7 +133,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 			ConnectorType: review.GetConnectorType(),
 			UserName:      review.GetUserName(),
 			VehicleName:   review.GetVehicleName(),
-			VehicleType:   review.GetVehicleType(),
+			VehicleType:   nil,
 			CreatedAt:     review.GetCreatedAt(),
 		}
 
