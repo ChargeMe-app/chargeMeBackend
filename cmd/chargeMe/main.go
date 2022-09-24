@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os/signal"
 	"syscall"
+	"time"
 
 	_ "github.com/lib/pq"
 
@@ -65,6 +66,15 @@ func main() {
 	storageRegistry := storage.NewStorageRegistry(libDBWrapper)
 
 	serviceRegistry := service.NewServiceRegistry(storageRegistry)
+
+	for {
+		err := serviceRegistry.Checkin.MoveFinishedCheckinsToReviews(ctx)
+		if err != nil {
+			log.Println("error while moving chekins to reviews:", err.Error())
+		}
+
+		time.Sleep(time.Minute)
+	}
 
 	apiServer := api.NewApiServer(serviceRegistry)
 

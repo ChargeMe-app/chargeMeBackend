@@ -20,7 +20,7 @@ type ReviewDTO struct {
 	ConnectorType *int      `db:"connector_type"`
 	UserName      *string   `db:"user_name"`
 	VehicleName   *string   `db:"vehicle_name"`
-	VehicleType   *string   `db:"vehicle_type"`
+	VehicleType   *int      `db:"vehicle_type"`
 	CreatedAt     time.Time `db:"created_at"`
 }
 

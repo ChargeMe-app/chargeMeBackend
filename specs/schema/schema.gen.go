@@ -122,7 +122,7 @@ type Review struct {
 	StationId     string    `json:"station_id"`
 	UserName      *string   `json:"user_name,omitempty"`
 	VehicleName   *string   `json:"vehicle_name,omitempty"`
-	VehicleType   *string   `json:"vehicle_type,omitempty"`
+	VehicleType   *int      `json:"vehicle_type,omitempty"`
 }
 
 // SignInRequest defines model for SignInRequest.
@@ -168,7 +168,7 @@ type User struct {
 	SignInService string        `json:"sign_in_service"`
 	Stats         *string       `json:"stats,omitempty"`
 	TotalReviews  *int          `json:"total_reviews,omitempty"`
-	VehicleType   *[]Vehicle    `json:"vehicle_type,omitempty"`
+	VehicleType   []Vehicle     `json:"vehicle_type"`
 }
 
 // Контакты пользователя.
