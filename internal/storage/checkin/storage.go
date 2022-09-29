@@ -99,7 +99,7 @@ func (c *checkinStorage) CreateCheckin(ctx context.Context, checkin checkinDomai
 
 func (c *checkinStorage) DeleteCheckinByCheckinID(ctx context.Context, checkinID checkinDomain.CheckinID) error {
 	query := squirrel.Update(tableCheckins).
-		Set("deleted_at", time.Now()).
+		Set("deleted_at", time.Now().In(time.UTC)).
 		Where(squirrel.Eq{"id": checkinID.String()}).
 		Where(squirrel.Eq{"deleted_at": nil}).
 		PlaceholderFormat(squirrel.Dollar)

@@ -34,38 +34,40 @@ func (r *reviewStorage) CreateReview(ctx context.Context, review reviewDomain.Re
 	query := squirrel.Insert(tableReviews).
 		Columns(
 			"id",
+			"user_id",
 			"comment",
 			"station_id",
 			"outlet_id",
 			"rating",
 			"connector_type",
 			"user_name",
-			"vehicle_name",
+			"kilowatts",
 			"vehicle_type",
 			"created_at",
 		).
 		Values(
 			review.GetReviewID().String(),
+			review.GetUserID().String(),
 			review.GetComment(),
 			review.GetStationID().String(),
 			review.GetOutletID().String(),
 			review.GetRating(),
 			review.GetConnectorType(),
 			review.GetUserName(),
-			review.GetVehicleName(),
+			review.GetKilowatts(),
 			review.GetVehicleType(),
 			review.GetCreatedAt(),
 		).
 		PlaceholderFormat(squirrel.Dollar)
 
-	if review.GetUserID() != nil {
-		query = query.Columns(
-			"user_id",
-		).
-			Values(
-				review.GetUserID().String(),
-			)
-	}
+	//if review.GetUserID() != nil {
+	//	query = query.Columns(
+	//		"user_id",
+	//	).
+	//		Values(
+	//			review.GetUserID().String(),
+	//		)
+	//}
 
 	err := r.db.Insert(ctx, query)
 	if err != nil {
