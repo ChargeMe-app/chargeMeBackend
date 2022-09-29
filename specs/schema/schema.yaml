@@ -529,7 +529,7 @@ components:
         vehicle_name:
           type: string
         vehicle_type:
-          type: string
+          type: integer
         created_at:
           type: string
           format: date-time
@@ -565,6 +565,7 @@ components:
       required:
         - display_name
         - sign_in_service
+        - vehicle_type
       properties:
         id:
           type: string

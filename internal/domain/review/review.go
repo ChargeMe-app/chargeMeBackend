@@ -25,7 +25,7 @@ type Review struct {
 	kilowatts     *int
 	userName      *string
 	vehicleName   *string
-	vehicleType   *string
+	vehicleType   *int
 	domain.Model
 }
 
@@ -39,7 +39,7 @@ func NewReview(
 	kilowatts *int,
 	userName *string,
 	vehicleName *string,
-	vehicleType *string,
+	vehicleType *int,
 	model domain.Model,
 ) Review {
 	return Review{
@@ -69,7 +69,7 @@ func NewReviewWithID(
 	kilowatts *int,
 	userName *string,
 	vehicleName *string,
-	vehicleType *string,
+	vehicleType *int,
 	model domain.Model,
 ) Review {
 	return Review{
@@ -128,11 +128,11 @@ func (r *Review) GetVehicleName() *string {
 	return r.vehicleName
 }
 
-func (r *Review) SetVehicleType(vehicleType *string) {
+func (r *Review) SetVehicleType(vehicleType *int) {
 	r.vehicleType = vehicleType
 }
 
-func (r *Review) GetVehicleType() *string {
+func (r *Review) GetVehicleType() *int {
 	return r.vehicleType
 }
 

@@ -28,7 +28,7 @@ func convertAppleCredentials(
 	)
 }
 
-func transformUserVehicles(vehicles []userDomain.Vehicle) *[]schema.Vehicle {
+func transformUserVehicles(vehicles []userDomain.Vehicle) []schema.Vehicle {
 	if vehicles == nil {
 		return nil
 	}
@@ -43,7 +43,7 @@ func transformUserVehicles(vehicles []userDomain.Vehicle) *[]schema.Vehicle {
 		response = append(response, v)
 	}
 
-	return &response
+	return response
 }
 
 func transformReviewsNumber(reviews []reviewDomain.Review) *int {

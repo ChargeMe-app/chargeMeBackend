@@ -102,7 +102,7 @@ type ReviewDTOJson struct {
 	ConnectorType *int        `json:"connector_type"`
 	Kilowatts     *int        `json:"kilowatts"`
 	VehicleName   *string     `json:"vehicle_name"`
-	VehicleType   *string     `json:"vehicle_type"`
+	VehicleType   *int        `json:"vehicle_type"`
 	User          UserDTOJSOn `json:"user"`
 	CreatedAT     string      `json:"created_at"`
 }
