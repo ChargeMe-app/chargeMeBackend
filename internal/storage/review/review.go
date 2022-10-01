@@ -95,6 +95,7 @@ func (r *reviewStorage) GetReviewsListByStationID(
 	).
 		From(tableReviews).
 		Where(squirrel.Eq{"station_id": stationID.String()}).
+		OrderBy("created_at DESC").
 		PlaceholderFormat(squirrel.Dollar)
 
 	var result []ReviewDTO
