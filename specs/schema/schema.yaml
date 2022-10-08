@@ -122,6 +122,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/AddressStationsFull'
 
+  /v1/review:
+    post:
+      tags:
+        - create review
+      operationId: createReview
+      summary: Создание ревью.
+      description: Создание ревью.
+
+
   /v1/checkin:
     post:
       tags:
@@ -524,6 +533,8 @@ components:
           type: integer
         connector_type:
           type: integer
+        kilowatts:
+          type: number
         user_name:
           type: string
         vehicle_name:
@@ -533,6 +544,36 @@ components:
         created_at:
           type: string
           format: date-time
+
+    CreateReview:
+      description: Отзыв о локации.
+      type: object
+      required:
+        - user_id
+        - user_name
+        - station_id
+        - outlet_id
+      properties:
+        user_id:
+          type: string
+        station_id:
+          type: string
+        outlet_id:
+          type: string
+        comment:
+          type: string
+        rating:
+          type: integer
+        kilowatts:
+          type: number
+        connector_type:
+          type: integer
+        user_name:
+          type: string
+        vehicle_name:
+          type: string
+        vehicle_type:
+          type: integer
 
     Amenity:
       description: Удобсва.
