@@ -117,6 +117,7 @@ type Review struct {
 	ConnectorType *int      `json:"connector_type,omitempty"`
 	CreatedAt     time.Time `json:"created_at"`
 	Id            string    `json:"id"`
+	Kilowatts     *float32  `json:"kilowatts,omitempty"`
 	OutletId      string    `json:"outlet_id"`
 	Rating        *int      `json:"rating,omitempty"`
 	StationId     string    `json:"station_id"`
@@ -251,6 +252,9 @@ type ServerInterface interface {
 	// Получение списка зарядных станций и удобств на локации.
 	// (GET /v1/locations/stations)
 	GetChargingStationsByLocationID(w http.ResponseWriter, r *http.Request, params GetChargingStationsByLocationIDParams)
+	// Создание ревью.
+	// (POST /v1/review)
+	CreateReview(w http.ResponseWriter, r *http.Request)
 	// Добавление автомобиля пользователя.
 	// (POST /v1/user/vehicle)
 	AddVehicle(w http.ResponseWriter, r *http.Request)
@@ -417,6 +421,21 @@ func (siw *ServerInterfaceWrapper) GetChargingStationsByLocationID(w http.Respon
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetChargingStationsByLocationID(w, r, params)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
+}
+
+// CreateReview operation middleware
+func (siw *ServerInterfaceWrapper) CreateReview(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateReview(w, r)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -597,6 +616,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/locations/stations", wrapper.GetChargingStationsByLocationID)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/review", wrapper.CreateReview)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/v1/user/vehicle", wrapper.AddVehicle)
