@@ -16,6 +16,7 @@ const (
 type Storage interface {
 	CreateStation(context.Context, stationDomain.Station) error
 	GetStationsByPlaceID(context.Context, placeDomain.PlaceID) ([]stationDomain.Station, error)
+	GetPlaceIdByStationID(context.Context, stationDomain.StationID) (placeDomain.PlaceID, error)
 }
 
 func NewStationStorage(db libdb.DB) Storage {
@@ -82,4 +83,22 @@ func (s *stationStorage) GetStationsByPlaceID(
 	}
 
 	return NewStationListFromDTO(result), nil
+}
+
+func (s *stationStorage) GetPlaceIdByStationID(ctx context.Context, stationID stationDomain.StationID) (placeDomain.PlaceID, error) {
+	query := squirrel.Select(
+		"location_id",
+	).
+		From(TableStations).
+		Where(squirrel.Eq{"id": stationID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result string
+
+	err := s.db.Get(ctx, query, &result)
+	if err != nil {
+		return "", err
+	}
+
+	return placeDomain.PlaceID(result), nil
 }

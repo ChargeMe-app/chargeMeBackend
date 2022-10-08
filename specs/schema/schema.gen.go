@@ -85,6 +85,20 @@ type Checkin struct {
 	VehicleType *int     `json:"vehicle_type,omitempty"`
 }
 
+// Отзыв о локации.
+type CreateReview struct {
+	Comment       *string  `json:"comment,omitempty"`
+	ConnectorType *int     `json:"connector_type,omitempty"`
+	Kilowatts     *float32 `json:"kilowatts,omitempty"`
+	OutletId      string   `json:"outlet_id"`
+	Rating        *int     `json:"rating,omitempty"`
+	StationId     string   `json:"station_id"`
+	UserId        string   `json:"user_id"`
+	UserName      string   `json:"user_name"`
+	VehicleName   *string  `json:"vehicle_name,omitempty"`
+	VehicleType   *int     `json:"vehicle_type,omitempty"`
+}
+
 // Error defines model for Error.
 type Error struct {
 	Code    int32  `json:"code"`
@@ -217,6 +231,9 @@ type GetChargingStationsByLocationIDParams struct {
 	LocationId string `form:"locationId" json:"locationId"`
 }
 
+// CreateReviewJSONBody defines parameters for CreateReview.
+type CreateReviewJSONBody = CreateReview
+
 // AddVehicleJSONBody defines parameters for AddVehicle.
 type AddVehicleJSONBody = VehicleWithUserId
 
@@ -228,6 +245,9 @@ type CreateCheckinJSONRequestBody = CreateCheckinJSONBody
 
 // CreateFullLocationJSONRequestBody defines body for CreateFullLocation for application/json ContentType.
 type CreateFullLocationJSONRequestBody = CreateFullLocationJSONBody
+
+// CreateReviewJSONRequestBody defines body for CreateReview for application/json ContentType.
+type CreateReviewJSONRequestBody = CreateReviewJSONBody
 
 // AddVehicleJSONRequestBody defines body for AddVehicle for application/json ContentType.
 type AddVehicleJSONRequestBody = AddVehicleJSONBody

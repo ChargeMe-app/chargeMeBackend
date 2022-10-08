@@ -5,6 +5,7 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	checkinDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/checkin"
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
+	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 )
@@ -22,6 +23,8 @@ type CheckinStorage interface {
 
 type ReviewStorage interface {
 	CreateReview(context.Context, reviewDomain.Review) error
+	GetReviewWithPositiveRating(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
+	GetReviewsWithNotNullRating(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
 }
 
 type OutletStorage interface {
@@ -29,21 +32,35 @@ type OutletStorage interface {
 	GetOutletsByStationID(context.Context, stationDomain.StationID) ([]outletDomain.Outlet, error)
 }
 
+type StationStorage interface {
+	GetPlaceIdByStationID(context.Context, stationDomain.StationID) (placeDomain.PlaceID, error)
+}
+
+type PlaceStorage interface {
+	UpdatePlaceScoreByID(context.Context, placeDomain.PlaceID, float32) error
+}
+
 type service struct {
 	checkinStorage CheckinStorage
 	reviewStorage  ReviewStorage
 	outletStorage  OutletStorage
+	stationStorage StationStorage
+	placeStorage   PlaceStorage
 }
 
 func NewCheckinService(
 	checkinStorage CheckinStorage,
 	reviewStorage ReviewStorage,
 	outletStorage OutletStorage,
+	stationStorage StationStorage,
+	placeStorage PlaceStorage,
 ) CheckinService {
 	return &service{
 		checkinStorage: checkinStorage,
 		reviewStorage:  reviewStorage,
 		outletStorage:  outletStorage,
+		stationStorage: stationStorage,
+		placeStorage:   placeStorage,
 	}
 }
 
@@ -92,6 +109,25 @@ func (s *service) MoveFinishedCheckinsToReviews(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+
+		placeId, err := s.stationStorage.GetPlaceIdByStationID(ctx, review.GetStationID())
+		if err != nil {
+			return err
+		}
+
+		positiveRatings, err := s.reviewStorage.GetReviewWithPositiveRating(ctx, placeId)
+		if err != nil {
+			return err
+		}
+
+		allRatings, err := s.reviewStorage.GetReviewsWithNotNullRating(ctx, placeId)
+		if err != nil {
+			return err
+		}
+
+		newScore := (float32(len(positiveRatings)) / float32(len(allRatings))) * 10
+
+		return s.placeStorage.UpdatePlaceScoreByID(ctx, placeId, newScore)
 	}
 
 	return nil
