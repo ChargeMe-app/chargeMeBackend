@@ -22,14 +22,17 @@ type Services struct {
 }
 
 func NewServiceRegistry(storages *storage.Storages) *Services {
-	place := placeService.NewPlaceService(storages.PlaceStorage)
+	place := placeService.NewPlaceService(storages.PlaceStorage, storages.ReviewStorage)
 	station := stationService.NewStationService(storages.StationStorage)
 	outlet := outletService.NewOutletService(storages.OutletStorage)
-	review := reviewService.NewReviewService(storages.ReviewStorage)
+	review := reviewService.NewReviewService(storages.ReviewStorage, storages.PlaceStorage, storages.StationStorage)
 	checkin := checkinService.NewCheckinService(
 		storages.CheckinStorage,
 		storages.ReviewStorage,
-		storages.OutletStorage)
+		storages.OutletStorage,
+		storages.StationStorage,
+		storages.PlaceStorage,
+	)
 	amenity := amenityService.NewAmenityService(storages.AmenityStorage)
 	user := userService.NewUserService(storages.UserStorage)
 

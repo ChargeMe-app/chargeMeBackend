@@ -2,7 +2,6 @@ package place
 
 import (
 	"context"
-
 	"github.com/Masterminds/squirrel"
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
@@ -16,6 +15,7 @@ type Storage interface {
 	CreatePlace(context.Context, placeDomain.Place) error
 	GetPlacesByCoordinates(context.Context, float32, float32, float32, float32) ([]placeDomain.Place, error)
 	GetFullPlaceByID(context.Context, placeDomain.PlaceID) (placeDomain.Place, error)
+	UpdatePlaceScoreByID(context.Context, placeDomain.PlaceID, float32) error
 }
 
 func NewPlaceStorage(db libdb.DB) Storage {
@@ -143,4 +143,18 @@ func (s *placeStorage) GetFullPlaceByID(ctx context.Context, placeID placeDomain
 	}
 
 	return NewPlaceFromDTO(result), nil
+}
+
+func (s *placeStorage) UpdatePlaceScoreByID(ctx context.Context, placeID placeDomain.PlaceID, rating float32) error {
+	query := squirrel.Update(tablePlaces).
+		Set("score", rating).
+		Where(squirrel.Eq{"id": placeID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := s.db.Update(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

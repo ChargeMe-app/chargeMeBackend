@@ -3,8 +3,10 @@ package api
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	checkinDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/checkin"
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
+	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	"github.com/poorfrombabylon/chargeMeBackend/libhttp"
@@ -12,8 +14,45 @@ import (
 	"net/http"
 )
 
+func (api *apiServer) CreateReview(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("api.review.CreateReview")
+	ctx := r.Context()
+
+	var req chargeMeV1.CreateReviewJSONRequestBody
+
+	err := libhttp.ReceiveJSON(ctx, r, &req)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		fmt.Println(err.Error())
+		return
+	}
+
+	userID := userDomain.UserID(uuid.MustParse(req.UserId))
+
+	review := reviewDomain.NewReview(
+		stationDomain.StationID(req.StationId),
+		outletDomain.OutletID(req.OutletId),
+		&userID,
+		req.Comment,
+		req.Rating,
+		req.ConnectorType,
+		req.Kilowatts,
+		&req.UserName,
+		req.VehicleName,
+		req.VehicleType,
+		domain.NewModel(),
+	)
+
+	err = api.reviewService.CreateReview(ctx, review)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		fmt.Println(err.Error())
+		return
+	}
+}
+
 func (api *apiServer) CreateCheckin(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("api.checkin.CreateCheckin")
+	fmt.Println("api.review.CreateCheckin")
 	ctx := r.Context()
 
 	var req chargeMeV1.CreateCheckinJSONRequestBody

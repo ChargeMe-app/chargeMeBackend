@@ -20,6 +20,8 @@ type Storage interface {
 	GetReviewsListByStationID(context.Context, stationDomain.StationID) ([]reviewDomain.Review, error)
 	GetReviewsListByUserID(context.Context, userDomain.UserID) ([]reviewDomain.Review, error)
 	GetReviewsListByLocationID(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
+	GetReviewWithPositiveRating(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
+	GetReviewsWithNotNullRating(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
 }
 
 func NewReviewStorage(db libdb.DB) Storage {
@@ -158,6 +160,64 @@ func (r *reviewStorage) GetReviewsListByUserID(
 	).
 		From(tableReviews).
 		Where(squirrel.Eq{"user_id": userId.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result []ReviewDTO
+
+	err := r.db.Select(ctx, query, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewReviewsListFromDTO(result), nil
+}
+
+func (r *reviewStorage) GetReviewWithPositiveRating(ctx context.Context, placeID placeDomain.PlaceID) ([]reviewDomain.Review, error) {
+	query := squirrel.Select(
+		"r.id",
+		"r.comment",
+		"r.station_id",
+		"r.outlet_id",
+		"r.rating",
+		"r.connector_type",
+		"r.user_name",
+		"r.vehicle_name",
+		"r.vehicle_type",
+		"r.created_at",
+	).
+		From(tableReviews + " as r").
+		Join(station.TableStations + " as s ON s.id = r.station_id").
+		Where(squirrel.Eq{"s.location_id": placeID.String()}).
+		Where(squirrel.Eq{"r.rating": 1}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result []ReviewDTO
+
+	err := r.db.Select(ctx, query, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewReviewsListFromDTO(result), nil
+}
+
+func (r *reviewStorage) GetReviewsWithNotNullRating(ctx context.Context, placeID placeDomain.PlaceID) ([]reviewDomain.Review, error) {
+	query := squirrel.Select(
+		"r.id",
+		"r.comment",
+		"r.station_id",
+		"r.outlet_id",
+		"r.rating",
+		"r.connector_type",
+		"r.user_name",
+		"r.vehicle_name",
+		"r.vehicle_type",
+		"r.created_at",
+	).
+		From(tableReviews + " as r").
+		Join(station.TableStations + " as s ON s.id = r.station_id").
+		Where(squirrel.Eq{"s.location_id": placeID.String()}).
+		Where(squirrel.NotEq{"r.rating": nil}).
 		PlaceholderFormat(squirrel.Dollar)
 
 	var result []ReviewDTO

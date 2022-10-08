@@ -129,6 +129,20 @@ paths:
       operationId: createReview
       summary: Создание ревью.
       description: Создание ревью.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReview"
+      responses:
+        '200':
+          description: success
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
 
   /v1/checkin:
