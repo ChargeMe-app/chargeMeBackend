@@ -12,6 +12,7 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/libhttp"
 	chargeMeV1 "github.com/poorfrombabylon/chargeMeBackend/specs/schema"
 	"net/http"
+	"time"
 )
 
 func (api *apiServer) CreateReview(w http.ResponseWriter, r *http.Request) {
@@ -74,6 +75,7 @@ func (api *apiServer) CreateCheckin(w http.ResponseWriter, r *http.Request) {
 		req.Comment,
 		req.Kilowatts,
 		req.Rating,
+		time.Now().Add(time.Duration(req.Duration)*time.Minute),
 	)
 
 	err = api.checkinService.CreateCheckin(ctx, checkin)

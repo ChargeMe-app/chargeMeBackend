@@ -22,6 +22,7 @@ type CheckinDTO struct {
 	Kilowatts   *float32  `db:"kilowatts"`
 	Rating      int       `db:"rating"`
 	StartedAt   time.Time `db:"started_at"`
+	FinishedAt  time.Time `db:"finished_at"`
 }
 
 func NewCheckinFromDTO(dto CheckinDTO) checkinDomain.Checkin {
@@ -36,6 +37,7 @@ func NewCheckinFromDTO(dto CheckinDTO) checkinDomain.Checkin {
 		dto.Comment,
 		dto.Kilowatts,
 		dto.Rating,
+		dto.FinishedAt,
 		domain.NewModelFrom(dto.StartedAt, nil),
 	)
 }

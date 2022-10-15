@@ -11,6 +11,7 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/libhttp"
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
 	chargeMeV1 "github.com/poorfrombabylon/chargeMeBackend/specs/schema"
+	"log"
 	"net/http"
 )
 
@@ -178,6 +179,18 @@ func (api *apiServer) GetChargingStationsByLocationID(
 			CostDescription: station.GetStationCostDescription(),
 			Hours:           station.GetStationWorkingHours(),
 			Kilowatts:       station.GetStationKilowatts(),
+		}
+
+		checkins, err := api.checkinService.GetValidCheckinForStation(ctx)
+		if err != nil {
+			log.Println(err.Error())
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		if checkins != nil && len(checkins) != 0 {
+			c := transformCheckin(checkins[0])
+			s.Checkin = &c
 		}
 
 		stationsResponse = append(stationsResponse, s)

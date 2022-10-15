@@ -16,6 +16,7 @@ type Storage interface {
 	CreateCheckin(context.Context, checkinDomain.Checkin) error
 	GetFinishedCheckins(context.Context) ([]checkinDomain.Checkin, error)
 	DeleteCheckinByCheckinID(context.Context, checkinDomain.CheckinID) error
+	GetValidCheckinForStation(context.Context) ([]checkinDomain.Checkin, error)
 }
 
 func NewCheckinStorage(db libdb.DB) Storage {
@@ -55,9 +56,36 @@ func (c *checkinStorage) GetFinishedCheckins(ctx context.Context) ([]checkinDoma
 	return NewCheckinListFromDTO(result), nil
 }
 
-func (c *checkinStorage) CreateCheckin(ctx context.Context, checkin checkinDomain.Checkin) error {
-	finishedAt := checkin.GetCreatedAt().Add(time.Duration(checkin.GetDuration()) * time.Minute)
+func (c *checkinStorage) GetValidCheckinForStation(ctx context.Context) ([]checkinDomain.Checkin, error) {
+	query := squirrel.Select(
+		"id",
+		"user_id",
+		"station_id",
+		"outlet_id",
+		"user_name",
+		"duration",
+		"vehicle_type",
+		"comment",
+		"kilowatts",
+		"rating",
+		"started_at",
+	).
+		From(tableCheckins).
+		Where(squirrel.Expr("finished_at > current_timestamp")).
+		Where(squirrel.Eq{"deleted_at": nil}).
+		PlaceholderFormat(squirrel.Dollar)
 
+	var result []CheckinDTO
+
+	err := c.db.Select(ctx, query, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewCheckinListFromDTO(result), nil
+}
+
+func (c *checkinStorage) CreateCheckin(ctx context.Context, checkin checkinDomain.Checkin) error {
 	query := squirrel.Insert(tableCheckins).
 		Columns(
 			"id",
@@ -85,7 +113,7 @@ func (c *checkinStorage) CreateCheckin(ctx context.Context, checkin checkinDomai
 			checkin.GetKilowatts(),
 			checkin.GetRating(),
 			checkin.GetCreatedAt(),
-			finishedAt,
+			checkin.GetFinishedAt(),
 		).
 		PlaceholderFormat(squirrel.Dollar)
 

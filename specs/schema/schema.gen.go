@@ -72,8 +72,8 @@ type AuthResponse struct {
 	UserId UserId `json:"user_id"`
 }
 
-// Сущность чекина.
-type Checkin struct {
+// Сущность чекина для создания.
+type CheckinCreate struct {
 	Comment     *string  `json:"comment,omitempty"`
 	Duration    int      `json:"duration"`
 	Kilowatts   *float32 `json:"kilowatts,omitempty"`
@@ -83,6 +83,21 @@ type Checkin struct {
 	UserId      string   `json:"user_id"`
 	UserName    string   `json:"user_name"`
 	VehicleType *int     `json:"vehicle_type,omitempty"`
+}
+
+// Сущность чекина.
+type CheckinStation struct {
+	Comment *string `json:"comment,omitempty"`
+
+	// Время окончания зарядки в UTC
+	FinishesAt  time.Time `json:"finishes_at"`
+	Kilowatts   *float32  `json:"kilowatts,omitempty"`
+	OutletId    string    `json:"outlet_id"`
+	Rating      int       `json:"rating"`
+	StationId   string    `json:"station_id"`
+	UserId      string    `json:"user_id"`
+	UserName    string    `json:"user_name"`
+	VehicleType *int      `json:"vehicle_type,omitempty"`
 }
 
 // Отзыв о локации.
@@ -153,7 +168,10 @@ type SignInRequest struct {
 
 // Полная информация о станции.
 type StationFull struct {
-	Available       *int                `json:"available,omitempty"`
+	Available *int `json:"available,omitempty"`
+
+	// Сущность чекина.
+	Checkin         *CheckinStation     `json:"checkin,omitempty"`
 	Cost            *int                `json:"cost,omitempty"`
 	CostDescription *string             `json:"cost_description,omitempty"`
 	Hours           *string             `json:"hours,omitempty"`
@@ -213,7 +231,7 @@ type VehicleWithUserId struct {
 type AuthenticateJSONBody = SignInRequest
 
 // CreateCheckinJSONBody defines parameters for CreateCheckin.
-type CreateCheckinJSONBody = Checkin
+type CreateCheckinJSONBody = CheckinCreate
 
 // GetLocationsParams defines parameters for GetLocations.
 type GetLocationsParams struct {

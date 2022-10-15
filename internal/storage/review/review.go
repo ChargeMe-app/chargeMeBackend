@@ -218,6 +218,7 @@ func (r *reviewStorage) GetReviewsWithNotNullRating(ctx context.Context, placeID
 		Join(station.TableStations + " as s ON s.id = r.station_id").
 		Where(squirrel.Eq{"s.location_id": placeID.String()}).
 		Where(squirrel.NotEq{"r.rating": nil}).
+		Where(squirrel.NotEq{"r.rating": 0}).
 		PlaceholderFormat(squirrel.Dollar)
 
 	var result []ReviewDTO
