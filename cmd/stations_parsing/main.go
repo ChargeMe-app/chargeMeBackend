@@ -9,6 +9,7 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
+	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	"io/ioutil"
 	"log"
 	"os"
@@ -39,7 +40,7 @@ import (
 //)
 
 const (
-	host     = "176.119.158.240"
+	host     = "158.160.13.205"
 	port     = 5432
 	user     = "postgres"
 	password = "pass"
@@ -273,11 +274,13 @@ func NewReviewFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry 
 
 		createdAt, _ := time.Parse("2006-01-02T15:04:05Z", reviewDTO.CreatedAT)
 
+		userID := userDomain.UserID(uuid.UUID{})
+
 		review := reviewDomain.NewReviewWithID(
 			reviewDomain.ReviewID(uuid.New().String()),
 			stationDomain.StationID(strconv.Itoa(reviewDTO.StationID)),
 			outletDomain.OutletID(strconv.Itoa(reviewDTO.OutletID)),
-			nil,
+			&userID,
 			reviewDTO.Comment,
 			reviewDTO.Rating,
 			reviewDTO.ConnectorType,
