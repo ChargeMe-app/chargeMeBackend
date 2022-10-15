@@ -156,7 +156,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Checkin"
+              $ref: "#/components/schemas/CheckinCreate"
       responses:
         '200':
           description: success
@@ -357,8 +357,8 @@ components:
         vehicle_type:
           type: integer
 
-    Checkin:
-      description: Сущность чекина.
+    CheckinCreate:
+      description: Сущность чекина для создания.
       type: object
       required:
         - user_id
@@ -386,6 +386,38 @@ components:
           type: integer
         duration:
           type: integer
+
+    CheckinStation:
+      description: Сущность чекина.
+      type: object
+      required:
+        - user_id
+        - station_id
+        - outlet_id
+        - rating
+        - finishes_at
+        - user_name
+      properties:
+        user_id:
+          type: string
+        station_id:
+          type: string
+        outlet_id:
+          type: string
+        vehicle_type:
+          type: integer
+        user_name:
+          type: string
+        comment:
+          type: string
+        kilowatts:
+          type: number
+        rating:
+          type: integer
+        finishes_at:
+          type: string
+          format: date-time
+          description: Время окончания зарядки в UTC
 
     StationPreliminary:
       description: Сущность станции.
@@ -497,7 +529,6 @@ components:
           items:
             $ref: '#/components/schemas/Amenity'
 
-
     StationFull:
       description: Полная информация о станции.
       type: object
@@ -525,6 +556,8 @@ components:
           type: string
         kilowatts:
           type: number
+        checkin:
+          $ref: '#/components/schemas/CheckinStation'
 
     Review:
       description: Отзыв о локации.

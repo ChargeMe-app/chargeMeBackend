@@ -1,6 +1,7 @@
 package api
 
 import (
+	checkinDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/checkin"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
@@ -49,4 +50,18 @@ func transformUserVehicles(vehicles []userDomain.Vehicle) []schema.Vehicle {
 func transformReviewsNumber(reviews []reviewDomain.Review) *int {
 	num := len(reviews)
 	return &num
+}
+
+func transformCheckin(checkin checkinDomain.Checkin) schema.CheckinStation {
+	return schema.CheckinStation{
+		UserId:      checkin.GetUserId().String(),
+		StationId:   checkin.GetStationId().String(),
+		OutletId:    checkin.GetOutletId().String(),
+		VehicleType: checkin.GetVehicleType(),
+		UserName:    checkin.GetUserName(),
+		Comment:     checkin.GetComment(),
+		Kilowatts:   checkin.GetKilowatts(),
+		Rating:      checkin.GetRating(),
+		FinishesAt:  checkin.GetFinishedAt(),
+	}
 }

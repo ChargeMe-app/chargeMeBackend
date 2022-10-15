@@ -13,12 +13,14 @@ import (
 type CheckinService interface {
 	CreateCheckin(context.Context, checkinDomain.Checkin) error
 	MoveFinishedCheckinsToReviews(context.Context) error
+	GetValidCheckinForStation(context.Context) ([]checkinDomain.Checkin, error)
 }
 
 type CheckinStorage interface {
 	CreateCheckin(context.Context, checkinDomain.Checkin) error
 	GetFinishedCheckins(context.Context) ([]checkinDomain.Checkin, error)
 	DeleteCheckinByCheckinID(context.Context, checkinDomain.CheckinID) error
+	GetValidCheckinForStation(context.Context) ([]checkinDomain.Checkin, error)
 }
 
 type ReviewStorage interface {
@@ -131,4 +133,8 @@ func (s *service) MoveFinishedCheckinsToReviews(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (s *service) GetValidCheckinForStation(ctx context.Context) ([]checkinDomain.Checkin, error) {
+	return s.checkinStorage.GetValidCheckinForStation(ctx)
 }

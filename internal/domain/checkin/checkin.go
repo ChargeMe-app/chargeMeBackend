@@ -6,6 +6,7 @@ import (
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
+	"time"
 )
 
 type CheckinID uuid.UUID
@@ -25,6 +26,7 @@ type Checkin struct {
 	comment     *string
 	kilowatts   *float32
 	rating      int
+	finishedAt  time.Time
 	domain.Model
 }
 
@@ -38,6 +40,7 @@ func NewCheckin(
 	comment *string,
 	kilowatts *float32,
 	rating int,
+	finishedAt time.Time,
 ) Checkin {
 	return Checkin{
 		id:          CheckinID(uuid.New()),
@@ -50,6 +53,7 @@ func NewCheckin(
 		comment:     comment,
 		kilowatts:   kilowatts,
 		rating:      rating,
+		finishedAt:  finishedAt,
 		Model:       domain.NewModel(),
 	}
 }
@@ -65,6 +69,7 @@ func NewCheckinWithID(
 	comment *string,
 	kilowatts *float32,
 	rating int,
+	finishedAt time.Time,
 	model domain.Model,
 ) Checkin {
 	return Checkin{
@@ -78,6 +83,7 @@ func NewCheckinWithID(
 		comment:     comment,
 		kilowatts:   kilowatts,
 		rating:      rating,
+		finishedAt:  finishedAt,
 		Model:       model,
 	}
 }
@@ -132,4 +138,8 @@ func (c Checkin) GetRating() int {
 
 func (c Checkin) GetUserName() string {
 	return c.userName
+}
+
+func (c Checkin) GetFinishedAt() time.Time {
+	return c.finishedAt
 }
