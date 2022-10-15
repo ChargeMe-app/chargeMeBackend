@@ -69,6 +69,7 @@ func (c *checkinStorage) GetValidCheckinForStation(ctx context.Context) ([]check
 		"kilowatts",
 		"rating",
 		"started_at",
+		"finished_at",
 	).
 		From(tableCheckins).
 		Where(squirrel.Expr("finished_at > current_timestamp")).
