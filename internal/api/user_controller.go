@@ -1,17 +1,17 @@
 package api
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/ignishub/terr/transport/httperror"
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	"github.com/poorfrombabylon/chargeMeBackend/libhttp"
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
+	"log"
 	"net/http"
 )
 
 func (api *apiServer) AddVehicle(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("api.user.AddVehicle")
+	log.Println("api.user.AddVehicle")
 	ctx := r.Context()
 
 	var req schema.AddVehicleJSONRequestBody
@@ -35,7 +35,7 @@ func (api *apiServer) AddVehicle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *apiServer) GetUserByUserId(w http.ResponseWriter, r *http.Request, userId string) {
-	fmt.Println("api.user.GetUserByID")
+	log.Println("api.user.GetUserByID")
 	ctx := r.Context()
 
 	user, err := api.userService.GetUserByUserId(ctx, userDomain.UserID(uuid.MustParse(userId)))

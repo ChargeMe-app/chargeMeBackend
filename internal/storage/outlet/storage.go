@@ -3,6 +3,7 @@ package outlet
 import (
 	"context"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
+	"log"
 
 	"github.com/Masterminds/squirrel"
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
@@ -28,6 +29,8 @@ type outletStorage struct {
 }
 
 func (o *outletStorage) CreateOutlet(ctx context.Context, outlet outletDomain.Outlet) error {
+	log.Println("outlet.storage.CreateOutlet")
+
 	query := squirrel.Insert(tableOutlets).
 		Columns(
 			"id",
@@ -56,6 +59,8 @@ func (o *outletStorage) CreateOutlet(ctx context.Context, outlet outletDomain.Ou
 }
 
 func (o *outletStorage) GetOutletsByStationID(ctx context.Context, stationID stationDomain.StationID) ([]outletDomain.Outlet, error) {
+	log.Println("outlet.storage.GetOutletsByStationID")
+
 	query := squirrel.Select(
 		"id",
 		"station_id",
@@ -80,6 +85,8 @@ func (o *outletStorage) GetOutletsByStationID(ctx context.Context, stationID sta
 }
 
 func (o *outletStorage) GetOutletByID(ctx context.Context, outletId outletDomain.OutletID) (outletDomain.Outlet, error) {
+	log.Println("outlet.storage.GetOutletByID")
+
 	query := squirrel.Select(
 		"id",
 		"station_id",

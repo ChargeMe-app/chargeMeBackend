@@ -4,6 +4,7 @@ import (
 	"context"
 	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
+	"log"
 )
 
 type AmenityService interface {
@@ -26,6 +27,8 @@ func NewAmenityService(amenityStorage AmenityStorage) AmenityService {
 }
 
 func (s *service) CreateAmenity(ctx context.Context, amenity amenityDomain.Amenity) error {
+	log.Println("service.amenity.CreateAmenity")
+
 	return s.CreateAmenity(ctx, amenity)
 }
 
@@ -33,5 +36,7 @@ func (s *service) GetAmenitiesListByLocationID(
 	ctx context.Context,
 	placeID placeDomain.PlaceID,
 ) ([]amenityDomain.Amenity, error) {
+	log.Println("service.amenity.GetAmenitiesListByLocationID")
+
 	return s.amenityStorage.GetAmenitiesListByLocationID(ctx, placeID)
 }
