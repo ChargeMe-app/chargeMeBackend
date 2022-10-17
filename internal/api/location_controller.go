@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"github.com/ignishub/terr/transport/httperror"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
@@ -18,7 +17,7 @@ import (
 // Получение списка локаций с зарядками в пределах координат
 // (GET /v1/locations)
 func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, params schema.GetLocationsParams) {
-	fmt.Println("api.station.GetStations")
+	log.Println("api.station.GetStations")
 	ctx := r.Context()
 	var addresses []schema.AddressStationsPreliminary
 
@@ -31,7 +30,7 @@ func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, param
 	places, err := api.placeService.GetPlacesByCoordinates(ctx, minLongitude, maxLongitude, minLatitude, maxLatitude)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
@@ -39,7 +38,7 @@ func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, param
 		stations, err := api.stationService.GetStationsByPlaceID(ctx, place.GetPlaceID())
 		if err != nil {
 			w.Write([]byte(err.Error()))
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 			return
 		}
 
@@ -49,7 +48,7 @@ func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, param
 			outlets, err := api.outletService.GetOutletsByStationID(ctx, station.GetStationID())
 			if err != nil {
 				w.Write([]byte(err.Error()))
-				fmt.Println(err.Error())
+				log.Println(err.Error())
 				return
 			}
 
@@ -103,7 +102,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 	r *http.Request,
 	params schema.GetChargingStationsByLocationIDParams,
 ) {
-	fmt.Println("api.station.GetChargingStationsByLocationID")
+	log.Println("api.station.GetChargingStationsByLocationID")
 	ctx := r.Context()
 	placeID := placeDomain.PlaceID(params.LocationId)
 	var reviewsResponse []schema.Review
@@ -114,7 +113,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 	if err != nil {
 		httperror.ServeError(w, err)
 		w.Write([]byte(err.Error()))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
@@ -144,7 +143,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 	stations, err := api.stationService.GetStationsByPlaceID(ctx, placeID)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
@@ -152,7 +151,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		outlets, err := api.outletService.GetOutletsByStationID(ctx, station.GetStationID())
 		if err != nil {
 			w.Write([]byte(err.Error()))
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 			return
 		}
 
@@ -199,7 +198,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 	amenities, err := api.amenityService.GetAmenitiesListByLocationID(ctx, placeID)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
@@ -236,7 +235,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		Amenities:                    &amenitiesResponse,
 	}
 
-	fmt.Println(response)
+	log.Println(response)
 
 	libhttp.SendJSON(ctx, w, response)
 }
@@ -244,20 +243,20 @@ func (api *apiServer) GetChargingStationsByLocationID(
 // Создание локации со станциями
 // (POST /v1/locations)
 func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("api.CreateFullLocation")
+	log.Println("api.CreateFullLocation")
 	ctx := r.Context()
 	var req chargeMeV1.CreateFullLocationJSONBody
 
 	err := libhttp.ReceiveJSON(ctx, r, &req)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
-	fmt.Println(r)
+	log.Println(r)
 
-	fmt.Println(req)
+	log.Println(req)
 
 	location := placeDomain.NewPlace(
 		req.Name,
@@ -279,14 +278,14 @@ func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request)
 		domain.NewModel(),
 	)
 
-	fmt.Println()
-	fmt.Println(location)
-	fmt.Println()
+	log.Println()
+	log.Println(location)
+	log.Println()
 
 	err = api.placeService.CreatePlace(ctx, location)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
@@ -300,7 +299,7 @@ func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request)
 		err = api.amenityService.CreateAmenity(ctx, amenity)
 		if err != nil {
 			w.Write([]byte(err.Error()))
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 			return
 		}
 	}
@@ -321,7 +320,7 @@ func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request)
 		err = api.stationService.CreateStation(ctx, station)
 		if err != nil {
 			w.Write([]byte(err.Error()))
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 			return
 		}
 
@@ -337,7 +336,7 @@ func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request)
 			err = api.outletService.CreateOutlet(ctx, outlet)
 			if err != nil {
 				w.Write([]byte(err.Error()))
-				fmt.Println(err.Error())
+				log.Println(err.Error())
 				return
 			}
 		}

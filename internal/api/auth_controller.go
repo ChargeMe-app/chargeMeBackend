@@ -1,16 +1,16 @@
 package api
 
 import (
-	"fmt"
 	"github.com/ignishub/terr/transport/httperror"
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	"github.com/poorfrombabylon/chargeMeBackend/libhttp"
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
+	"log"
 	"net/http"
 )
 
 func (api *apiServer) Authenticate(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("api.auth.Authenticate")
+	log.Println("api.auth.Authenticate")
 	ctx := r.Context()
 	var req schema.AuthenticateJSONRequestBody
 

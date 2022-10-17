@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	checkinDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/checkin"
@@ -11,12 +10,13 @@ import (
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	"github.com/poorfrombabylon/chargeMeBackend/libhttp"
 	chargeMeV1 "github.com/poorfrombabylon/chargeMeBackend/specs/schema"
+	"log"
 	"net/http"
 	"time"
 )
 
 func (api *apiServer) CreateReview(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("api.review.CreateReview")
+	log.Println("api.review.CreateReview")
 	ctx := r.Context()
 
 	var req chargeMeV1.CreateReviewJSONRequestBody
@@ -24,7 +24,7 @@ func (api *apiServer) CreateReview(w http.ResponseWriter, r *http.Request) {
 	err := libhttp.ReceiveJSON(ctx, r, &req)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
@@ -47,13 +47,13 @@ func (api *apiServer) CreateReview(w http.ResponseWriter, r *http.Request) {
 	err = api.reviewService.CreateReview(ctx, review)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 }
 
 func (api *apiServer) CreateCheckin(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("api.review.CreateCheckin")
+	log.Println("api.review.CreateCheckin")
 	ctx := r.Context()
 
 	var req chargeMeV1.CreateCheckinJSONRequestBody
@@ -61,7 +61,7 @@ func (api *apiServer) CreateCheckin(w http.ResponseWriter, r *http.Request) {
 	err := libhttp.ReceiveJSON(ctx, r, &req)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
@@ -81,7 +81,7 @@ func (api *apiServer) CreateCheckin(w http.ResponseWriter, r *http.Request) {
 	err = api.checkinService.CreateCheckin(ctx, checkin)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 }

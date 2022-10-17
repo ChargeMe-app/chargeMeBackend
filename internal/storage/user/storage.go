@@ -6,6 +6,7 @@ import (
 	"github.com/ignishub/terr"
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
+	"log"
 )
 
 const (
@@ -35,6 +36,8 @@ type userStorage struct {
 }
 
 func (u *userStorage) CreateUser(ctx context.Context, user userDomain.User) error {
+	log.Println("user.storage.CreateUser")
+
 	query := squirrel.Insert(TableUsers).
 		Columns(
 			"id",
@@ -65,6 +68,8 @@ func (u *userStorage) CreateUser(ctx context.Context, user userDomain.User) erro
 }
 
 func (u *userStorage) GetUserByIdentifier(ctx context.Context, userIdentifier string) (userDomain.User, error) {
+	log.Println("user.storage.GetUserByIdentifier")
+
 	query := squirrel.Select(
 		"id",
 		"user_identifier",
@@ -89,6 +94,8 @@ func (u *userStorage) GetUserByIdentifier(ctx context.Context, userIdentifier st
 }
 
 func (u *userStorage) IsUserExist(ctx context.Context, user userDomain.User) (*bool, error) {
+	log.Println("user.storage.IsUserExist")
+
 	query := squirrel.Select("1").
 		Prefix("SELECT EXISTS (").
 		From(TableUsers).
@@ -107,6 +114,8 @@ func (u *userStorage) IsUserExist(ctx context.Context, user userDomain.User) (*b
 }
 
 func (u *userStorage) CreateVehicle(ctx context.Context, vehicle userDomain.Vehicle) error {
+	log.Println("user.storage.CreateVehicle")
+
 	query := squirrel.Insert(TableVehicles).
 		Columns(
 			"user_id",
@@ -127,6 +136,8 @@ func (u *userStorage) CreateVehicle(ctx context.Context, vehicle userDomain.Vehi
 }
 
 func (u *userStorage) GetVehiclesByUserId(ctx context.Context, userId userDomain.UserID) ([]userDomain.Vehicle, error) {
+	log.Println("user.storage.GetVehiclesByUserId")
+
 	queru := squirrel.Select(
 		"user_id",
 		"vehicle_type",
@@ -148,6 +159,8 @@ func (u *userStorage) GetVehiclesByUserId(ctx context.Context, userId userDomain
 }
 
 func (u *userStorage) CreateAppleCredentials(ctx context.Context, creds userDomain.AppleCredentials) error {
+	log.Println("user.storage.CreateAppleCredentials")
+
 	query := squirrel.Insert(TableAppleCredentials).
 		Columns(
 			"user_id",
@@ -170,6 +183,8 @@ func (u *userStorage) CreateAppleCredentials(ctx context.Context, creds userDoma
 }
 
 func (u *userStorage) CreateGoogleCredentials(ctx context.Context, creds userDomain.GoogleCredentials) error {
+	log.Println("user.storage.CreateGoogleCredentials")
+
 	query := squirrel.Insert(TableGoogleCredentials).
 		Columns(
 			"user_id",
@@ -192,6 +207,8 @@ func (u *userStorage) CreateGoogleCredentials(ctx context.Context, creds userDom
 }
 
 func (u *userStorage) GetUserByUserId(ctx context.Context, userId userDomain.UserID) (userDomain.User, error) {
+	log.Println("user.storage.GetUserByUserId")
+
 	query := squirrel.Select(
 		"id",
 		"user_identifier",

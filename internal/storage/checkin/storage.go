@@ -5,6 +5,7 @@ import (
 	"github.com/Masterminds/squirrel"
 	checkinDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/checkin"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
+	"log"
 	"time"
 )
 
@@ -28,6 +29,8 @@ type checkinStorage struct {
 }
 
 func (c *checkinStorage) GetFinishedCheckins(ctx context.Context) ([]checkinDomain.Checkin, error) {
+	log.Println("checkin.storage.GetFinishedCheckins")
+
 	query := squirrel.Select(
 		"id",
 		"user_id",
@@ -57,6 +60,8 @@ func (c *checkinStorage) GetFinishedCheckins(ctx context.Context) ([]checkinDoma
 }
 
 func (c *checkinStorage) GetValidCheckinForStation(ctx context.Context) ([]checkinDomain.Checkin, error) {
+	log.Println("checkin.storage.GetValidCheckinForStation")
+
 	query := squirrel.Select(
 		"id",
 		"user_id",
@@ -87,6 +92,8 @@ func (c *checkinStorage) GetValidCheckinForStation(ctx context.Context) ([]check
 }
 
 func (c *checkinStorage) CreateCheckin(ctx context.Context, checkin checkinDomain.Checkin) error {
+	log.Println("checkin.storage.CreateCheckin")
+
 	query := squirrel.Insert(tableCheckins).
 		Columns(
 			"id",
@@ -127,6 +134,8 @@ func (c *checkinStorage) CreateCheckin(ctx context.Context, checkin checkinDomai
 }
 
 func (c *checkinStorage) DeleteCheckinByCheckinID(ctx context.Context, checkinID checkinDomain.CheckinID) error {
+	log.Println("checkin.storage.DeleteCheckinByCheckinID")
+
 	query := squirrel.Update(tableCheckins).
 		Set("deleted_at", time.Now().In(time.UTC)).
 		Where(squirrel.Eq{"id": checkinID.String()}).

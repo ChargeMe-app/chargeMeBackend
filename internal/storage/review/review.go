@@ -9,6 +9,7 @@ import (
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	station "github.com/poorfrombabylon/chargeMeBackend/internal/storage/station"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
+	"log"
 )
 
 const (
@@ -33,6 +34,8 @@ type reviewStorage struct {
 }
 
 func (r *reviewStorage) CreateReview(ctx context.Context, review reviewDomain.Review) error {
+	log.Println("review.storage.CreateReview")
+
 	query := squirrel.Insert(tableReviews).
 		Columns(
 			"id",
@@ -83,6 +86,8 @@ func (r *reviewStorage) GetReviewsListByStationID(
 	ctx context.Context,
 	stationID stationDomain.StationID,
 ) ([]reviewDomain.Review, error) {
+	log.Println("review.storage.GetReviewsListByStationID")
+
 	query := squirrel.Select(
 		"id",
 		"comment",
@@ -114,6 +119,8 @@ func (r *reviewStorage) GetReviewsListByLocationID(
 	ctx context.Context,
 	placeID placeDomain.PlaceID,
 ) ([]reviewDomain.Review, error) {
+	log.Println("review.storage.GetReviewsListByLocationID")
+
 	query := squirrel.Select(
 		"r.id",
 		"r.comment",
@@ -145,6 +152,8 @@ func (r *reviewStorage) GetReviewsListByUserID(
 	ctx context.Context,
 	userId userDomain.UserID,
 ) ([]reviewDomain.Review, error) {
+	log.Println("review.storage.GetReviewsListByUserID")
+
 	query := squirrel.Select(
 		"id",
 		"comment",
@@ -173,6 +182,8 @@ func (r *reviewStorage) GetReviewsListByUserID(
 }
 
 func (r *reviewStorage) GetReviewWithPositiveRating(ctx context.Context, placeID placeDomain.PlaceID) ([]reviewDomain.Review, error) {
+	log.Println("review.storage.GetReviewWithPositiveRating")
+
 	query := squirrel.Select(
 		"r.id",
 		"r.comment",
@@ -202,6 +213,8 @@ func (r *reviewStorage) GetReviewWithPositiveRating(ctx context.Context, placeID
 }
 
 func (r *reviewStorage) GetReviewsWithNotNullRating(ctx context.Context, placeID placeDomain.PlaceID) ([]reviewDomain.Review, error) {
+	log.Println("review.storage.GetReviewsWithNotNullRating")
+
 	query := squirrel.Select(
 		"r.id",
 		"r.comment",

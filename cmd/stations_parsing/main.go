@@ -130,7 +130,7 @@ func main() {
 	if err != nil {
 		log.Fatal("failed to connect to database:", err.Error())
 	} else {
-		fmt.Println("connected to db")
+		log.Println("connected to db")
 	}
 
 	dbx := sqlx.NewDb(db, "pgx")

@@ -2,6 +2,7 @@ package amenity
 
 import (
 	"context"
+	"fmt"
 	"github.com/Masterminds/squirrel"
 	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
@@ -26,6 +27,8 @@ type amenityStorage struct {
 }
 
 func (a *amenityStorage) CreateAmenity(ctx context.Context, amenity amenityDomain.Amenity) error {
+	fmt.Println("amenity.storage.CreateAmenity")
+
 	query := squirrel.Insert(tableAmenities).
 		Columns(
 			"id",
@@ -50,6 +53,8 @@ func (a *amenityStorage) CreateAmenity(ctx context.Context, amenity amenityDomai
 }
 
 func (a *amenityStorage) GetAmenitiesListByLocationID(ctx context.Context, placeID placeDomain.PlaceID) ([]amenityDomain.Amenity, error) {
+	fmt.Println("amenity.storage.GetAmenitiesListByLocationID")
+
 	query := squirrel.Select(
 		"id",
 		"location_id",

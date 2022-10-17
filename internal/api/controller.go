@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/service"
 	amenityService "github.com/poorfrombabylon/chargeMeBackend/internal/service/amenity"
 	checkinService "github.com/poorfrombabylon/chargeMeBackend/internal/service/checkin"
@@ -10,6 +9,7 @@ import (
 	reviewService "github.com/poorfrombabylon/chargeMeBackend/internal/service/review"
 	stationService "github.com/poorfrombabylon/chargeMeBackend/internal/service/station"
 	userService "github.com/poorfrombabylon/chargeMeBackend/internal/service/user"
+	"log"
 	"net/http"
 
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
@@ -44,5 +44,5 @@ func NewApiServer(serviceRegistry *service.Services) schema.ServerInterface {
 func (api *apiServer) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	//ctx := r.Context()
 	w.Write([]byte("hello healthCheck"))
-	fmt.Println("hello healthCheck")
+	log.Println("hello healthCheck")
 }

@@ -8,6 +8,7 @@ import (
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
+	"log"
 )
 
 type CheckinService interface {
@@ -67,10 +68,14 @@ func NewCheckinService(
 }
 
 func (s *service) CreateCheckin(ctx context.Context, checkin checkinDomain.Checkin) error {
+	log.Println("checkin.service.CreateCheckin")
+
 	return s.checkinStorage.CreateCheckin(ctx, checkin)
 }
 
 func (s *service) MoveFinishedCheckinsToReviews(ctx context.Context) error {
+	log.Println("checkin.service.MoveFinishedCheckinsToReviews")
+
 	finishedCheckinList, err := s.checkinStorage.GetFinishedCheckins(ctx)
 	if err != nil {
 		return err
