@@ -40,10 +40,10 @@ import (
 //)
 
 const (
-	host     = "158.160.13.205"
+	host     = "158.160.15.192"
 	port     = 5432
 	user     = "postgres"
-	password = "pass"
+	password = "e8c5367d37f246ba933fc0a621e4befd"
 	dbname   = "postgres"
 )
 
