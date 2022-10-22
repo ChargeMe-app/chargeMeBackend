@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jmoiron/sqlx"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/config"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/service"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/storage"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
@@ -22,22 +23,6 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
 	"golang.org/x/sync/errgroup"
 )
-
-const (
-	host     = "158.160.15.192"
-	port     = 5432
-	user     = "postgres"
-	password = "e8c5367d37f246ba933fc0a621e4befd"
-	dbname   = "postgres"
-)
-
-//const (
-//	host     = "localhost"
-//	port     = 5432
-//	user     = "postgres"
-//	password = "pass"
-//	dbname   = "postgres"
-//)
 
 func main() {
 	ctx, cancel := signal.NotifyContext(
@@ -49,9 +34,13 @@ func main() {
 	)
 	defer cancel()
 
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+	cfg, err := config.InitConfig()
+	if err != nil {
+		log.Fatal("error while init config")
+	}
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		cfg.Postgres.Host, cfg.Postgres.Port, cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.DBname)
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {

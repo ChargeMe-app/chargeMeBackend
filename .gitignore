@@ -1,2 +1,3 @@
 ./stationData.json
-./docker-compose.yml
+docker-compose.yml
+cmd/chargeMe/config.yaml

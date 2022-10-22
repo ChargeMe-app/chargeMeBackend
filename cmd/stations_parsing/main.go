@@ -20,6 +20,7 @@ import (
 
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 
+	"github.com/poorfrombabylon/chargeMeBackend/internal/config"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
@@ -29,22 +30,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/storage"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
-)
-
-//const (
-//	host     = "localhost"
-//	port     = 5432
-//	user     = "postgres"
-//	password = "pass"
-//	dbname   = "postgres"
-//)
-
-const (
-	host     = "158.160.15.192"
-	port     = 5432
-	user     = "postgres"
-	password = "e8c5367d37f246ba933fc0a621e4befd"
-	dbname   = "postgres"
 )
 
 type LocationDTOJson struct {
@@ -122,9 +107,13 @@ func main() {
 	)
 	defer cancel()
 
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+	cfg, err := config.InitConfig()
+	if err != nil {
+		log.Fatal("error while init config")
+	}
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		cfg.Postgres.Host, cfg.Postgres.Port, cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.DBname)
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
