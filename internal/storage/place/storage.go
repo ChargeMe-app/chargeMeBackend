@@ -5,7 +5,6 @@ import (
 	"github.com/Masterminds/squirrel"
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
-	"log"
 )
 
 const (
@@ -28,8 +27,6 @@ type placeStorage struct {
 }
 
 func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place) error {
-	log.Println("place.storage.CreatePlace")
-
 	query := squirrel.Insert(tablePlaces).
 		Columns(
 			"id",
@@ -88,8 +85,6 @@ func (s *placeStorage) GetPlacesByCoordinates(
 	minLatitude float32,
 	maxLatitude float32,
 ) ([]placeDomain.Place, error) {
-	log.Println("place.storage.GetPlacesByCoordinates")
-
 	query := squirrel.Select(
 		"id",
 		"name",
@@ -116,8 +111,6 @@ func (s *placeStorage) GetPlacesByCoordinates(
 }
 
 func (s *placeStorage) GetFullPlaceByID(ctx context.Context, placeID placeDomain.PlaceID) (placeDomain.Place, error) {
-	log.Println("place.storage.GetFullPlaceByID")
-
 	query := squirrel.Select(
 		"id",
 		"name",
@@ -153,8 +146,6 @@ func (s *placeStorage) GetFullPlaceByID(ctx context.Context, placeID placeDomain
 }
 
 func (s *placeStorage) UpdatePlaceScoreByID(ctx context.Context, placeID placeDomain.PlaceID, rating float32) error {
-	log.Println("place.storage.UpdatePlaceScoreByID")
-
 	query := squirrel.Update(tablePlaces).
 		Set("score", rating).
 		Where(squirrel.Eq{"id": placeID.String()}).

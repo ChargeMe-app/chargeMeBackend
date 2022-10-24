@@ -52,20 +52,14 @@ func (s *service) GetPlacesByCoordinates(
 	minLatitude float32,
 	maxLatitude float32,
 ) ([]placeDomain.Place, error) {
-	log.Println("place.service.GetPlacesByCoordinates")
-
 	return s.placeStorage.GetPlacesByCoordinates(ctx, minLongitude, maxLongitude, minLatitude, maxLatitude)
 }
 
 func (s *service) GetFullPlaceByID(ctx context.Context, place placeDomain.PlaceID) (placeDomain.Place, error) {
-	log.Println("place.service.GetFullPlaceByID")
-
 	return s.placeStorage.GetFullPlaceByID(ctx, place)
 }
 
 func (s *service) UpdatePlaceScoreByID(ctx context.Context, placeID placeDomain.PlaceID) error {
-	log.Println("place.service.UpdatePlaceScoreByID")
-
 	positiveRatings, err := s.reviewStorage.GetReviewWithPositiveRating(ctx, placeID)
 	if err != nil {
 		return err
