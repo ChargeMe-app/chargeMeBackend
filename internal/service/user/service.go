@@ -39,7 +39,6 @@ func NewUserService(userStorage UserStorage) UserService {
 
 func (s *service) GetOrCreateUser(ctx context.Context, user userDomain.User) (*userDomain.User, error) {
 	log.Println("user.service.GetOrCreateUser")
-
 	ok, err := s.userStorage.IsUserExist(ctx, user)
 	if err != nil {
 		return nil, err
@@ -55,37 +54,25 @@ func (s *service) GetOrCreateUser(ctx context.Context, user userDomain.User) (*u
 }
 
 func (s *service) CreateVehicle(ctx context.Context, vehicle userDomain.Vehicle) error {
-	log.Println("user.service.CreateVehicle")
-
 	return s.userStorage.CreateVehicle(ctx, vehicle)
 }
 
 func (s *service) CreateAppleCredentials(ctx context.Context, creds userDomain.AppleCredentials) error {
-	log.Println("user.service.CreateAppleCredentials")
-
 	return s.userStorage.CreateAppleCredentials(ctx, creds)
 }
 
 func (s *service) CreateGoogleCredentials(ctx context.Context, creds userDomain.GoogleCredentials) error {
-	log.Println("user.service.CreateGoogleCredentials")
-
 	return s.userStorage.CreateGoogleCredentials(ctx, creds)
 }
 
 func (s *service) GetVehiclesByUserId(ctx context.Context, userId userDomain.UserID) ([]userDomain.Vehicle, error) {
-	log.Println("user.service.GetVehiclesByUserId")
-
 	return s.userStorage.GetVehiclesByUserId(ctx, userId)
 }
 
 func (s *service) GetUserByIdentifier(ctx context.Context, identifier string) (userDomain.User, error) {
-	log.Println("user.service.GetUserByIdentifier")
-
 	return s.userStorage.GetUserByIdentifier(ctx, identifier)
 }
 
 func (s *service) GetUserByUserId(ctx context.Context, userId userDomain.UserID) (userDomain.User, error) {
-	log.Println("user.service.GetUserByUserId")
-
 	return s.userStorage.GetUserByUserId(ctx, userId)
 }

@@ -8,20 +8,19 @@ import (
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
-	"log"
 )
 
 type CheckinService interface {
 	CreateCheckin(context.Context, checkinDomain.Checkin) error
 	MoveFinishedCheckinsToReviews(context.Context) error
-	GetValidCheckinForStation(context.Context) ([]checkinDomain.Checkin, error)
+	GetValidCheckinForStation(context.Context, stationDomain.StationID) ([]checkinDomain.Checkin, error)
 }
 
 type CheckinStorage interface {
 	CreateCheckin(context.Context, checkinDomain.Checkin) error
 	GetFinishedCheckins(context.Context) ([]checkinDomain.Checkin, error)
 	DeleteCheckinByCheckinID(context.Context, checkinDomain.CheckinID) error
-	GetValidCheckinForStation(context.Context) ([]checkinDomain.Checkin, error)
+	GetValidCheckinForStation(context.Context, stationDomain.StationID) ([]checkinDomain.Checkin, error)
 }
 
 type ReviewStorage interface {
@@ -68,14 +67,10 @@ func NewCheckinService(
 }
 
 func (s *service) CreateCheckin(ctx context.Context, checkin checkinDomain.Checkin) error {
-	log.Println("checkin.service.CreateCheckin")
-
 	return s.checkinStorage.CreateCheckin(ctx, checkin)
 }
 
 func (s *service) MoveFinishedCheckinsToReviews(ctx context.Context) error {
-	log.Println("checkin.service.MoveFinishedCheckinsToReviews")
-
 	finishedCheckinList, err := s.checkinStorage.GetFinishedCheckins(ctx)
 	if err != nil {
 		return err
@@ -140,6 +135,6 @@ func (s *service) MoveFinishedCheckinsToReviews(ctx context.Context) error {
 	return nil
 }
 
-func (s *service) GetValidCheckinForStation(ctx context.Context) ([]checkinDomain.Checkin, error) {
-	return s.checkinStorage.GetValidCheckinForStation(ctx)
+func (s *service) GetValidCheckinForStation(ctx context.Context, stationID stationDomain.StationID) ([]checkinDomain.Checkin, error) {
+	return s.checkinStorage.GetValidCheckinForStation(ctx, stationID)
 }

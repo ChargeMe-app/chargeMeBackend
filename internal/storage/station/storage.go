@@ -30,7 +30,6 @@ type stationStorage struct {
 
 func (s *stationStorage) CreateStation(ctx context.Context, station stationDomain.Station) error {
 	log.Println("station.storage.CreateStation")
-
 	query := squirrel.Insert(TableStations).
 		Columns(
 			"id",
@@ -70,8 +69,6 @@ func (s *stationStorage) GetStationsByPlaceID(
 	ctx context.Context,
 	placeID placeDomain.PlaceID,
 ) ([]stationDomain.Station, error) {
-	log.Println("station.storage.GetStationsByPlaceID")
-
 	query := squirrel.Select(
 		"id",
 		"location_id",
@@ -91,8 +88,6 @@ func (s *stationStorage) GetStationsByPlaceID(
 }
 
 func (s *stationStorage) GetPlaceIdByStationID(ctx context.Context, stationID stationDomain.StationID) (placeDomain.PlaceID, error) {
-	log.Println("station.storage.GetPlaceIdByStationID")
-
 	query := squirrel.Select(
 		"location_id",
 	).

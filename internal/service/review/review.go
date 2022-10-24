@@ -6,7 +6,6 @@ import (
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
-	"log"
 )
 
 type ReviewService interface {
@@ -50,8 +49,6 @@ func NewReviewService(reviewStorage ReviewStorage, placeStorage PlaceStorage, st
 }
 
 func (s *service) CreateReview(ctx context.Context, review reviewDomain.Review) error {
-	log.Println("review.service.CreateReview")
-
 	err := s.reviewStorage.CreateReview(ctx, review)
 	if err != nil {
 		return err
@@ -81,8 +78,6 @@ func (s *service) GetReviewsListByStationID(
 	ctx context.Context,
 	stationID stationDomain.StationID,
 ) ([]reviewDomain.Review, error) {
-	log.Println("review.service.GetReviewsListByStationID")
-
 	return s.reviewStorage.GetReviewsListByStationID(ctx, stationID)
 }
 
@@ -90,25 +85,17 @@ func (s *service) GetReviewsListByLocationID(
 	ctx context.Context,
 	placeID placeDomain.PlaceID,
 ) ([]reviewDomain.Review, error) {
-	log.Println("review.service.GetReviewsListByLocationID")
-
 	return s.reviewStorage.GetReviewsListByLocationID(ctx, placeID)
 }
 
 func (s *service) GetReviewsListByUserID(ctx context.Context, userId userDomain.UserID) ([]reviewDomain.Review, error) {
-	log.Println("review.service.GetReviewsListByUserID")
-
 	return s.reviewStorage.GetReviewsListByUserID(ctx, userId)
 }
 
 func (s *service) GetReviewWithPositiveRating(ctx context.Context, placeID placeDomain.PlaceID) ([]reviewDomain.Review, error) {
-	log.Println("review.service.GetReviewWithPositiveRating")
-
 	return s.reviewStorage.GetReviewWithPositiveRating(ctx, placeID)
 }
 
 func (s *service) GetReviewsWithNotNullRating(ctx context.Context, placeID placeDomain.PlaceID) ([]reviewDomain.Review, error) {
-	log.Println("review.service.GetReviewsWithNotNullRating")
-
 	return s.reviewStorage.GetReviewsWithNotNullRating(ctx, placeID)
 }

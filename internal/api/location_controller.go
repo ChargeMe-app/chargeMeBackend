@@ -180,7 +180,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 			Kilowatts:       station.GetStationKilowatts(),
 		}
 
-		checkins, err := api.checkinService.GetValidCheckinForStation(ctx)
+		checkins, err := api.checkinService.GetValidCheckinForStation(ctx, station.GetStationID())
 		if err != nil {
 			log.Println(err.Error())
 			w.Write([]byte(err.Error()))
