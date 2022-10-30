@@ -31,6 +31,7 @@ type AddressStationsFull struct {
 	Name                         string        `json:"name"`
 	Open247                      *bool         `json:"open247,omitempty"`
 	PhoneNumber                  *string       `json:"phone_number,omitempty"`
+	Photos                       *[]Photo      `json:"photos,omitempty"`
 	Reviews                      *[]Review     `json:"reviews,omitempty"`
 	Score                        *float32      `json:"score,omitempty"`
 	Stations                     []StationFull `json:"stations"`
@@ -132,6 +133,15 @@ type OutletPreliminary struct {
 	Id        string   `json:"id"`
 	Kilowatts *float32 `json:"kilowatts"`
 	Power     int      `json:"power"`
+}
+
+// Photo defines model for Photo.
+type Photo struct {
+	Caption   *string   `json:"caption,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+	Id        string    `json:"id"`
+	Url       string    `json:"url"`
+	UserId    string    `json:"user_id"`
 }
 
 // ResponseLocations defines model for ResponseLocations.

@@ -482,6 +482,10 @@ components:
         - name
         - stations
       properties:
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Photo'
         access:
           type: integer
         address:
@@ -528,6 +532,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Amenity'
+
+    Photo:
+      required:
+        - id
+        - url
+        - user_id
+        - created_at
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        user_id:
+          type: string
+        caption:
+          type: string
+        created_at:
+          type: string
+          format: date-time
 
     StationFull:
       description: Полная информация о станции.
