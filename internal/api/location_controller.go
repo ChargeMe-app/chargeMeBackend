@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/ignishub/terr/transport/httperror"
+	config "github.com/poorfrombabylon/chargeMeBackend/internal/config"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
@@ -108,6 +109,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 	var reviewsResponse []schema.Review
 	var stationsResponse []schema.StationFull
 	var amenitiesResponse []schema.Amenity
+	var photosResponse []schema.Photo
 
 	place, err := api.placeService.GetFullPlaceByID(ctx, placeID)
 	if err != nil {
@@ -133,7 +135,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 			ConnectorType: review.GetConnectorType(),
 			UserName:      review.GetUserName(),
 			VehicleName:   review.GetVehicleName(),
-			VehicleType:   nil,
+			VehicleType:   review.GetVehicleType(),
 			CreatedAt:     review.GetCreatedAt(),
 		}
 
@@ -195,6 +197,27 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		stationsResponse = append(stationsResponse, s)
 	}
 
+	photos, err := api.photoService.GetPhotoListByPlaceID(ctx, placeID)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		log.Println(err.Error())
+		return
+	}
+
+	yandexLink := config.GetConfig().YandexStorage.BaseUrl
+
+	for _, p := range photos {
+		photo := schema.Photo{
+			Id:        p.GetPhotoID().String(),
+			Caption:   p.GetPhotoCaption(),
+			Url:       yandexLink + "/" + p.GetPhotoName(),
+			UserId:    p.GetUserID().String(),
+			CreatedAt: p.GetCreatedAt(),
+		}
+
+		photosResponse = append(photosResponse, photo)
+	}
+
 	amenities, err := api.amenityService.GetAmenitiesListByLocationID(ctx, placeID)
 	if err != nil {
 		w.Write([]byte(err.Error()))
@@ -216,6 +239,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		Access:                       place.GetPlaceAccess(),
 		Address:                      place.GetPlaceAddress(),
 		IconType:                     place.GetPlaceIconType(),
+		Photos:                       &photosResponse,
 		Id:                           place.GetPlaceID().String(),
 		Latitude:                     place.GetPlaceLatitude(),
 		Longitude:                    place.GetPlaceLongitude(),
