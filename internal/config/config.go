@@ -23,9 +23,7 @@ type Database struct {
 }
 
 type YandexStorage struct {
-	AwsAccessKeyId     string `yaml:"aws_access_key_id"`
-	AwsSecretAccessKey string `yaml:"aws_secret_access_key"`
-	Region             string `yaml:"region"`
+	BaseUrl string `yaml:"baseUrl"`
 }
 
 func InitConfig() (*Config, error) {
@@ -44,4 +42,8 @@ func InitConfig() (*Config, error) {
 	}
 
 	return &cfg, nil
+}
+
+func GetConfig() *Config {
+	return &cfg
 }

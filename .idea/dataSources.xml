@@ -8,18 +8,11 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="yandex" uuid="4b858431-1307-4fe6-9d35-1c6f5f514768">
+    <data-source source="LOCAL" name="yandex 158.160.11.212" uuid="c7394685-7871-44d4-8756-4458b15f2589">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://158.160.13.205:5432/postgres</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="попытка номер 5" uuid="620c3009-0f35-452b-b2e9-8de9cbc305b9">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://158.160.15.192:5432/postgres</jdbc-url>
+      <jdbc-url>jdbc:postgresql://158.160.11.212:5432/postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
