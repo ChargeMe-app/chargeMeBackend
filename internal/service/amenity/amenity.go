@@ -26,7 +26,7 @@ func NewAmenityService(amenityStorage AmenityStorage) AmenityService {
 }
 
 func (s *service) CreateAmenity(ctx context.Context, amenity amenityDomain.Amenity) error {
-	return s.CreateAmenity(ctx, amenity)
+	return s.amenityStorage.CreateAmenity(ctx, amenity)
 }
 
 func (s *service) GetAmenitiesListByLocationID(
