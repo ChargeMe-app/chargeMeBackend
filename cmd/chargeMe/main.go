@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"database/sql"
 	"fmt"
 	"log"
@@ -78,15 +79,25 @@ func startHttpServer(
 	router := chi.NewRouter()
 	router.Handle("/*", handler)
 
+	cert, err := tls.LoadX509KeyPair("cmd/chargeMe/158.160.11.212.crt",
+		"cmd/chargeMe/158.160.11.212.key")
+	if err != nil {
+		return err
+	}
+
 	httpServer := http.Server{
 		Addr:    ":8081",
 		Handler: router,
+		TLSConfig: &tls.Config{
+			Certificates: []tls.Certificate{cert},
+		},
 	}
 
 	group, ctx := errgroup.WithContext(ctx)
 
 	group.Go(func() error {
-		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		err := httpServer.ListenAndServeTLS("", "")
+		if err != nil && err != http.ErrServerClosed {
 			return err
 		}
 		return nil
