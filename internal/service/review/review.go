@@ -69,9 +69,13 @@ func (s *service) CreateReview(ctx context.Context, review reviewDomain.Review) 
 		return err
 	}
 
-	newScore := (float32(len(positiveRatings)) / float32(len(allRatings))) * 10
+	if len(allRatings) >= 5 {
+		newScore := (float32(len(positiveRatings)) / float32(len(allRatings))) * 10
 
-	return s.placeStorage.UpdatePlaceScoreByID(ctx, placeId, newScore)
+		return s.placeStorage.UpdatePlaceScoreByID(ctx, placeId, newScore)
+	}
+
+	return nil
 }
 
 func (s *service) GetReviewsListByStationID(

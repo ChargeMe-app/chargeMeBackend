@@ -96,6 +96,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+    put:
+      tags:
+        - update location
+      operationId: updateLocation
+      summary: Обновление станции по идентификатору.
+      description: Обновление станции по идентификатору.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressStationsFull'
+      responses:
+        '200':
+          description: Success
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 
 
   /v1/locations/stations:

@@ -254,6 +254,9 @@ type GetLocationsParams struct {
 // CreateFullLocationJSONBody defines parameters for CreateFullLocation.
 type CreateFullLocationJSONBody = AddressStationsFull
 
+// UpdateLocationJSONBody defines parameters for UpdateLocation.
+type UpdateLocationJSONBody = AddressStationsFull
+
 // GetChargingStationsByLocationIDParams defines parameters for GetChargingStationsByLocationID.
 type GetChargingStationsByLocationIDParams struct {
 	LocationId string `form:"locationId" json:"locationId"`
@@ -273,6 +276,9 @@ type CreateCheckinJSONRequestBody = CreateCheckinJSONBody
 
 // CreateFullLocationJSONRequestBody defines body for CreateFullLocation for application/json ContentType.
 type CreateFullLocationJSONRequestBody = CreateFullLocationJSONBody
+
+// UpdateLocationJSONRequestBody defines body for UpdateLocation for application/json ContentType.
+type UpdateLocationJSONRequestBody = UpdateLocationJSONBody
 
 // CreateReviewJSONRequestBody defines body for CreateReview for application/json ContentType.
 type CreateReviewJSONRequestBody = CreateReviewJSONBody
@@ -297,6 +303,9 @@ type ServerInterface interface {
 	// Создания локации со станциями.
 	// (POST /v1/locations)
 	CreateFullLocation(w http.ResponseWriter, r *http.Request)
+	// Обновление станции по идентификатору.
+	// (PUT /v1/locations)
+	UpdateLocation(w http.ResponseWriter, r *http.Request)
 	// Получение списка зарядных станций и удобств на локации.
 	// (GET /v1/locations/stations)
 	GetChargingStationsByLocationID(w http.ResponseWriter, r *http.Request, params GetChargingStationsByLocationIDParams)
@@ -435,6 +444,21 @@ func (siw *ServerInterfaceWrapper) CreateFullLocation(w http.ResponseWriter, r *
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateFullLocation(w, r)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
+}
+
+// UpdateLocation operation middleware
+func (siw *ServerInterfaceWrapper) UpdateLocation(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateLocation(w, r)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -661,6 +685,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/v1/locations", wrapper.CreateFullLocation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/locations", wrapper.UpdateLocation)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/locations/stations", wrapper.GetChargingStationsByLocationID)

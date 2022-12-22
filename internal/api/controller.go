@@ -16,8 +16,6 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
 )
 
-var _ schema.ServerInterface = &apiServer{}
-
 type apiServer struct {
 	placeService   placeService.PlaceService
 	stationService stationService.StationService

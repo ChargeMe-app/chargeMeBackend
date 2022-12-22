@@ -2,6 +2,7 @@ package outlet
 
 import (
 	"context"
+
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 )
