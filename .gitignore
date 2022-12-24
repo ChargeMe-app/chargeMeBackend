@@ -1,3 +1,5 @@
 ./stationData.json
 docker-compose.yml
 cmd/chargeMe/config.yaml
+!.vscode/launch.json
+.DS_Store

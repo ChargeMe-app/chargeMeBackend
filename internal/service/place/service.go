@@ -26,7 +26,6 @@ type PlaceStorage interface {
 	GetPlacesByCoordinates(context.Context, float32, float32, float32, float32) ([]placeDomain.Place, error)
 	GetFullPlaceByID(context.Context, placeDomain.PlaceID) (placeDomain.Place, error)
 	UpdatePlaceScoreByID(context.Context, placeDomain.PlaceID, float32) error
-	DeletePlaceByID(ctx context.Context, placeID placeDomain.PlaceID) error
 }
 
 type service struct {

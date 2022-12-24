@@ -162,7 +162,9 @@ func (s *placeStorage) UpdatePlaceScoreByID(ctx context.Context, placeID placeDo
 }
 
 func (s *placeStorage) DeletePlaceByID(ctx context.Context, placeID placeDomain.PlaceID) error {
-	query := squirrel.Delete(tablePlaces).Where(squirrel.Eq{"id": placeID.String()}).PlaceholderFormat(squirrel.Dollar)
+	query := squirrel.Delete(tablePlaces).
+		Where(squirrel.Eq{"id": placeID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
 
 	err := s.db.Delete(ctx, query)
 	if err != nil {
