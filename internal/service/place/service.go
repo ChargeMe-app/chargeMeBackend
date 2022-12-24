@@ -2,8 +2,9 @@ package place
 
 import (
 	"context"
-	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	"log"
+
+	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 )
@@ -25,6 +26,7 @@ type PlaceStorage interface {
 	GetPlacesByCoordinates(context.Context, float32, float32, float32, float32) ([]placeDomain.Place, error)
 	GetFullPlaceByID(context.Context, placeDomain.PlaceID) (placeDomain.Place, error)
 	UpdatePlaceScoreByID(context.Context, placeDomain.PlaceID, float32) error
+	DeletePlaceByID(ctx context.Context, placeID placeDomain.PlaceID) error
 }
 
 type service struct {
