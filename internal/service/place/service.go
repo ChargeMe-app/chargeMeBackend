@@ -2,8 +2,9 @@ package place
 
 import (
 	"context"
-	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 	"log"
+
+	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
 
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 )

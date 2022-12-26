@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
+
+	"gopkg.in/yaml.v3"
 )
 
 var cfg Config
@@ -27,7 +28,7 @@ type YandexStorage struct {
 }
 
 func InitConfig() (*Config, error) {
-	configPath := "cmd/chargeMe/config.yaml"
+	configPath := "../../cmd/chargeMe/config.yaml"
 
 	clean := filepath.Clean(configPath)
 
