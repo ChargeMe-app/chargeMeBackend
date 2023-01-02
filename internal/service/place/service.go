@@ -18,7 +18,7 @@ type PlaceService interface {
 	CreatePlace(ctx context.Context, place placeDomain.Place) error
 	GetPlacesByCoordinates(context.Context, float32, float32, float32, float32) ([]placeDomain.Place, error)
 	GetFullPlaceByID(context.Context, placeDomain.PlaceID) (placeDomain.Place, error)
-	//UpdatePlaceScoreByID(context.Context, placeDomain.PlaceID) error
+	UpdatePlace(context.Context, placeDomain.Place) error
 }
 
 type PlaceStorage interface {
@@ -26,6 +26,7 @@ type PlaceStorage interface {
 	GetPlacesByCoordinates(context.Context, float32, float32, float32, float32) ([]placeDomain.Place, error)
 	GetFullPlaceByID(context.Context, placeDomain.PlaceID) (placeDomain.Place, error)
 	UpdatePlaceScoreByID(context.Context, placeDomain.PlaceID, float32) error
+	UpdatePlace(context.Context, placeDomain.Place) error
 }
 
 type service struct {
@@ -60,20 +61,6 @@ func (s *service) GetFullPlaceByID(ctx context.Context, place placeDomain.PlaceI
 	return s.placeStorage.GetFullPlaceByID(ctx, place)
 }
 
-//func (s *service) UpdatePlaceScoreByID(ctx context.Context, placeID placeDomain.PlaceID) error {
-//	positiveRatings, err := s.reviewStorage.GetReviewWithPositiveRating(ctx, placeID)
-//	if err != nil {
-//		return err
-//	}
-//
-//	allRatings, err := s.reviewStorage.GetReviewsWithNotNullRating(ctx, placeID)
-//	if err != nil {
-//		return err
-//	}
-//
-//	if len(allRatings) == 0 {}
-//
-//	newScore := (float32(len(positiveRatings)) / float32(len(allRatings))) * 10
-//
-//	return s.placeStorage.UpdatePlaceScoreByID(ctx, placeID, newScore)
-//}
+func (s *service) UpdatePlace(ctx context.Context, place placeDomain.Place) error {
+	return s.placeStorage.UpdatePlace(ctx, place)
+}

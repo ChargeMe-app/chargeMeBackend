@@ -102,6 +102,12 @@ paths:
       operationId: updateLocation
       summary: Обновление станции по идентификатору.
       description: Обновление станции по идентификатору.
+      parameters:
+        - name: locationId
+          required: true
+          in: query
+          schema:
+            type: string
       requestBody:
         content:
           application/json:

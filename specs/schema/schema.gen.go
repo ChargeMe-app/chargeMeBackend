@@ -257,6 +257,11 @@ type CreateFullLocationJSONBody = AddressStationsFull
 // UpdateLocationJSONBody defines parameters for UpdateLocation.
 type UpdateLocationJSONBody = AddressStationsFull
 
+// UpdateLocationParams defines parameters for UpdateLocation.
+type UpdateLocationParams struct {
+	LocationId string `form:"locationId" json:"locationId"`
+}
+
 // GetChargingStationsByLocationIDParams defines parameters for GetChargingStationsByLocationID.
 type GetChargingStationsByLocationIDParams struct {
 	LocationId string `form:"locationId" json:"locationId"`
@@ -305,7 +310,7 @@ type ServerInterface interface {
 	CreateFullLocation(w http.ResponseWriter, r *http.Request)
 	// Обновление станции по идентификатору.
 	// (PUT /v1/locations)
-	UpdateLocation(w http.ResponseWriter, r *http.Request)
+	UpdateLocation(w http.ResponseWriter, r *http.Request, params UpdateLocationParams)
 	// Получение списка зарядных станций и удобств на локации.
 	// (GET /v1/locations/stations)
 	GetChargingStationsByLocationID(w http.ResponseWriter, r *http.Request, params GetChargingStationsByLocationIDParams)
@@ -457,8 +462,27 @@ func (siw *ServerInterfaceWrapper) CreateFullLocation(w http.ResponseWriter, r *
 func (siw *ServerInterfaceWrapper) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateLocationParams
+
+	// ------------- Required query parameter "locationId" -------------
+	if paramValue := r.URL.Query().Get("locationId"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "locationId"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "locationId", r.URL.Query(), &params.LocationId)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "locationId", Err: err})
+		return
+	}
+
 	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateLocation(w, r)
+		siw.Handler.UpdateLocation(w, r, params)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {

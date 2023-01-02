@@ -25,7 +25,7 @@ type Services struct {
 
 func NewServiceRegistry(storages *storage.Storages) *Services {
 	place := placeService.NewPlaceService(storages.PlaceStorage, storages.ReviewStorage)
-	station := stationService.NewStationService(storages.StationStorage)
+	station := stationService.NewStationService(storages.StationStorage, storages.OutletStorage)
 	outlet := outletService.NewOutletService(storages.OutletStorage)
 	review := reviewService.NewReviewService(storages.ReviewStorage, storages.PlaceStorage, storages.StationStorage)
 	photo := photoService.NewPhotoService(storages.PhotoStorage)
