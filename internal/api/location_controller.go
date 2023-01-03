@@ -1,18 +1,15 @@
 package api
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/ignishub/terr/transport/httperror"
-	config "github.com/poorfrombabylon/chargeMeBackend/internal/config"
-	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
-	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
-	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/config"
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
-	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 	"github.com/poorfrombabylon/chargeMeBackend/libhttp"
 	"github.com/poorfrombabylon/chargeMeBackend/specs/schema"
 	chargeMeV1 "github.com/poorfrombabylon/chargeMeBackend/specs/schema"
-	"log"
-	"net/http"
 )
 
 // Получение списка локаций с зарядками в пределах координат
@@ -90,7 +87,7 @@ func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, param
 	}
 
 	response := schema.ResponseLocations{
-		Locations: addresses,
+		Locations: []schema.AddressStationsPreliminary{addresses[0]},
 	}
 
 	libhttp.SendJSON(ctx, w, response)
@@ -282,25 +279,7 @@ func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request)
 
 	log.Println(req)
 
-	location := placeDomain.NewPlace(
-		req.Name,
-		req.Score,
-		req.Longitude,
-		req.Latitude,
-		req.Access,
-		req.IconType,
-		req.Address,
-		req.Description,
-		req.AccessRestriction,
-		req.AccessRestrictionDescription,
-		req.Cost,
-		req.CostDescription,
-		req.Hours,
-		req.Open247,
-		req.ComingSoon,
-		req.PhoneNumber,
-		domain.NewModel(),
-	)
+	location := convertLocation(req)
 
 	log.Println()
 	log.Println(location)
@@ -313,14 +292,10 @@ func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	for _, a := range *req.Amenities {
-		amenity := amenityDomain.NewAmenity(
-			location.GetPlaceID(),
-			a.Form,
-			domain.NewModel(),
-		)
+	if req.Amenities != nil {
+		amenities := convertAmenitiesList(location.GetPlaceID(), *req.Amenities)
 
-		err = api.amenityService.CreateAmenity(ctx, amenity)
+		err = api.amenityService.CreateAmenitiesList(ctx, amenities)
 		if err != nil {
 			w.Write([]byte(err.Error()))
 			log.Println(err.Error())
@@ -329,17 +304,7 @@ func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request)
 	}
 
 	for _, s := range req.Stations {
-		station := stationDomain.NewStation(
-			location.GetPlaceID(),
-			s.Available,
-			s.Cost,
-			s.Name,
-			s.Manufacturer,
-			s.CostDescription,
-			s.Hours,
-			s.Kilowatts,
-			domain.NewModel(),
-		)
+		station := convertStation(location.GetPlaceID(), s)
 
 		err = api.stationService.CreateStation(ctx, station)
 		if err != nil {
@@ -348,21 +313,83 @@ func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		for _, o := range s.Outlets {
-			outlet := outletDomain.NewOutlet(
-				station.GetStationID(),
-				o.Connector,
-				o.Kilowatts,
-				o.Power,
-				domain.NewModel(),
-			)
+		outlets := convertOutletList(station.GetStationID(), s.Outlets)
 
-			err = api.outletService.CreateOutlet(ctx, outlet)
-			if err != nil {
-				w.Write([]byte(err.Error()))
-				log.Println(err.Error())
-				return
-			}
+		err = api.outletService.CreateOutletsList(ctx, outlets)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			log.Println(err.Error())
+			return
+		}
+	}
+}
+
+// обновление локации со станциями
+// (PUT /v1/locations)
+func (api *apiServer) UpdateLocation(w http.ResponseWriter, r *http.Request, params schema.UpdateLocationParams) {
+	log.Println("api.UpdateLocation")
+	ctx := r.Context()
+	var req chargeMeV1.CreateFullLocationJSONBody
+
+	err := libhttp.ReceiveJSON(ctx, r, &req)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		log.Println(err.Error())
+		return
+	}
+
+	locationId := placeDomain.PlaceID(params.LocationId)
+	location := convertLocationWithID(req, locationId)
+
+	err = api.placeService.UpdatePlace(ctx, location)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		log.Println(err.Error())
+		return
+	}
+
+	err = api.stationService.DeleteStationsByPlaceID(ctx, locationId)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		log.Println(err.Error())
+		return
+	}
+
+	err = api.amenityService.DeleteAmenitiesByLocationID(ctx, locationId)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		log.Println(err.Error())
+		return
+	}
+
+	for _, s := range req.Stations {
+		station := convertStation(locationId, s)
+
+		err = api.stationService.CreateStation(ctx, station)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			log.Println(err.Error())
+			return
+		}
+
+		outlets := convertOutletList(station.GetStationID(), s.Outlets)
+
+		err = api.outletService.CreateOutletsList(ctx, outlets)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			log.Println(err.Error())
+			return
+		}
+	}
+
+	if req.Amenities != nil {
+		amenities := convertAmenitiesList(location.GetPlaceID(), *req.Amenities)
+
+		err = api.amenityService.CreateAmenitiesList(ctx, amenities)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			log.Println(err.Error())
+			return
 		}
 	}
 }

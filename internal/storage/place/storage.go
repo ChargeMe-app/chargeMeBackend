@@ -18,6 +18,7 @@ type Storage interface {
 	GetFullPlaceByID(context.Context, placeDomain.PlaceID) (placeDomain.Place, error)
 	UpdatePlaceScoreByID(context.Context, placeDomain.PlaceID, float32) error
 	DeletePlaceByID(ctx context.Context, placeID placeDomain.PlaceID) error
+	UpdatePlace(context.Context, placeDomain.Place) error
 }
 
 func NewPlaceStorage(db libdb.DB) Storage {
@@ -73,6 +74,34 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 		PlaceholderFormat(squirrel.Dollar)
 
 	err := s.db.Insert(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *placeStorage) UpdatePlace(
+	ctx context.Context,
+	place placeDomain.Place,
+) error {
+	query := squirrel.Update(tablePlaces).
+		Set("name", place.GetPlaceName()).
+		Set("description", place.GetDescription()).
+		Set("phone_number", place.GetPhoneNumber()).
+		Set("longitude", place.GetPlaceLongitude()).
+		Set("latitude", place.GetPlaceLatitude()).
+		Set("address", place.GetPlaceAddress()).
+		Set("access", place.GetPlaceAccess()).
+		Set("cost", place.GetCost()).
+		Set("cost_description", place.GetCostDescription()).
+		Set("hours", place.GetHours()).
+		Set("is_open_or_active", place.IsComingSoon()).
+		Set("open247", place.GetOpen247()).
+		Where(squirrel.Eq{"id": place.GetPlaceID().String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := s.db.Update(ctx, query)
 	if err != nil {
 		return err
 	}

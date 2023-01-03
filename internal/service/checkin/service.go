@@ -129,9 +129,11 @@ func (s *service) MoveFinishedCheckinsToReviews(ctx context.Context) error {
 			return err
 		}
 
-		newScore := (float32(len(positiveRatings)) / float32(len(allRatings))) * 10
+		if len(allRatings) >= 5 {
+			newScore := (float32(len(positiveRatings)) / float32(len(allRatings))) * 10
 
-		return s.placeStorage.UpdatePlaceScoreByID(ctx, placeId, newScore)
+			return s.placeStorage.UpdatePlaceScoreByID(ctx, placeId, newScore)
+		}
 	}
 
 	return nil

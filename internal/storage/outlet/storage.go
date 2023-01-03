@@ -2,6 +2,7 @@ package outlet
 
 import (
 	"context"
+
 	"github.com/Masterminds/squirrel"
 	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
@@ -16,6 +17,8 @@ type Storage interface {
 	CreateOutlet(context.Context, outletDomain.Outlet) error
 	GetOutletsByStationID(context.Context, stationDomain.StationID) ([]outletDomain.Outlet, error)
 	GetOutletByID(context.Context, outletDomain.OutletID) (outletDomain.Outlet, error)
+	DeleteOutletByID(context.Context, outletDomain.OutletID) error
+	DeleteOutletsByStationID(context.Context, stationDomain.StationID) error
 }
 
 func NewOutletStorage(db libdb.DB) Storage {
@@ -100,4 +103,30 @@ func (o *outletStorage) GetOutletByID(ctx context.Context, outletId outletDomain
 	outlet := NewOutletFromDTO(result)
 
 	return outlet, nil
+}
+
+func (o *outletStorage) DeleteOutletsByStationID(ctx context.Context, stationID stationDomain.StationID) error {
+	query := squirrel.Delete(tableOutlets).
+		Where(squirrel.Eq{"station_id": stationID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := o.db.Delete(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *outletStorage) DeleteOutletByID(ctx context.Context, outletID outletDomain.OutletID) error {
+	query := squirrel.Delete(tableOutlets).
+		Where(squirrel.Eq{"id": outletID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := o.db.Delete(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

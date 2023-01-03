@@ -2,8 +2,9 @@ package station
 
 import (
 	"context"
-	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	"log"
+
+	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 
 	"github.com/Masterminds/squirrel"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
@@ -18,6 +19,7 @@ type Storage interface {
 	CreateStation(context.Context, stationDomain.Station) error
 	GetStationsByPlaceID(context.Context, placeDomain.PlaceID) ([]stationDomain.Station, error)
 	GetPlaceIdByStationID(context.Context, stationDomain.StationID) (placeDomain.PlaceID, error)
+	DeleteStationByID(context.Context, stationDomain.StationID) error
 }
 
 func NewStationStorage(db libdb.DB) Storage {
@@ -103,4 +105,17 @@ func (s *stationStorage) GetPlaceIdByStationID(ctx context.Context, stationID st
 	}
 
 	return placeDomain.PlaceID(result), nil
+}
+
+func (s *stationStorage) DeleteStationByID(ctx context.Context, stationID stationDomain.StationID) error {
+	query := squirrel.Delete(TableStations).
+		Where(squirrel.Eq{"id": stationID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := s.db.Delete(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
