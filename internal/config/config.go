@@ -28,7 +28,7 @@ type YandexStorage struct {
 }
 
 func InitConfig() (*Config, error) {
-	configPath := "/Users/almazkhayrullin/Desktop/chargeMe_back/cmd/chargeMe/config.yaml"
+	configPath := "cmd/chargeMe/config.yaml"
 
 	clean := filepath.Clean(configPath)
 
