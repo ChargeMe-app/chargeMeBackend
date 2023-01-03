@@ -1,6 +1,7 @@
 ./stationData.json
 docker-compose.yml
 cmd/chargeMe/config.yaml
+./example/check_integration/integration.go
 .idea
 !.vscode/launch.json
 .DS_Store

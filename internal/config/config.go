@@ -13,6 +13,11 @@ var cfg Config
 type Config struct {
 	Postgres      Database      `yaml:"DB"`
 	YandexStorage YandexStorage `yaml:"YandexStorage"`
+	Sitronics     Sitronics     `yaml:"Sitronics"`
+}
+
+type Sitronics struct {
+	BaseUrl string `yaml:"baseUrl"`
 }
 
 type Database struct {
