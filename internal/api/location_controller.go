@@ -87,7 +87,7 @@ func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, param
 	}
 
 	response := schema.ResponseLocations{
-		Locations: []schema.AddressStationsPreliminary{addresses[0]},
+		Locations: addresses,
 	}
 
 	libhttp.SendJSON(ctx, w, response)
