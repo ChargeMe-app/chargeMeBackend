@@ -19,6 +19,7 @@ type Storage interface {
 	UpdatePlaceScoreByID(context.Context, placeDomain.PlaceID, float32) error
 	DeletePlaceByID(ctx context.Context, placeID placeDomain.PlaceID) error
 	UpdatePlace(context.Context, placeDomain.Place) error
+	GetAllPlaces(ctx context.Context) ([]placeDomain.Place, error)
 }
 
 func NewPlaceStorage(db libdb.DB) Storage {
@@ -27,6 +28,30 @@ func NewPlaceStorage(db libdb.DB) Storage {
 
 type placeStorage struct {
 	db libdb.DB
+}
+
+func (s *placeStorage) GetAllPlaces(ctx context.Context) ([]placeDomain.Place, error) {
+	query := squirrel.Select(
+		"id",
+		"name",
+		"score",
+		"longitude",
+		"latitude",
+		"address",
+		"access",
+		"icon_type",
+	).
+		From(tablePlaces).
+		PlaceholderFormat(squirrel.Dollar)
+
+	var result []PlaceDTO
+
+	err := s.db.Select(ctx, query, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewPlaceListDTO(result), nil
 }
 
 func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place) error {
