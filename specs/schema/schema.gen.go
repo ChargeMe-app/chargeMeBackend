@@ -12,45 +12,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// Список станций по адресу
-type AddressStationsFull struct {
-	Access                       *int          `json:"access,omitempty"`
-	AccessRestriction            *string       `json:"access_restriction,omitempty"`
-	AccessRestrictionDescription *string       `json:"access_restriction_description,omitempty"`
-	Address                      string        `json:"address"`
-	Amenities                    *[]Amenity    `json:"amenities,omitempty"`
-	ComingSoon                   *bool         `json:"coming_soon,omitempty"`
-	Cost                         *bool         `json:"cost,omitempty"`
-	CostDescription              *string       `json:"cost_description,omitempty"`
-	Description                  *string       `json:"description,omitempty"`
-	Hours                        *string       `json:"hours,omitempty"`
-	IconType                     *string       `json:"icon_type,omitempty"`
-	Id                           string        `json:"id"`
-	Latitude                     float32       `json:"latitude"`
-	Longitude                    float32       `json:"longitude"`
-	Name                         string        `json:"name"`
-	Open247                      *bool         `json:"open247,omitempty"`
-	PhoneNumber                  *string       `json:"phone_number,omitempty"`
-	Photos                       *[]Photo      `json:"photos,omitempty"`
-	Reviews                      *[]Review     `json:"reviews,omitempty"`
-	Score                        *float32      `json:"score,omitempty"`
-	Stations                     []StationFull `json:"stations"`
-}
-
-// Список станций по адресу
-type AddressStationsPreliminary struct {
-	Access    int                  `json:"access"`
-	Address   string               `json:"address"`
-	Icon      *string              `json:"icon,omitempty"`
-	IconType  *string              `json:"icon_type,omitempty"`
-	Id        string               `json:"id"`
-	Latitude  float32              `json:"latitude"`
-	Longitude float32              `json:"longitude"`
-	Name      string               `json:"name"`
-	Score     *float32             `json:"score,omitempty"`
-	Stations  []StationPreliminary `json:"stations"`
-}
-
 // Удобсва.
 type Amenity struct {
 	Form       *int   `json:"form,omitempty"`
@@ -127,12 +88,58 @@ type GoogleAuthCredentials struct {
 	IdToken     string `json:"id_token"`
 }
 
+// Список станций по адресу
+type LocationFull struct {
+	Access                       *int          `json:"access,omitempty"`
+	AccessRestriction            *string       `json:"access_restriction,omitempty"`
+	AccessRestrictionDescription *string       `json:"access_restriction_description,omitempty"`
+	Address                      string        `json:"address"`
+	Amenities                    *[]Amenity    `json:"amenities,omitempty"`
+	ComingSoon                   *bool         `json:"coming_soon,omitempty"`
+	Cost                         *bool         `json:"cost,omitempty"`
+	CostDescription              *string       `json:"cost_description,omitempty"`
+	Description                  *string       `json:"description,omitempty"`
+	Hours                        *string       `json:"hours,omitempty"`
+	IconType                     *string       `json:"icon_type,omitempty"`
+	Id                           string        `json:"id"`
+	Latitude                     float32       `json:"latitude"`
+	Longitude                    float32       `json:"longitude"`
+	Name                         string        `json:"name"`
+	Open247                      *bool         `json:"open247,omitempty"`
+	PhoneNumber                  *string       `json:"phone_number,omitempty"`
+	Photos                       *[]Photo      `json:"photos,omitempty"`
+	Reviews                      *[]Review     `json:"reviews,omitempty"`
+	Score                        *float32      `json:"score,omitempty"`
+	Stations                     []StationFull `json:"stations"`
+}
+
+// Список станций по адресу
+type LocationPreliminary struct {
+	Access    int                  `json:"access"`
+	Address   string               `json:"address"`
+	Icon      *string              `json:"icon,omitempty"`
+	IconType  *string              `json:"icon_type,omitempty"`
+	Id        string               `json:"id"`
+	Latitude  float32              `json:"latitude"`
+	Longitude float32              `json:"longitude"`
+	Name      string               `json:"name"`
+	Score     *float32             `json:"score,omitempty"`
+	Stations  []StationPreliminary `json:"stations"`
+}
+
+// LocationsOnMap defines model for LocationsOnMap.
+type LocationsOnMap struct {
+	// Результат запроса.
+	Locations []LocationPreliminary `json:"locations"`
+}
+
 // Сущность разъема.
-type OutletPreliminary struct {
+type Outlet struct {
 	Connector int      `json:"connector"`
 	Id        string   `json:"id"`
 	Kilowatts *float32 `json:"kilowatts"`
 	Power     int      `json:"power"`
+	Price     *float32 `json:"price"`
 }
 
 // Photo defines model for Photo.
@@ -142,12 +149,6 @@ type Photo struct {
 	Id        string    `json:"id"`
 	Url       string    `json:"url"`
 	UserId    string    `json:"user_id"`
-}
-
-// ResponseLocations defines model for ResponseLocations.
-type ResponseLocations struct {
-	// Результат запроса.
-	Locations []AddressStationsPreliminary `json:"locations"`
 }
 
 // Отзыв о локации.
@@ -181,21 +182,21 @@ type StationFull struct {
 	Available *int `json:"available,omitempty"`
 
 	// Сущность чекина.
-	Checkin         *CheckinStation     `json:"checkin,omitempty"`
-	Cost            *int                `json:"cost,omitempty"`
-	CostDescription *string             `json:"cost_description,omitempty"`
-	Hours           *string             `json:"hours,omitempty"`
-	Id              string              `json:"id"`
-	Kilowatts       *float32            `json:"kilowatts,omitempty"`
-	Manufacturer    *string             `json:"manufacturer,omitempty"`
-	Name            *string             `json:"name,omitempty"`
-	Outlets         []OutletPreliminary `json:"outlets"`
+	Checkin         *CheckinStation `json:"checkin,omitempty"`
+	Cost            *int            `json:"cost,omitempty"`
+	CostDescription *string         `json:"cost_description,omitempty"`
+	Hours           *string         `json:"hours,omitempty"`
+	Id              string          `json:"id"`
+	Kilowatts       *float32        `json:"kilowatts,omitempty"`
+	Manufacturer    *string         `json:"manufacturer,omitempty"`
+	Name            *string         `json:"name,omitempty"`
+	Outlets         []Outlet        `json:"outlets"`
 }
 
 // Сущность станции.
 type StationPreliminary struct {
-	Id      string              `json:"id"`
-	Outlets []OutletPreliminary `json:"outlets"`
+	Id      string   `json:"id"`
+	Outlets []Outlet `json:"outlets"`
 }
 
 // Информация пользователя.
@@ -252,10 +253,10 @@ type GetLocationsParams struct {
 }
 
 // CreateFullLocationJSONBody defines parameters for CreateFullLocation.
-type CreateFullLocationJSONBody = AddressStationsFull
+type CreateFullLocationJSONBody = LocationFull
 
 // UpdateLocationJSONBody defines parameters for UpdateLocation.
-type UpdateLocationJSONBody = AddressStationsFull
+type UpdateLocationJSONBody = LocationFull
 
 // UpdateLocationParams defines parameters for UpdateLocation.
 type UpdateLocationParams struct {

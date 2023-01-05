@@ -7,7 +7,7 @@ type MyECarsConnector struct {
 	Power   interface{} `json:"power"`
 	Type    interface{} `json:"type"`
 	State   interface{} `json:"state"`
-	Coast   interface{} `json:"coast"`
+	Cost    interface{} `json:"coast"`
 }
 
 type MyECarsStation struct {

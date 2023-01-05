@@ -37,6 +37,7 @@ func (o *outletStorage) CreateOutlet(ctx context.Context, outlet outletDomain.Ou
 			"connector",
 			"kilowatts",
 			"power",
+			"price",
 			"created_at",
 		).
 		Values(
@@ -45,6 +46,7 @@ func (o *outletStorage) CreateOutlet(ctx context.Context, outlet outletDomain.Ou
 			outlet.GetConnector(),
 			outlet.GetKilowatts(),
 			outlet.GetPower(),
+			outlet.GetPrice(),
 			outlet.GetCreatedAt(),
 		).
 		PlaceholderFormat(squirrel.Dollar)
@@ -64,6 +66,7 @@ func (o *outletStorage) GetOutletsByStationID(ctx context.Context, stationID sta
 		"connector",
 		"kilowatts",
 		"power",
+		"price",
 	).
 		From(tableOutlets).
 		Where(squirrel.Eq{"station_id": stationID.String()}).
@@ -88,6 +91,7 @@ func (o *outletStorage) GetOutletByID(ctx context.Context, outletId outletDomain
 		"connector",
 		"kilowatts",
 		"power",
+		"price",
 	).
 		From(tableOutlets).
 		Where(squirrel.Eq{"id": outletId.String()}).
