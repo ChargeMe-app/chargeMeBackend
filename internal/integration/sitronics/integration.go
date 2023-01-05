@@ -12,8 +12,8 @@ import (
 )
 
 type Integration interface {
-	GetAllStations(_ context.Context) (SitronicsMapInfo, error)
-	GetStationByName(_ context.Context, stationName string) (SitronicsStationInfo, error)
+	GetAllStations(context.Context) (SitronicsMapInfo, error)
+	GetStationByName(context.Context, string) (SitronicsStationInfo, error)
 }
 
 type sitronicsIntegration struct {

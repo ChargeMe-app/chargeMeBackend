@@ -14,10 +14,16 @@ type Config struct {
 	Postgres      Database      `yaml:"DB"`
 	YandexStorage YandexStorage `yaml:"YandexStorage"`
 	Sitronics     Sitronics     `yaml:"Sitronics"`
+	MyECars       MyECars       `yaml:"MyECars"`
 }
 
 type Sitronics struct {
 	BaseUrl string `yaml:"baseUrl"`
+}
+
+type MyECars struct {
+	BaseUrl string `yaml:"baseUrl"`
+	Key     string `json:"key"`
 }
 
 type Database struct {
