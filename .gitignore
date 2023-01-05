@@ -1,9 +1,6 @@
 ./stationData.json
 docker-compose.yml
 cmd/chargeMe/config.yaml
-cmd/chargeMe/158.160.11.212.key
-cmd/chargeMe/158.160.11.212.crt
-cmd/chargeMe/158.160.11.212.csr
 .idea
 !.vscode/launch.json
 .DS_Store
