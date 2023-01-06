@@ -18,6 +18,7 @@ type Outlet struct {
 	connectorType int
 	kilowatts     *float32
 	power         int
+	price         *float32
 	domain.Model
 }
 
@@ -82,4 +83,12 @@ func (o *Outlet) SetKilowatts(kilowatts *float32) {
 
 func (o *Outlet) GetPower() int {
 	return o.power
+}
+
+func (o *Outlet) GetPrice() *float32 {
+	return o.price
+}
+
+func (o *Outlet) SetPrice(price *float32) {
+	o.price = price
 }

@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/poorfrombabylon/chargeMeBackend/internal/integration"
+
 	_ "github.com/lib/pq"
 
 	"github.com/go-chi/chi/v5"
@@ -54,7 +56,9 @@ func main() {
 
 	storageRegistry := storage.NewStorageRegistry(libDBWrapper)
 
-	serviceRegistry := service.NewServiceRegistry(storageRegistry)
+	integrationRegistry := integration.NewIntegrationRegistry(cfg)
+
+	serviceRegistry := service.NewServiceRegistry(storageRegistry, integrationRegistry)
 
 	apiServer := api.NewApiServer(serviceRegistry)
 

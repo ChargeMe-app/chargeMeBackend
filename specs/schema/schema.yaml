@@ -61,7 +61,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseLocations'
+                $ref: '#/components/schemas/LocationsOnMap'
         '500':
           description: internal server error
           content:
@@ -81,14 +81,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddressStationsFull'
+              $ref: '#/components/schemas/LocationFull'
       responses:
         '200':
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseLocations'
+                $ref: '#/components/schemas/LocationsOnMap'
         '500':
           description: internal server error
           content:
@@ -112,7 +112,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddressStationsFull'
+              $ref: '#/components/schemas/LocationFull'
       responses:
         '200':
           description: Success
@@ -147,7 +147,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddressStationsFull'
+                $ref: '#/components/schemas/LocationFull'
 
   /v1/review:
     post:
@@ -317,7 +317,7 @@ components:
         access_token:
           type: string
 
-    ResponseLocations:
+    LocationsOnMap:
       type: object
       required:
         - locations
@@ -326,9 +326,9 @@ components:
           type: array
           description: Результат запроса.
           items:
-            $ref: '#/components/schemas/AddressStationsPreliminary'
+            $ref: '#/components/schemas/LocationPreliminary'
 
-    AddressStationsPreliminary:
+    LocationPreliminary:
       description: Список станций по адресу
       type: object
       required:
@@ -458,9 +458,9 @@ components:
         outlets:
           type: array
           items:
-            $ref: '#/components/schemas/OutletPreliminary'
+            $ref: '#/components/schemas/Outlet'
 
-    OutletPreliminary:
+    Outlet:
       description: Сущность разъема.
       type: object
       required:
@@ -477,6 +477,9 @@ components:
           nullable: true
         power:
           type: integer
+        price:
+          type: number
+          nullable: true
 
     LocationWithFullStation:
       type: object
@@ -486,7 +489,7 @@ components:
         - amenities
       properties:
         location:
-          $ref: '#/components/schemas/AddressStationsFull'
+          $ref: '#/components/schemas/LocationFull'
         reviews:
           type: array
           description: Отзывы о локации
@@ -498,7 +501,7 @@ components:
           items:
             $ref: '#/components/schemas/Amenity'
 
-    AddressStationsFull:
+    LocationFull:
       description: Список станций по адресу
       type: object
       required:
@@ -591,7 +594,7 @@ components:
         outlets:
           type: array
           items:
-            $ref: "#/components/schemas/OutletPreliminary"
+            $ref: "#/components/schemas/Outlet"
         available:
           type: integer
         cost:

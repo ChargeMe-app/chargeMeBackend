@@ -5,6 +5,7 @@ CREATE TABLE outlets
     connector  INTEGER,
     kilowatts  FLOAT,
     power      INTEGER,
+    price      FLOAT,
     created_at TIMESTAMP(0) NOT NULL
 );
 

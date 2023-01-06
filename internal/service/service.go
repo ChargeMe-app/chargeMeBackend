@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/poorfrombabylon/chargeMeBackend/internal/integration"
 	amenityService "github.com/poorfrombabylon/chargeMeBackend/internal/service/amenity"
 	checkinService "github.com/poorfrombabylon/chargeMeBackend/internal/service/checkin"
 	outletService "github.com/poorfrombabylon/chargeMeBackend/internal/service/outlet"
@@ -23,7 +24,7 @@ type Services struct {
 	User    userService.UserService
 }
 
-func NewServiceRegistry(storages *storage.Storages) *Services {
+func NewServiceRegistry(storages *storage.Storages, integrations integration.Integration) *Services {
 	place := placeService.NewPlaceService(storages.PlaceStorage, storages.ReviewStorage)
 	station := stationService.NewStationService(storages.StationStorage, storages.OutletStorage)
 	outlet := outletService.NewOutletService(storages.OutletStorage)
