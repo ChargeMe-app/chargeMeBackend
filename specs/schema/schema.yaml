@@ -534,10 +534,6 @@ components:
           type: number
         description:
           type: string
-        access_restriction:
-          type: string
-        access_restriction_description:
-          type: string
         cost:
           type: boolean
         cost_description:

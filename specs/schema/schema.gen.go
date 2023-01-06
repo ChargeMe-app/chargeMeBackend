@@ -90,27 +90,25 @@ type GoogleAuthCredentials struct {
 
 // Список станций по адресу
 type LocationFull struct {
-	Access                       *int          `json:"access,omitempty"`
-	AccessRestriction            *string       `json:"access_restriction,omitempty"`
-	AccessRestrictionDescription *string       `json:"access_restriction_description,omitempty"`
-	Address                      string        `json:"address"`
-	Amenities                    *[]Amenity    `json:"amenities,omitempty"`
-	ComingSoon                   *bool         `json:"coming_soon,omitempty"`
-	Cost                         *bool         `json:"cost,omitempty"`
-	CostDescription              *string       `json:"cost_description,omitempty"`
-	Description                  *string       `json:"description,omitempty"`
-	Hours                        *string       `json:"hours,omitempty"`
-	IconType                     *string       `json:"icon_type,omitempty"`
-	Id                           string        `json:"id"`
-	Latitude                     float32       `json:"latitude"`
-	Longitude                    float32       `json:"longitude"`
-	Name                         string        `json:"name"`
-	Open247                      *bool         `json:"open247,omitempty"`
-	PhoneNumber                  *string       `json:"phone_number,omitempty"`
-	Photos                       *[]Photo      `json:"photos,omitempty"`
-	Reviews                      *[]Review     `json:"reviews,omitempty"`
-	Score                        *float32      `json:"score,omitempty"`
-	Stations                     []StationFull `json:"stations"`
+	Access          *int          `json:"access,omitempty"`
+	Address         string        `json:"address"`
+	Amenities       *[]Amenity    `json:"amenities,omitempty"`
+	ComingSoon      *bool         `json:"coming_soon,omitempty"`
+	Cost            *bool         `json:"cost,omitempty"`
+	CostDescription *string       `json:"cost_description,omitempty"`
+	Description     *string       `json:"description,omitempty"`
+	Hours           *string       `json:"hours,omitempty"`
+	IconType        *string       `json:"icon_type,omitempty"`
+	Id              string        `json:"id"`
+	Latitude        float32       `json:"latitude"`
+	Longitude       float32       `json:"longitude"`
+	Name            string        `json:"name"`
+	Open247         *bool         `json:"open247,omitempty"`
+	PhoneNumber     *string       `json:"phone_number,omitempty"`
+	Photos          *[]Photo      `json:"photos,omitempty"`
+	Reviews         *[]Review     `json:"reviews,omitempty"`
+	Score           *float32      `json:"score,omitempty"`
+	Stations        []StationFull `json:"stations"`
 }
 
 // Список станций по адресу

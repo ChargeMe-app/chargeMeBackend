@@ -10,8 +10,6 @@ CREATE TABLE places
     description                    TEXT,
     phone_number                   TEXT,
     access                         INTEGER,
-    access_restriction             TEXT,
-    access_restriction_description TEXT,
     cost                           BOOL,
     cost_description               TEXT,
     hours                          TEXT,

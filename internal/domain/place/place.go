@@ -12,23 +12,21 @@ func (placeID PlaceID) String() string {
 }
 
 type Place struct {
-	placeID                      PlaceID
-	name                         string
-	score                        *float32
-	longitude                    float32
-	latitude                     float32
-	access                       *int
-	iconType                     *string
-	address                      string
-	description                  *string
-	accessRestriction            *string
-	accessRestrictionDescription *string
-	cost                         *bool
-	costDescription              *string
-	hours                        *string
-	open247                      *bool
-	isComingSoon                 *bool
-	phoneNumber                  *string
+	placeID         PlaceID
+	name            string
+	score           *float32
+	longitude       float32
+	latitude        float32
+	access          *int
+	iconType        *string
+	address         string
+	description     *string
+	cost            *bool
+	costDescription *string
+	hours           *string
+	open247         *bool
+	isComingSoon    *bool
+	phoneNumber     *string
 	domain.Model
 }
 
@@ -41,8 +39,6 @@ func NewPlace(
 	iconType *string,
 	address string,
 	description *string,
-	accessRestriction *string,
-	accessRestrictionDescription *string,
 	cost *bool,
 	costDescription *string,
 	hours *string,
@@ -52,24 +48,22 @@ func NewPlace(
 	model domain.Model,
 ) Place {
 	return Place{
-		placeID:                      PlaceID(uuid.New().String()),
-		name:                         name,
-		longitude:                    longitude,
-		latitude:                     latitude,
-		score:                        score,
-		access:                       access,
-		iconType:                     iconType,
-		address:                      address,
-		description:                  description,
-		accessRestriction:            accessRestriction,
-		accessRestrictionDescription: accessRestrictionDescription,
-		cost:                         cost,
-		costDescription:              costDescription,
-		hours:                        hours,
-		open247:                      open247,
-		isComingSoon:                 isComingSoon,
-		phoneNumber:                  phoneNumber,
-		Model:                        model,
+		placeID:         PlaceID(uuid.New().String()),
+		name:            name,
+		longitude:       longitude,
+		latitude:        latitude,
+		score:           score,
+		access:          access,
+		iconType:        iconType,
+		address:         address,
+		description:     description,
+		cost:            cost,
+		costDescription: costDescription,
+		hours:           hours,
+		open247:         open247,
+		isComingSoon:    isComingSoon,
+		phoneNumber:     phoneNumber,
+		Model:           model,
 	}
 }
 
@@ -83,8 +77,6 @@ func NewPlaceWithID(
 	iconType *string,
 	address string,
 	description *string,
-	accessRestriction *string,
-	accessRestrictionDescription *string,
 	cost *bool,
 	costDescription *string,
 	hours *string,
@@ -94,24 +86,22 @@ func NewPlaceWithID(
 	model domain.Model,
 ) Place {
 	return Place{
-		placeID:                      placeID,
-		name:                         name,
-		longitude:                    longitude,
-		latitude:                     latitude,
-		score:                        score,
-		access:                       access,
-		iconType:                     iconType,
-		address:                      address,
-		description:                  description,
-		accessRestriction:            accessRestriction,
-		accessRestrictionDescription: accessRestrictionDescription,
-		cost:                         cost,
-		costDescription:              costDescription,
-		hours:                        hours,
-		open247:                      open247,
-		isComingSoon:                 isComingSoon,
-		phoneNumber:                  phoneNumber,
-		Model:                        model,
+		placeID:         placeID,
+		name:            name,
+		longitude:       longitude,
+		latitude:        latitude,
+		score:           score,
+		access:          access,
+		iconType:        iconType,
+		address:         address,
+		description:     description,
+		cost:            cost,
+		costDescription: costDescription,
+		hours:           hours,
+		open247:         open247,
+		isComingSoon:    isComingSoon,
+		phoneNumber:     phoneNumber,
+		Model:           model,
 	}
 }
 
@@ -159,28 +149,12 @@ func (p *Place) GetPlaceAddress() string {
 	return p.address
 }
 
-func (p *Place) SetAccessRestriction(accessRestriction *string) {
-	p.accessRestriction = accessRestriction
-}
-
-func (p *Place) GetAccessRestriction() *string {
-	return p.accessRestriction
-}
-
 func (p *Place) SetCost(cost *bool) {
 	p.cost = cost
 }
 
 func (p *Place) GetCost() *bool {
 	return p.cost
-}
-
-func (p *Place) SetAccessRestrictionDescription(accessRestrictionDescription *string) {
-	p.accessRestrictionDescription = accessRestrictionDescription
-}
-
-func (p *Place) GetAccessRestrictionDescription() *string {
-	return p.accessRestrictionDescription
 }
 
 func (p *Place) SetCostDescription(costDescription *string) {
