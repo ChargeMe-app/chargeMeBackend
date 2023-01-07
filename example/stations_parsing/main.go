@@ -40,7 +40,7 @@ type LocationDTOJson struct {
 	Latitude                     float32            `json:"latitude"`
 	Longitude                    float32            `json:"longitude"`
 	Score                        *float32           `json:"score,omitempty"`
-	IconType                     *string            `json:"icon_type,omitempty"`
+	IconType                     string             `json:"icon_type,omitempty"`
 	Description                  *string            `json:"description,omitempty"`
 	AccessRestriction            *string            `json:"access_restriction,omitempty"`
 	AccessRestrictionDescription *string            `json:"access_restriction_description,omitempty"`
@@ -183,8 +183,6 @@ func NewLocationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistr
 		dto.IconType,
 		dto.Address,
 		dto.Description,
-		dto.AccessRestriction,
-		dto.AccessRestrictionDescription,
 		dto.Cost,
 		dto.CostDescription,
 		dto.Hours,

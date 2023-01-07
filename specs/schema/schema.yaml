@@ -339,6 +339,7 @@ components:
         - longitude
         - name
         - stations
+        - icon_type
       properties:
         access:
           type: integer
@@ -511,6 +512,7 @@ components:
         - longitude
         - name
         - stations
+        - icon_type
       properties:
         photos:
           type: array

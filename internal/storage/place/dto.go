@@ -14,7 +14,7 @@ type PlaceDTO struct {
 	Latitude        float32   `db:"latitude"`
 	Address         string    `db:"address"`
 	Access          *int      `db:"access"`
-	IconType        *string   `db:"icon_type"`
+	IconType        string    `db:"icon_type"`
 	Description     *string   `db:"description"`
 	Cost            *bool     `db:"cost"`
 	CostDescription *string   `db:"cost_description"`
