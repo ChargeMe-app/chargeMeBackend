@@ -98,7 +98,7 @@ type LocationFull struct {
 	CostDescription *string       `json:"cost_description,omitempty"`
 	Description     *string       `json:"description,omitempty"`
 	Hours           *string       `json:"hours,omitempty"`
-	IconType        *string       `json:"icon_type,omitempty"`
+	IconType        string        `json:"icon_type"`
 	Id              string        `json:"id"`
 	Latitude        float32       `json:"latitude"`
 	Longitude       float32       `json:"longitude"`
@@ -116,7 +116,7 @@ type LocationPreliminary struct {
 	Access    int                  `json:"access"`
 	Address   string               `json:"address"`
 	Icon      *string              `json:"icon,omitempty"`
-	IconType  *string              `json:"icon_type,omitempty"`
+	IconType  string               `json:"icon_type"`
 	Id        string               `json:"id"`
 	Latitude  float32              `json:"latitude"`
 	Longitude float32              `json:"longitude"`

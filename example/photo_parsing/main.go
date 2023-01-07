@@ -9,12 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/config"
-	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
-	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
-	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
-	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
-	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/storage"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
@@ -24,7 +19,6 @@ import (
 	"os/signal"
 	"strconv"
 	"syscall"
-	"time"
 )
 
 type LocationDTOJson struct {
@@ -170,143 +164,6 @@ func NewPhotosFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry 
 		)
 
 		err := storageRegistry.PhotoStorage.CreatePhoto(ctx, photo)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func NewLocationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry *storage.Storages) error {
-	_ = placeDomain.NewPlaceWithID(
-		placeDomain.PlaceID(strconv.Itoa(dto.PlaceID)),
-		dto.Name,
-		dto.Score,
-		dto.Longitude,
-		dto.Latitude,
-		&dto.Access,
-		dto.IconType,
-		dto.Address,
-		dto.Description,
-		dto.AccessRestriction,
-		dto.AccessRestrictionDescription,
-		dto.Cost,
-		dto.CostDescription,
-		dto.Hours,
-		dto.Open247,
-		dto.ComingSoon,
-		dto.PhoneNumber,
-		domain.NewModel(),
-	)
-
-	//err := storageRegistry.PlaceStorage.CreatePlace(ctx, place)
-	//if err != nil {
-	//	return err
-	//}
-
-	return nil
-}
-
-func NewStationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry *storage.Storages) error {
-	var err error
-
-	for _, stationDTO := range dto.Stations {
-		station := stationDomain.NewStationWithID(
-			stationDomain.StationID(strconv.Itoa(stationDTO.Id)),
-			placeDomain.PlaceID(strconv.Itoa(dto.PlaceID)),
-			stationDTO.Available,
-			stationDTO.Cost,
-			stationDTO.Name,
-			stationDTO.Manufacturer,
-			stationDTO.CostDescription,
-			stationDTO.Hours,
-			stationDTO.Kilowatts,
-			domain.NewModel(),
-		)
-
-		err = storageRegistry.StationStorage.CreateStation(ctx, station)
-		if err != nil {
-			return err
-		}
-
-		err = NewOutletsFromDTO(ctx, stationDTO, storageRegistry)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func NewOutletsFromDTO(ctx context.Context, stationDTO StationsDTOJson, storageRegistry *storage.Storages) error {
-	var err error
-
-	for _, outletDTO := range stationDTO.Outlets {
-		outlet := outletDomain.NewOutletWithID(
-			outletDomain.OutletID(strconv.Itoa(outletDTO.Id)),
-			stationDomain.StationID(strconv.Itoa(stationDTO.Id)),
-			outletDTO.ConnectorType,
-			outletDTO.Kilowatts,
-			outletDTO.Power,
-			domain.NewModel(),
-		)
-
-		err = storageRegistry.OutletStorage.CreateOutlet(ctx, outlet)
-		if err != nil {
-			return err
-		}
-
-	}
-
-	return nil
-}
-
-func NewReviewFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry *storage.Storages) error {
-	var err error
-
-	for _, reviewDTO := range dto.Reviews {
-
-		createdAt, _ := time.Parse("2006-01-02T15:04:05Z", reviewDTO.CreatedAT)
-
-		userID := userDomain.UserID(uuid.UUID{})
-
-		review := reviewDomain.NewReviewWithID(
-			reviewDomain.ReviewID(uuid.New().String()),
-			stationDomain.StationID(strconv.Itoa(reviewDTO.StationID)),
-			outletDomain.OutletID(strconv.Itoa(reviewDTO.OutletID)),
-			&userID,
-			reviewDTO.Comment,
-			reviewDTO.Rating,
-			reviewDTO.ConnectorType,
-			reviewDTO.Kilowatts,
-			reviewDTO.User.FirstName,
-			reviewDTO.VehicleName,
-			reviewDTO.VehicleType,
-			domain.NewModelFrom(createdAt, nil),
-		)
-
-		err = storageRegistry.ReviewStorage.CreateReview(ctx, review)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func NewAmenityFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry *storage.Storages) error {
-	var err error
-
-	for _, amenityDTO := range dto.Amenities {
-		amenity := amenityDomain.NewAmenityWithID(
-			amenityDomain.AmenityID(uuid.New().String()),
-			placeDomain.PlaceID(strconv.Itoa(amenityDTO.LocationID)),
-			amenityDTO.Form,
-			domain.NewModel(),
-		)
-
-		err = storageRegistry.AmenityStorage.CreateAmenity(ctx, amenity)
 		if err != nil {
 			return err
 		}
