@@ -196,7 +196,7 @@ func transformCheckin(checkin checkinDomain.Checkin) schema.CheckinStation {
 
 func transformLocationPreliminary(place placeDomain.Place, stations []schema.StationPreliminary) schema.LocationPreliminary {
 	return schema.LocationPreliminary{
-		Access:    *place.GetPlaceAccess(),
+		Access:    place.GetPlaceAccess(),
 		Address:   place.GetPlaceAddress(),
 		Id:        place.GetPlaceID().String(),
 		Latitude:  place.GetPlaceLatitude(),

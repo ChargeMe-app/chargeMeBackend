@@ -5,6 +5,11 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 )
 
+const (
+	Sitronics = "Sitronics"
+	MyECars   = "my.eCars"
+)
+
 type PlaceID string
 
 func (placeID PlaceID) String() string {
@@ -27,6 +32,7 @@ type Place struct {
 	open247         *bool
 	isComingSoon    *bool
 	phoneNumber     *string
+	companyName     *string
 	domain.Model
 }
 
@@ -203,4 +209,12 @@ func (p *Place) SetDescription(description *string) {
 
 func (p *Place) GetDescription() *string {
 	return p.description
+}
+
+func (p *Place) SetCompanyName(name *string) {
+	p.companyName = name
+}
+
+func (p *Place) GetCompanyName() *string {
+	return p.companyName
 }

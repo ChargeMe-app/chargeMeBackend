@@ -13,6 +13,8 @@ CREATE TABLE places
     cost              BOOL,
     cost_description  TEXT,
     hours             TEXT,
+    company_name      TEXT,
+    hide              BOOL DEFAULT FALSE,
     open247           BOOL DEFAULT TRUE,
     is_open_or_active BOOL DEFAULT TRUE,
     created_at        TIMESTAMP(0) NOT NULL

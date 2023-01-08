@@ -15,13 +15,13 @@ func (amenityID AmenityID) String() string {
 type Amenity struct {
 	id         AmenityID
 	locationID placeDomain.PlaceID
-	form       *int
+	form       int
 	domain.Model
 }
 
 func NewAmenity(
 	locationID placeDomain.PlaceID,
-	form *int,
+	form int,
 	model domain.Model,
 ) Amenity {
 	return Amenity{
@@ -35,7 +35,7 @@ func NewAmenity(
 func NewAmenityWithID(
 	id AmenityID,
 	locationID placeDomain.PlaceID,
-	form *int,
+	form int,
 	model domain.Model,
 ) Amenity {
 	return Amenity{
@@ -54,10 +54,6 @@ func (a *Amenity) GetLocationID() placeDomain.PlaceID {
 	return a.locationID
 }
 
-func (a *Amenity) SetAmenityForm(form *int) {
-	a.form = form
-}
-
-func (a *Amenity) GetAmenityForm() *int {
+func (a *Amenity) GetAmenityForm() int {
 	return a.form
 }

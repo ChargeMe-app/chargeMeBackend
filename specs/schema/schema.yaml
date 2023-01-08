@@ -332,7 +332,6 @@ components:
       description: Список станций по адресу
       type: object
       required:
-        - access
         - address
         - id
         - latitude
@@ -679,6 +678,7 @@ components:
       required:
         - id
         - location_id
+        - form
       properties:
         id:
           type: string

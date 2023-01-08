@@ -22,6 +22,7 @@ type PlaceDTO struct {
 	Open247         *bool     `db:"open247"`
 	IsOpenOrActive  *bool     `db:"is_open_or_active"`
 	PhoneNumber     *string   `db:"phone_number"`
+	CompanyName     *string   `db:"company_name"`
 	CreatedAt       time.Time `db:"created_at"`
 }
 
@@ -46,6 +47,8 @@ func NewPlaceFromDTO(dto PlaceDTO) placeDomain.Place {
 		dto.PhoneNumber,
 		model,
 	)
+
+	p.SetCompanyName(dto.CompanyName)
 
 	return p
 }

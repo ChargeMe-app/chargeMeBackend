@@ -14,7 +14,7 @@ import (
 
 // Удобсва.
 type Amenity struct {
-	Form       *int   `json:"form,omitempty"`
+	Form       int    `json:"form"`
 	Id         string `json:"id"`
 	LocationId string `json:"location_id"`
 }
@@ -113,7 +113,7 @@ type LocationFull struct {
 
 // Список станций по адресу
 type LocationPreliminary struct {
-	Access    int                  `json:"access"`
+	Access    *int                 `json:"access,omitempty"`
 	Address   string               `json:"address"`
 	Icon      *string              `json:"icon,omitempty"`
 	IconType  string               `json:"icon_type"`
