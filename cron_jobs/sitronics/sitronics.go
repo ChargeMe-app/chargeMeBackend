@@ -4,6 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
+	"os/signal"
+	"strconv"
+	"syscall"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/config"
@@ -15,10 +20,6 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/internal/integration/sitronics"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/storage"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
-	"log"
-	"os/signal"
-	"strconv"
-	"syscall"
 )
 
 func main() {
@@ -100,6 +101,12 @@ func startJob(
 			costDescription = &description
 		}
 
+		iconType := "G"
+		for i, outlet := range s.Connectors {
+			connectorType := convertConnectorType(outlet.Type)
+
+		}
+
 		place := placeDomain.NewPlaceWithID(
 			placeDomain.PlaceID(s.Id),
 			s.Name,
@@ -107,7 +114,7 @@ func startJob(
 			s.Longitude,
 			s.Latitude,
 			nil,
-			"G",
+			iconType,
 			s.Address,
 			&s.PublicDescription,
 			&cost,
