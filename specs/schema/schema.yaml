@@ -102,12 +102,6 @@ paths:
       operationId: updateLocation
       summary: Обновление станции по идентификатору.
       description: Обновление станции по идентификатору.
-      parameters:
-        - name: locationId
-          required: true
-          in: query
-          schema:
-            type: string
       requestBody:
         content:
           application/json:
@@ -424,6 +418,7 @@ components:
         - rating
         - finishes_at
         - user_name
+        - is_auto
       properties:
         user_id:
           type: string
@@ -441,6 +436,8 @@ components:
           type: number
         rating:
           type: integer
+        is_auto:
+          type: boolean
         finishes_at:
           type: string
           format: date-time
@@ -547,6 +544,8 @@ components:
           type: boolean
         phone_number:
           type: string
+        company_name:
+          type: string
         stations:
           type: array
           items:
@@ -606,8 +605,10 @@ components:
           type: string
         kilowatts:
           type: number
-        checkin:
-          $ref: '#/components/schemas/CheckinStation'
+        checkins:
+          type: array
+          items:
+            $ref: '#/components/schemas/CheckinStation'
 
     Review:
       description: Отзыв о локации.

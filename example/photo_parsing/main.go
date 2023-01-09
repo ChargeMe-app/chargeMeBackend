@@ -124,14 +124,15 @@ func main() {
 
 	err = startJob(ctx, storageRegistry)
 	if err != nil {
-		log.Fatal("failure:", err.Error())
+		//log.Fatal("failure:", err.Error())
+		fmt.Println(err.Error())
 	}
 }
 
 func startJob(ctx context.Context, storageRegistry *storage.Storages) error {
 	var dto []LocationDTOJson
 
-	jsonFile, err := os.Open("/Users/almazkhayrullin/Desktop/full.json")
+	jsonFile, err := os.Open("/Users/almazkhayrullin/Desktop/jsons/full.json")
 	if err != nil {
 		log.Fatal("failed to parse json:", err.Error())
 	}
@@ -163,8 +164,14 @@ func NewPhotosFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry 
 			p.Caption,
 		)
 
-		err := storageRegistry.PhotoStorage.CreatePhoto(ctx, photo)
+		_, err := storageRegistry.PlaceStorage.GetFullPlaceByID(ctx, placeDomain.PlaceID(strconv.Itoa(dto.PlaceID)))
 		if err != nil {
+			continue
+		}
+
+		err = storageRegistry.PhotoStorage.CreatePhoto(ctx, photo)
+		if err != nil {
+			fmt.Println(dto.PlaceID)
 			return err
 		}
 	}

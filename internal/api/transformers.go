@@ -190,8 +190,19 @@ func transformCheckin(checkin checkinDomain.Checkin) schema.CheckinStation {
 		Comment:     checkin.GetComment(),
 		Kilowatts:   checkin.GetKilowatts(),
 		Rating:      checkin.GetRating(),
+		IsAuto:      checkin.IsAutoCheckin(),
 		FinishesAt:  checkin.GetFinishedAt(),
 	}
+}
+
+func transformCheckinList(checkins []checkinDomain.Checkin) []schema.CheckinStation {
+	result := make([]schema.CheckinStation, 0, len(checkins))
+
+	for _, c := range checkins {
+		result = append(result, transformCheckin(c))
+	}
+
+	return result
 }
 
 func transformLocationPreliminary(place placeDomain.Place, stations []schema.StationPreliminary) schema.LocationPreliminary {

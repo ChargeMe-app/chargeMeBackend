@@ -177,7 +177,7 @@ func convertMyeCarsStation(station my_ecars.MyECarsStation) stationDomain.Statio
 		placeDomain.PlaceID(station.Id),
 		nil,
 		nil,
-		nil,
+		&station.Name,
 		nil,
 		nil,
 		nil,

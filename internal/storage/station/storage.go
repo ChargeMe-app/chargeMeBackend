@@ -77,6 +77,7 @@ func (s *stationStorage) GetStationsByPlaceID(
 	query := squirrel.Select(
 		"id",
 		"location_id",
+		"name",
 	).
 		From(TableStations).
 		Where(squirrel.Eq{"location_id": placeID.String()}).

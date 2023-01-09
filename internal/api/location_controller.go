@@ -119,7 +119,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 
 		stationResponse := transformFullStation(station, outletResponse)
 
-		checkins, err := api.checkinService.GetValidCheckinForStation(ctx, station.GetStationID())
+		checkins, err := api.checkinService.GetValidCheckinForStation(ctx, station, place.GetCompanyName())
 		if err != nil {
 			log.Println(err.Error())
 			w.Write([]byte(err.Error()))
@@ -127,8 +127,8 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		}
 
 		if checkins != nil && len(checkins) != 0 {
-			c := transformCheckin(checkins[0])
-			stationResponse.Checkin = &c
+			c := transformCheckinList(checkins)
+			stationResponse.Checkins = &c
 		}
 
 		stationsResponse = append(stationsResponse, stationResponse)
@@ -226,7 +226,7 @@ func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request)
 
 // обновление локации со станциями
 // (PUT /v1/locations)
-func (api *apiServer) UpdateLocation(w http.ResponseWriter, r *http.Request, params schema.UpdateLocationParams) {
+func (api *apiServer) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	log.Println("api.UpdateLocation")
 	ctx := r.Context()
 	var req chargeMeV1.CreateFullLocationJSONBody
@@ -238,7 +238,7 @@ func (api *apiServer) UpdateLocation(w http.ResponseWriter, r *http.Request, par
 		return
 	}
 
-	locationId := placeDomain.PlaceID(params.LocationId)
+	locationId := placeDomain.PlaceID(req.Id)
 	location := convertLocationWithID(req, locationId)
 
 	err = api.placeService.UpdatePlace(ctx, location)

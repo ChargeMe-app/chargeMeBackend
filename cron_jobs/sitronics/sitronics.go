@@ -156,7 +156,7 @@ func convertSitronicsStation(station sitronics.SitronicsStation) stationDomain.S
 		placeDomain.PlaceID(station.Id),
 		nil,
 		nil,
-		nil,
+		&station.Name,
 		nil,
 		nil,
 		nil,
