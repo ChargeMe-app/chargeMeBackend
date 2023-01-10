@@ -477,6 +477,8 @@ components:
         price:
           type: number
           nullable: true
+        price_unit:
+          type: string
 
     LocationWithFullStation:
       type: object

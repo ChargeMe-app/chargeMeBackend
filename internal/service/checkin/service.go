@@ -183,7 +183,7 @@ func (s *service) GetValidCheckinForStation(
 		}
 
 		for _, c := range stationsInfo.Connectors {
-			isExist := s.isCheckExist(baseCheckins, stationsInfo.StationID, c.OutletID)
+			isExist := s.isCheckinExist(baseCheckins, stationsInfo.StationID, c.OutletID)
 
 			if c.Available == 1 {
 				if isExist {
@@ -268,7 +268,7 @@ func (s *service) getMyECarsStationAvailability(
 	return result, nil
 }
 
-func (s *service) isCheckExist(
+func (s *service) isCheckinExist(
 	checkins []checkinDomain.Checkin,
 	stationID stationDomain.StationID,
 	outletID outletDomain.OutletID,

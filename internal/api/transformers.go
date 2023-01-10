@@ -144,6 +144,7 @@ func transformOutlet(outlet outletDomain.Outlet) schema.Outlet {
 		Id:        outlet.GetOutletID().String(),
 		Power:     outlet.GetPower(),
 		Price:     outlet.GetPrice(),
+		PriceUnit: outlet.GetPriceUnit(),
 	}
 }
 

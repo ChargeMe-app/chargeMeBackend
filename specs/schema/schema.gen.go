@@ -140,6 +140,7 @@ type Outlet struct {
 	Kilowatts *float32 `json:"kilowatts"`
 	Power     int      `json:"power"`
 	Price     *float32 `json:"price"`
+	PriceUnit *string  `json:"price_unit,omitempty"`
 }
 
 // Photo defines model for Photo.
