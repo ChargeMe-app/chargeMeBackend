@@ -36,6 +36,9 @@ func NewServiceRegistry(storages *storage.Storages, integrations integration.Int
 		storages.OutletStorage,
 		storages.StationStorage,
 		storages.PlaceStorage,
+		storages.UserStorage,
+		integrations.MyECarsIntegration,
+		integrations.SitronicsIntegration,
 	)
 	amenity := amenityService.NewAmenityService(storages.AmenityStorage)
 	user := userService.NewUserService(storages.UserStorage)

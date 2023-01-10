@@ -14,6 +14,7 @@ type OutletDTO struct {
 	Kilowatts *float32  `db:"kilowatts"`
 	Power     int       `db:"power"`
 	Price     *float32  `db:"price"`
+	PriceUnit *string   `db:"price_unit"`
 	CreatedAt time.Time `db:"created_at"`
 }
 

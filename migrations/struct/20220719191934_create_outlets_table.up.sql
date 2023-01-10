@@ -6,6 +6,8 @@ CREATE TABLE outlets
     kilowatts  FLOAT,
     power      INTEGER,
     price      FLOAT,
+    price_unit TEXT,
+    hide       BOOL DEFAULT FALSE,
     created_at TIMESTAMP(0) NOT NULL
 );
 

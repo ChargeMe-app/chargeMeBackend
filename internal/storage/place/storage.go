@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	tablePlaces = "places"
+	TablePlaces = "places"
 )
 
 type Storage interface {
@@ -20,6 +20,8 @@ type Storage interface {
 	DeletePlaceByID(ctx context.Context, placeID placeDomain.PlaceID) error
 	UpdatePlace(context.Context, placeDomain.Place) error
 	GetAllPlaces(ctx context.Context) ([]placeDomain.Place, error)
+	HideCompanyPlaces(context.Context, string) error
+	CreateOrUnhidePlace(context.Context, placeDomain.Place) error
 }
 
 func NewPlaceStorage(db libdb.DB) Storage {
@@ -41,7 +43,7 @@ func (s *placeStorage) GetAllPlaces(ctx context.Context) ([]placeDomain.Place, e
 		"access",
 		"icon_type",
 	).
-		From(tablePlaces).
+		From(TablePlaces).
 		PlaceholderFormat(squirrel.Dollar)
 
 	var result []PlaceDTO
@@ -55,7 +57,7 @@ func (s *placeStorage) GetAllPlaces(ctx context.Context) ([]placeDomain.Place, e
 }
 
 func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place) error {
-	query := squirrel.Insert(tablePlaces).
+	query := squirrel.Insert(TablePlaces).
 		Columns(
 			"id",
 			"name",
@@ -72,6 +74,7 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 			"open247",
 			"is_open_or_active",
 			"phone_number",
+			"company_name",
 			"created_at",
 		).
 		Values(
@@ -90,6 +93,7 @@ func (s *placeStorage) CreatePlace(ctx context.Context, place placeDomain.Place)
 			place.GetOpen247(),
 			place.IsComingSoon(),
 			place.GetPhoneNumber(),
+			place.GetCompanyName(),
 			place.GetCreatedAt(),
 		).
 		PlaceholderFormat(squirrel.Dollar)
@@ -106,7 +110,7 @@ func (s *placeStorage) UpdatePlace(
 	ctx context.Context,
 	place placeDomain.Place,
 ) error {
-	query := squirrel.Update(tablePlaces).
+	query := squirrel.Update(TablePlaces).
 		Set("name", place.GetPlaceName()).
 		Set("description", place.GetDescription()).
 		Set("phone_number", place.GetPhoneNumber()).
@@ -147,9 +151,10 @@ func (s *placeStorage) GetPlacesByCoordinates(
 		"access",
 		"icon_type",
 	).
-		From(tablePlaces).
+		From(TablePlaces).
 		Where(squirrel.Expr("longitude > ? AND longitude < ?", minLongitude, maxLongitude)).
 		Where(squirrel.Expr("latitude > ? AND latitude < ?", minLatitude, maxLatitude)).
+		Where(squirrel.Eq{"hide": false}).
 		PlaceholderFormat(squirrel.Dollar)
 
 	var result []PlaceDTO
@@ -179,10 +184,12 @@ func (s *placeStorage) GetFullPlaceByID(ctx context.Context, placeID placeDomain
 		"open247",
 		"is_open_or_active",
 		"phone_number",
+		"company_name",
 		"created_at",
 	).
-		From(tablePlaces).
+		From(TablePlaces).
 		Where(squirrel.Eq{"id": placeID.String()}).
+		Where(squirrel.Eq{"hide": false}).
 		PlaceholderFormat(squirrel.Dollar)
 
 	var result PlaceDTO
@@ -196,7 +203,7 @@ func (s *placeStorage) GetFullPlaceByID(ctx context.Context, placeID placeDomain
 }
 
 func (s *placeStorage) UpdatePlaceScoreByID(ctx context.Context, placeID placeDomain.PlaceID, rating float32) error {
-	query := squirrel.Update(tablePlaces).
+	query := squirrel.Update(TablePlaces).
 		Set("score", rating).
 		Where(squirrel.Eq{"id": placeID.String()}).
 		PlaceholderFormat(squirrel.Dollar)
@@ -210,11 +217,76 @@ func (s *placeStorage) UpdatePlaceScoreByID(ctx context.Context, placeID placeDo
 }
 
 func (s *placeStorage) DeletePlaceByID(ctx context.Context, placeID placeDomain.PlaceID) error {
-	query := squirrel.Delete(tablePlaces).
+	query := squirrel.Delete(TablePlaces).
 		Where(squirrel.Eq{"id": placeID.String()}).
 		PlaceholderFormat(squirrel.Dollar)
 
 	err := s.db.Delete(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *placeStorage) HideCompanyPlaces(ctx context.Context, companyName string) error {
+	query := squirrel.Update(TablePlaces).
+		Set("hide", true).
+		Where(squirrel.Eq{"company_name": companyName}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := s.db.Update(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *placeStorage) CreateOrUnhidePlace(ctx context.Context, place placeDomain.Place) error {
+	query := squirrel.Insert(TablePlaces).
+		Columns(
+			"id",
+			"name",
+			"score",
+			"longitude",
+			"latitude",
+			"address",
+			"access",
+			"icon_type",
+			"description",
+			"cost",
+			"cost_description",
+			"hours",
+			"open247",
+			"is_open_or_active",
+			"phone_number",
+			"company_name",
+			"created_at",
+		).
+		Values(
+			place.GetPlaceID().String(),
+			place.GetPlaceName(),
+			place.GetPlaceScore(),
+			place.GetPlaceLongitude(),
+			place.GetPlaceLatitude(),
+			place.GetPlaceAddress(),
+			place.GetPlaceAccess(),
+			place.GetPlaceIconType(),
+			place.GetDescription(),
+			place.GetCost(),
+			place.GetCostDescription(),
+			place.GetHours(),
+			place.GetOpen247(),
+			place.IsComingSoon(),
+			place.GetPhoneNumber(),
+			place.GetCompanyName(),
+			place.GetCreatedAt(),
+		).
+		Suffix("ON CONFLICT ON CONSTRAINT places_pkey DO UPDATE SET hide = false").
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := s.db.Insert(ctx, query)
 	if err != nil {
 		return err
 	}

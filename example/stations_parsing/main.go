@@ -6,18 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
-	"github.com/poorfrombabylon/chargeMeBackend/internal/config"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
-	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
-	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
-	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 	userDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/user"
-	"github.com/poorfrombabylon/chargeMeBackend/internal/storage"
-	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 	"io/ioutil"
 	"log"
 	"os"
@@ -25,6 +17,19 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
+
+	"github.com/poorfrombabylon/chargeMeBackend/internal/config"
+	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
+
+	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
+
+	_ "github.com/lib/pq"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/storage"
+	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 )
 
 type LocationDTOJson struct {
@@ -35,7 +40,7 @@ type LocationDTOJson struct {
 	Latitude                     float32            `json:"latitude"`
 	Longitude                    float32            `json:"longitude"`
 	Score                        *float32           `json:"score,omitempty"`
-	IconType                     *string            `json:"icon_type,omitempty"`
+	IconType                     string             `json:"icon_type,omitempty"`
 	Description                  *string            `json:"description,omitempty"`
 	AccessRestriction            *string            `json:"access_restriction,omitempty"`
 	AccessRestrictionDescription *string            `json:"access_restriction_description,omitempty"`
@@ -48,7 +53,6 @@ type LocationDTOJson struct {
 	Stations                     []StationsDTOJson  `json:"stations"`
 	Reviews                      []ReviewDTOJson    `json:"reviews"`
 	Amenities                    []AmenitiesDTOJson `json:"amenities"`
-	Photos                       []PhotoDTOJson     `json:"photos"`
 }
 
 type StationsDTOJson struct {
@@ -91,11 +95,6 @@ type ReviewDTOJson struct {
 
 type UserDTOJSOn struct {
 	FirstName *string `json:"first_name"`
-}
-
-type PhotoDTOJson struct {
-	Caption *string `json:"caption"`
-	ID      int     `json:"id"`
 }
 
 func main() {
@@ -149,27 +148,22 @@ func startJob(ctx context.Context, storageRegistry *storage.Storages) error {
 	json.Unmarshal(byteValue, &dto)
 
 	for i := 0; i < len(dto); i++ {
-		err = NewPhotosFromDTO(ctx, dto[i], storageRegistry)
+		err = NewLocationFromDTO(ctx, dto[i], storageRegistry)
 		if err != nil {
 			return err
 		}
-	}
 
-	return nil
-}
+		err = NewStationFromDTO(ctx, dto[i], storageRegistry)
+		if err != nil {
+			return err
+		}
 
-func NewPhotosFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry *storage.Storages) error {
+		err = NewReviewFromDTO(ctx, dto[i], storageRegistry)
+		if err != nil {
+			return err
+		}
 
-	for _, p := range dto.Photos {
-		photo := placeDomain.NewPhoto(
-			placeDomain.PhotoID(strconv.Itoa(p.ID)),
-			userDomain.UserID(uuid.UUID{}),
-			placeDomain.PlaceID(strconv.Itoa(dto.PlaceID)),
-			strconv.Itoa(p.ID)+".jpg",
-			p.Caption,
-		)
-
-		err := storageRegistry.PhotoStorage.CreatePhoto(ctx, photo)
+		err = NewAmenityFromDTO(ctx, dto[i], storageRegistry)
 		if err != nil {
 			return err
 		}
@@ -179,7 +173,7 @@ func NewPhotosFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry 
 }
 
 func NewLocationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry *storage.Storages) error {
-	_ = placeDomain.NewPlaceWithID(
+	place := placeDomain.NewPlaceWithID(
 		placeDomain.PlaceID(strconv.Itoa(dto.PlaceID)),
 		dto.Name,
 		dto.Score,
@@ -189,8 +183,6 @@ func NewLocationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistr
 		dto.IconType,
 		dto.Address,
 		dto.Description,
-		dto.AccessRestriction,
-		dto.AccessRestrictionDescription,
 		dto.Cost,
 		dto.CostDescription,
 		dto.Hours,
@@ -200,10 +192,10 @@ func NewLocationFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistr
 		domain.NewModel(),
 	)
 
-	//err := storageRegistry.PlaceStorage.CreatePlace(ctx, place)
-	//if err != nil {
-	//	return err
-	//}
+	err := storageRegistry.PlaceStorage.CreatePlace(ctx, place)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

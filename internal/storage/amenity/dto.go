@@ -18,7 +18,7 @@ func NewAmenityFromDTO(dto AmenityDTO) amenityDomain.Amenity {
 	return amenityDomain.NewAmenityWithID(
 		amenityDomain.AmenityID(dto.AmenityID),
 		placeDomain.PlaceID(dto.LocationID),
-		&dto.Form,
+		dto.Form,
 		domain.NewModelFrom(dto.CreatedAt, nil),
 	)
 }

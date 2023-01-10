@@ -2,6 +2,7 @@ package station
 
 import (
 	"context"
+	"github.com/poorfrombabylon/chargeMeBackend/internal/storage/place"
 	"log"
 
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
@@ -20,6 +21,8 @@ type Storage interface {
 	GetStationsByPlaceID(context.Context, placeDomain.PlaceID) ([]stationDomain.Station, error)
 	GetPlaceIdByStationID(context.Context, stationDomain.StationID) (placeDomain.PlaceID, error)
 	DeleteStationByID(context.Context, stationDomain.StationID) error
+	HideCompanyStations(context.Context, string) error
+	CreateOrUnhideStation(context.Context, stationDomain.Station) error
 }
 
 func NewStationStorage(db libdb.DB) Storage {
@@ -74,6 +77,7 @@ func (s *stationStorage) GetStationsByPlaceID(
 	query := squirrel.Select(
 		"id",
 		"location_id",
+		"name",
 	).
 		From(TableStations).
 		Where(squirrel.Eq{"location_id": placeID.String()}).
@@ -113,6 +117,59 @@ func (s *stationStorage) DeleteStationByID(ctx context.Context, stationID statio
 		PlaceholderFormat(squirrel.Dollar)
 
 	err := s.db.Delete(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *stationStorage) HideCompanyStations(ctx context.Context, companyName string) error {
+	query := squirrel.Update(TableStations+" s").
+		Set("hide", true).
+		Where(squirrel.Expr(
+			"s.location_id IN (SELECT p.id FROM "+place.TablePlaces+" p "+
+				"WHERE p.company_name = ?)", companyName)).
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := s.db.Update(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (s *stationStorage) CreateOrUnhideStation(ctx context.Context, station stationDomain.Station) error {
+	query := squirrel.Insert(TableStations).
+		Columns(
+			"id",
+			"location_id",
+			"available",
+			"cost",
+			"name",
+			"manufacturer",
+			"cost_description",
+			"hours",
+			"kilowatts",
+			"created_at",
+		).
+		Values(
+			station.GetStationID().String(),
+			station.GetPlaceID().String(),
+			station.GetStationAvailability(),
+			station.GetStationCost(),
+			station.GetStationName(),
+			station.GetStationManufacturer(),
+			station.GetStationCostDescription(),
+			station.GetStationWorkingHours(),
+			station.GetStationKilowatts(),
+			station.GetCreatedAt(),
+		).
+		Suffix("ON CONFLICT (id) DO UPDATE SET hide = false").
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := s.db.Insert(ctx, query)
 	if err != nil {
 		return err
 	}

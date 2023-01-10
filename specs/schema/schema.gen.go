@@ -14,7 +14,7 @@ import (
 
 // Удобсва.
 type Amenity struct {
-	Form       *int   `json:"form,omitempty"`
+	Form       int    `json:"form"`
 	Id         string `json:"id"`
 	LocationId string `json:"location_id"`
 }
@@ -53,6 +53,7 @@ type CheckinStation struct {
 
 	// Время окончания зарядки в UTC
 	FinishesAt  time.Time `json:"finishes_at"`
+	IsAuto      bool      `json:"is_auto"`
 	Kilowatts   *float32  `json:"kilowatts,omitempty"`
 	OutletId    string    `json:"outlet_id"`
 	Rating      int       `json:"rating"`
@@ -94,11 +95,12 @@ type LocationFull struct {
 	Address         string        `json:"address"`
 	Amenities       *[]Amenity    `json:"amenities,omitempty"`
 	ComingSoon      *bool         `json:"coming_soon,omitempty"`
+	CompanyName     *string       `json:"company_name,omitempty"`
 	Cost            *bool         `json:"cost,omitempty"`
 	CostDescription *string       `json:"cost_description,omitempty"`
 	Description     *string       `json:"description,omitempty"`
 	Hours           *string       `json:"hours,omitempty"`
-	IconType        *string       `json:"icon_type,omitempty"`
+	IconType        string        `json:"icon_type"`
 	Id              string        `json:"id"`
 	Latitude        float32       `json:"latitude"`
 	Longitude       float32       `json:"longitude"`
@@ -113,10 +115,10 @@ type LocationFull struct {
 
 // Список станций по адресу
 type LocationPreliminary struct {
-	Access    int                  `json:"access"`
+	Access    *int                 `json:"access,omitempty"`
 	Address   string               `json:"address"`
 	Icon      *string              `json:"icon,omitempty"`
-	IconType  *string              `json:"icon_type,omitempty"`
+	IconType  string               `json:"icon_type"`
 	Id        string               `json:"id"`
 	Latitude  float32              `json:"latitude"`
 	Longitude float32              `json:"longitude"`
@@ -177,18 +179,16 @@ type SignInRequest struct {
 
 // Полная информация о станции.
 type StationFull struct {
-	Available *int `json:"available,omitempty"`
-
-	// Сущность чекина.
-	Checkin         *CheckinStation `json:"checkin,omitempty"`
-	Cost            *int            `json:"cost,omitempty"`
-	CostDescription *string         `json:"cost_description,omitempty"`
-	Hours           *string         `json:"hours,omitempty"`
-	Id              string          `json:"id"`
-	Kilowatts       *float32        `json:"kilowatts,omitempty"`
-	Manufacturer    *string         `json:"manufacturer,omitempty"`
-	Name            *string         `json:"name,omitempty"`
-	Outlets         []Outlet        `json:"outlets"`
+	Available       *int              `json:"available,omitempty"`
+	Checkins        *[]CheckinStation `json:"checkins,omitempty"`
+	Cost            *int              `json:"cost,omitempty"`
+	CostDescription *string           `json:"cost_description,omitempty"`
+	Hours           *string           `json:"hours,omitempty"`
+	Id              string            `json:"id"`
+	Kilowatts       *float32          `json:"kilowatts,omitempty"`
+	Manufacturer    *string           `json:"manufacturer,omitempty"`
+	Name            *string           `json:"name,omitempty"`
+	Outlets         []Outlet          `json:"outlets"`
 }
 
 // Сущность станции.
@@ -256,11 +256,6 @@ type CreateFullLocationJSONBody = LocationFull
 // UpdateLocationJSONBody defines parameters for UpdateLocation.
 type UpdateLocationJSONBody = LocationFull
 
-// UpdateLocationParams defines parameters for UpdateLocation.
-type UpdateLocationParams struct {
-	LocationId string `form:"locationId" json:"locationId"`
-}
-
 // GetChargingStationsByLocationIDParams defines parameters for GetChargingStationsByLocationID.
 type GetChargingStationsByLocationIDParams struct {
 	LocationId string `form:"locationId" json:"locationId"`
@@ -309,7 +304,7 @@ type ServerInterface interface {
 	CreateFullLocation(w http.ResponseWriter, r *http.Request)
 	// Обновление станции по идентификатору.
 	// (PUT /v1/locations)
-	UpdateLocation(w http.ResponseWriter, r *http.Request, params UpdateLocationParams)
+	UpdateLocation(w http.ResponseWriter, r *http.Request)
 	// Получение списка зарядных станций и удобств на локации.
 	// (GET /v1/locations/stations)
 	GetChargingStationsByLocationID(w http.ResponseWriter, r *http.Request, params GetChargingStationsByLocationIDParams)
@@ -461,27 +456,8 @@ func (siw *ServerInterfaceWrapper) CreateFullLocation(w http.ResponseWriter, r *
 func (siw *ServerInterfaceWrapper) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params UpdateLocationParams
-
-	// ------------- Required query parameter "locationId" -------------
-	if paramValue := r.URL.Query().Get("locationId"); paramValue != "" {
-
-	} else {
-		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "locationId"})
-		return
-	}
-
-	err = runtime.BindQueryParameter("form", true, true, "locationId", r.URL.Query(), &params.LocationId)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "locationId", Err: err})
-		return
-	}
-
 	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateLocation(w, r, params)
+		siw.Handler.UpdateLocation(w, r)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {

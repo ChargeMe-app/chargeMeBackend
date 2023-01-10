@@ -13,7 +13,7 @@ import (
 
 type Integration interface {
 	GetAllStations(context.Context) (SitronicsMapInfo, error)
-	GetStationByName(context.Context, string) (SitronicsStationInfo, error)
+	GetPlaceByName(context.Context, string) (SitronicsStationInfo, error)
 }
 
 type sitronicsIntegration struct {
@@ -61,7 +61,7 @@ func (s sitronicsIntegration) GetAllStations(_ context.Context) (SitronicsMapInf
 	return result, nil
 }
 
-func (s sitronicsIntegration) GetStationByName(_ context.Context, stationName string) (SitronicsStationInfo, error) {
+func (s sitronicsIntegration) GetPlaceByName(_ context.Context, stationName string) (SitronicsStationInfo, error) {
 	u, err := url.Parse(s.baseUrl)
 	if err != nil {
 		return SitronicsStationInfo{}, err

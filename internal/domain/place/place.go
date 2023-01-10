@@ -5,6 +5,11 @@ import (
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 )
 
+const (
+	Sitronics = "Sitronics"
+	MyECars   = "my.eCars"
+)
+
 type PlaceID string
 
 func (placeID PlaceID) String() string {
@@ -14,12 +19,12 @@ func (placeID PlaceID) String() string {
 type Place struct {
 	placeID         PlaceID
 	name            string
-	score           *float32
 	longitude       float32
 	latitude        float32
-	access          *int
-	iconType        *string
+	iconType        string
 	address         string
+	score           *float32
+	access          *int
 	description     *string
 	cost            *bool
 	costDescription *string
@@ -27,6 +32,7 @@ type Place struct {
 	open247         *bool
 	isComingSoon    *bool
 	phoneNumber     *string
+	companyName     *string
 	domain.Model
 }
 
@@ -36,7 +42,7 @@ func NewPlace(
 	longitude float32,
 	latitude float32,
 	access *int,
-	iconType *string,
+	iconType string,
 	address string,
 	description *string,
 	cost *bool,
@@ -74,7 +80,7 @@ func NewPlaceWithID(
 	longitude float32,
 	latitude float32,
 	access *int,
-	iconType *string,
+	iconType string,
 	address string,
 	description *string,
 	cost *bool,
@@ -137,11 +143,11 @@ func (p *Place) SetPlaceAccess(access *int) {
 	p.access = access
 }
 
-func (p *Place) GetPlaceIconType() *string {
+func (p *Place) GetPlaceIconType() string {
 	return p.iconType
 }
 
-func (p *Place) SetPlaceIconType(iconType *string) {
+func (p *Place) SetPlaceIconType(iconType string) {
 	p.iconType = iconType
 }
 
@@ -203,4 +209,12 @@ func (p *Place) SetDescription(description *string) {
 
 func (p *Place) GetDescription() *string {
 	return p.description
+}
+
+func (p *Place) SetCompanyName(name *string) {
+	p.companyName = name
+}
+
+func (p *Place) GetCompanyName() *string {
+	return p.companyName
 }

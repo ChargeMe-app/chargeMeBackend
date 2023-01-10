@@ -26,6 +26,7 @@ type Checkin struct {
 	comment     *string
 	kilowatts   *float32
 	rating      int
+	isAuto      bool
 	finishedAt  time.Time
 	domain.Model
 }
@@ -40,6 +41,7 @@ func NewCheckin(
 	comment *string,
 	kilowatts *float32,
 	rating int,
+	isAuto bool,
 	finishedAt time.Time,
 ) Checkin {
 	return Checkin{
@@ -53,6 +55,7 @@ func NewCheckin(
 		comment:     comment,
 		kilowatts:   kilowatts,
 		rating:      rating,
+		isAuto:      isAuto,
 		finishedAt:  finishedAt,
 		Model:       domain.NewModel(),
 	}
@@ -69,6 +72,7 @@ func NewCheckinWithID(
 	comment *string,
 	kilowatts *float32,
 	rating int,
+	isAuto bool,
 	finishedAt time.Time,
 	model domain.Model,
 ) Checkin {
@@ -83,6 +87,7 @@ func NewCheckinWithID(
 		comment:     comment,
 		kilowatts:   kilowatts,
 		rating:      rating,
+		isAuto:      isAuto,
 		finishedAt:  finishedAt,
 		Model:       model,
 	}
@@ -142,4 +147,8 @@ func (c Checkin) GetUserName() string {
 
 func (c Checkin) GetFinishedAt() time.Time {
 	return c.finishedAt
+}
+
+func (c Checkin) IsAutoCheckin() bool {
+	return c.isAuto
 }
