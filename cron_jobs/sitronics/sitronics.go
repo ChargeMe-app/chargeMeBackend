@@ -7,6 +7,7 @@ import (
 	"log"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/jmoiron/sqlx"
@@ -115,13 +116,17 @@ func startJob(
 			iconType += "R"
 		}
 
+		access := 1
+
+		placeID := strings.Replace(s.Id, ";", ".", -1)
+
 		place := placeDomain.NewPlaceWithID(
-			placeDomain.PlaceID(s.Id),
+			placeDomain.PlaceID(placeID),
 			s.Name,
 			nil,
 			s.Longitude,
 			s.Latitude,
-			nil,
+			&access,
 			iconType,
 			s.Address,
 			&s.PublicDescription,
@@ -166,9 +171,11 @@ func startJob(
 }
 
 func convertSitronicsStation(station sitronics.SitronicsStation) stationDomain.Station {
+	stationID := strings.Replace(station.Id, ";", ".", -1)
+
 	return stationDomain.NewStationWithID(
-		stationDomain.StationID(station.Id),
-		placeDomain.PlaceID(station.Id),
+		stationDomain.StationID(stationID),
+		placeDomain.PlaceID(stationID),
 		nil,
 		nil,
 		&station.Name,

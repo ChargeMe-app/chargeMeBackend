@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/poorfrombabylon/chargeMeBackend/internal/domain"
 	amenityDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/amenity"
 	checkinDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/checkin"
@@ -207,13 +208,19 @@ func transformCheckinList(checkins []checkinDomain.Checkin) []schema.CheckinStat
 }
 
 func transformLocationPreliminary(place placeDomain.Place, stations []schema.StationPreliminary) schema.LocationPreliminary {
+	name := place.GetPlaceName()
+
+	if place.GetCompanyName() != nil {
+		name = fmt.Sprintf("%s %s", *place.GetCompanyName(), place.GetPlaceName())
+	}
+
 	return schema.LocationPreliminary{
 		Access:    place.GetPlaceAccess(),
 		Address:   place.GetPlaceAddress(),
 		Id:        place.GetPlaceID().String(),
 		Latitude:  place.GetPlaceLatitude(),
 		Longitude: place.GetPlaceLongitude(),
-		Name:      place.GetPlaceName(),
+		Name:      name,
 		Score:     place.GetPlaceScore(),
 		IconType:  place.GetPlaceIconType(),
 		Stations:  stations,
@@ -304,6 +311,12 @@ func transformLocationFull(
 	reviewsList *[]schema.Review,
 	amenitiesList *[]schema.Amenity,
 ) schema.LocationFull {
+	name := place.GetPlaceName()
+
+	if place.GetCompanyName() != nil {
+		name = fmt.Sprintf("%s %s", *place.GetCompanyName(), place.GetPlaceName())
+	}
+
 	return schema.LocationFull{
 		Access:          place.GetPlaceAccess(),
 		Address:         place.GetPlaceAddress(),
@@ -312,7 +325,7 @@ func transformLocationFull(
 		Id:              place.GetPlaceID().String(),
 		Latitude:        place.GetPlaceLatitude(),
 		Longitude:       place.GetPlaceLongitude(),
-		Name:            place.GetPlaceName(),
+		Name:            name,
 		Score:           place.GetPlaceScore(),
 		Description:     place.GetDescription(),
 		Cost:            place.GetCost(),
@@ -321,6 +334,7 @@ func transformLocationFull(
 		Open247:         place.GetOpen247(),
 		ComingSoon:      place.IsComingSoon(),
 		PhoneNumber:     place.GetPhoneNumber(),
+		CompanyName:     place.GetCompanyName(),
 		Stations:        stationsList,
 		Reviews:         reviewsList,
 		Amenities:       amenitiesList,
