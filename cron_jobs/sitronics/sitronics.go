@@ -102,9 +102,13 @@ func startJob(
 		}
 
 		iconType := "G"
-		for i, outlet := range s.Connectors {
+		yIconType := map[int]bool{3: true, 4: true, 13: true}
+		for _, outlet := range s.Connectors {
 			connectorType := convertConnectorType(outlet.Type)
-
+			if yIconType[connectorType] {
+				iconType = "Y"
+				break
+			}
 		}
 
 		place := placeDomain.NewPlaceWithID(
