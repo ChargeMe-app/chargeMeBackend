@@ -111,6 +111,10 @@ func startJob(
 			}
 		}
 
+		if s.Status == 1 {
+			iconType += "R"
+		}
+
 		place := placeDomain.NewPlaceWithID(
 			placeDomain.PlaceID(s.Id),
 			s.Name,
