@@ -2,6 +2,7 @@ package review
 
 import (
 	"context"
+
 	"github.com/Masterminds/squirrel"
 	placeDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/place"
 	reviewDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/review"
@@ -22,6 +23,7 @@ type Storage interface {
 	GetReviewsListByLocationID(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
 	GetReviewWithPositiveRating(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
 	GetReviewsWithNotNullRating(context.Context, placeDomain.PlaceID) ([]reviewDomain.Review, error)
+	DeleteReviewsByStationID(context.Context, stationDomain.StationID) error
 }
 
 func NewReviewStorage(db libdb.DB) Storage {
@@ -229,4 +231,17 @@ func (r *reviewStorage) GetReviewsWithNotNullRating(ctx context.Context, placeID
 	}
 
 	return NewReviewsListFromDTO(result), nil
+}
+
+func (r *reviewStorage) DeleteReviewsByStationID(ctx context.Context, stationID stationDomain.StationID) error {
+	query := squirrel.Delete(tableReviews).
+		Where(squirrel.Eq{"station_id": stationID.String()}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := r.db.Delete(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

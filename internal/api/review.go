@@ -75,6 +75,7 @@ func (api *apiServer) CreateCheckin(w http.ResponseWriter, r *http.Request) {
 		req.Comment,
 		req.Kilowatts,
 		req.Rating,
+		false,
 		time.Now().Add(time.Duration(req.Duration)*time.Minute),
 	)
 

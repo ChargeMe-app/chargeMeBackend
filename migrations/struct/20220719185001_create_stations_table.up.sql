@@ -9,6 +9,7 @@ CREATE TABLE stations
     cost_description TEXT,
     hours            TEXT,
     kilowatts        FLOAT,
+    hide             BOOL DEFAULT FALSE,
     created_at       TIMESTAMP(0) NOT NULL
 );
 

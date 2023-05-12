@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/Masterminds/squirrel"
 	checkinDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/checkin"
+	outletDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/outlet"
 	stationDomain "github.com/poorfrombabylon/chargeMeBackend/internal/domain/station"
 	"github.com/poorfrombabylon/chargeMeBackend/libdb"
 	"time"
@@ -16,7 +17,8 @@ const (
 type Storage interface {
 	CreateCheckin(context.Context, checkinDomain.Checkin) error
 	GetFinishedCheckins(context.Context) ([]checkinDomain.Checkin, error)
-	DeleteCheckinByCheckinID(context.Context, checkinDomain.CheckinID) error
+	DeleteCheckinByID(context.Context, checkinDomain.CheckinID) error
+	DeleteCheckinByOutletID(context.Context, outletDomain.OutletID) error
 	GetValidCheckinForStation(context.Context, stationDomain.StationID) ([]checkinDomain.Checkin, error)
 }
 
@@ -40,6 +42,7 @@ func (c *checkinStorage) GetFinishedCheckins(ctx context.Context) ([]checkinDoma
 		"comment",
 		"kilowatts",
 		"rating",
+		"is_auto",
 		"started_at",
 	).
 		From(tableCheckins).
@@ -69,6 +72,7 @@ func (c *checkinStorage) GetValidCheckinForStation(ctx context.Context, stationI
 		"comment",
 		"kilowatts",
 		"rating",
+		"is_auto",
 		"started_at",
 		"finished_at",
 	).
@@ -101,6 +105,7 @@ func (c *checkinStorage) CreateCheckin(ctx context.Context, checkin checkinDomai
 			"comment",
 			"kilowatts",
 			"rating",
+			"is_auto",
 			"started_at",
 			"finished_at",
 		).
@@ -115,6 +120,7 @@ func (c *checkinStorage) CreateCheckin(ctx context.Context, checkin checkinDomai
 			checkin.GetComment(),
 			checkin.GetKilowatts(),
 			checkin.GetRating(),
+			checkin.IsAutoCheckin(),
 			checkin.GetCreatedAt(),
 			checkin.GetFinishedAt(),
 		).
@@ -128,10 +134,25 @@ func (c *checkinStorage) CreateCheckin(ctx context.Context, checkin checkinDomai
 	return nil
 }
 
-func (c *checkinStorage) DeleteCheckinByCheckinID(ctx context.Context, checkinID checkinDomain.CheckinID) error {
+func (c *checkinStorage) DeleteCheckinByID(ctx context.Context, checkinID checkinDomain.CheckinID) error {
 	query := squirrel.Update(tableCheckins).
 		Set("deleted_at", time.Now().In(time.UTC)).
 		Where(squirrel.Eq{"id": checkinID.String()}).
+		Where(squirrel.Eq{"deleted_at": nil}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	err := c.db.Update(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *checkinStorage) DeleteCheckinByOutletID(ctx context.Context, outletID outletDomain.OutletID) error {
+	query := squirrel.Update(tableCheckins).
+		Set("deleted_at", time.Now().In(time.UTC)).
+		Where(squirrel.Eq{"outlet_id": outletID.String()}).
 		Where(squirrel.Eq{"deleted_at": nil}).
 		PlaceholderFormat(squirrel.Dollar)
 

@@ -21,6 +21,7 @@ type CheckinDTO struct {
 	Comment     *string   `db:"comment"`
 	Kilowatts   *float32  `db:"kilowatts"`
 	Rating      int       `db:"rating"`
+	IsAuto      bool      `db:"is_auto"`
 	StartedAt   time.Time `db:"started_at"`
 	FinishedAt  time.Time `db:"finished_at"`
 }
@@ -37,6 +38,7 @@ func NewCheckinFromDTO(dto CheckinDTO) checkinDomain.Checkin {
 		dto.Comment,
 		dto.Kilowatts,
 		dto.Rating,
+		dto.IsAuto,
 		dto.FinishedAt,
 		domain.NewModelFrom(dto.StartedAt, nil),
 	)

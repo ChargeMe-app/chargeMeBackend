@@ -17,7 +17,7 @@ import (
 func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, params schema.GetLocationsParams) {
 	log.Println("api.station.GetStations")
 	ctx := r.Context()
-	var addresses []schema.AddressStationsPreliminary
+	var addresses []schema.LocationPreliminary
 
 	minLongitude := *params.LongitudeMin
 	maxLongitude := *params.LongitudeMax
@@ -50,18 +50,7 @@ func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, param
 				return
 			}
 
-			var outletResponse []schema.OutletPreliminary
-
-			for _, outlet := range outlets {
-				outletSchema := schema.OutletPreliminary{
-					Connector: outlet.GetConnector(),
-					Kilowatts: outlet.GetKilowatts(),
-					Id:        outlet.GetOutletID().String(),
-					Power:     outlet.GetPower(),
-				}
-
-				outletResponse = append(outletResponse, outletSchema)
-			}
+			outletResponse := transformOutletsList(outlets)
 
 			stationSchema := schema.StationPreliminary{
 				Id:      station.GetStationID().String(),
@@ -71,22 +60,12 @@ func (api *apiServer) GetLocations(w http.ResponseWriter, r *http.Request, param
 			stationResponse = append(stationResponse, stationSchema)
 		}
 
-		addressSchema := schema.AddressStationsPreliminary{
-			Access:    *place.GetPlaceAccess(),
-			Address:   place.GetPlaceAddress(),
-			Id:        place.GetPlaceID().String(),
-			Latitude:  place.GetPlaceLatitude(),
-			Longitude: place.GetPlaceLongitude(),
-			Name:      place.GetPlaceName(),
-			Score:     place.GetPlaceScore(),
-			IconType:  place.GetPlaceIconType(),
-			Stations:  stationResponse,
-		}
+		addressSchema := transformLocationPreliminary(place, stationResponse)
 
 		addresses = append(addresses, addressSchema)
 	}
 
-	response := schema.ResponseLocations{
+	response := schema.LocationsOnMap{
 		Locations: addresses,
 	}
 
@@ -103,10 +82,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 	log.Println("api.station.GetChargingStationsByLocationID")
 	ctx := r.Context()
 	placeID := placeDomain.PlaceID(params.LocationId)
-	var reviewsResponse []schema.Review
 	var stationsResponse []schema.StationFull
-	var amenitiesResponse []schema.Amenity
-	var photosResponse []schema.Photo
 
 	place, err := api.placeService.GetFullPlaceByID(ctx, placeID)
 	if err != nil {
@@ -122,22 +98,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		return
 	}
 
-	for _, review := range reviews {
-		r := schema.Review{
-			Id:            review.GetReviewID().String(),
-			StationId:     review.GetStationID().String(),
-			OutletId:      review.GetOutletID().String(),
-			Comment:       review.GetComment(),
-			Rating:        review.GetRating(),
-			ConnectorType: review.GetConnectorType(),
-			UserName:      review.GetUserName(),
-			VehicleName:   review.GetVehicleName(),
-			VehicleType:   review.GetVehicleType(),
-			CreatedAt:     review.GetCreatedAt(),
-		}
-
-		reviewsResponse = append(reviewsResponse, r)
-	}
+	reviewsResponse := transformReviewsList(reviews)
 
 	stations, err := api.stationService.GetStationsByPlaceID(ctx, placeID)
 	if err != nil {
@@ -154,32 +115,11 @@ func (api *apiServer) GetChargingStationsByLocationID(
 			return
 		}
 
-		var outletResponse []schema.OutletPreliminary
+		outletResponse := transformOutletsList(outlets)
 
-		for _, outlet := range outlets {
-			outletSchema := schema.OutletPreliminary{
-				Connector: outlet.GetConnector(),
-				Kilowatts: outlet.GetKilowatts(),
-				Id:        outlet.GetOutletID().String(),
-				Power:     outlet.GetPower(),
-			}
+		stationResponse := transformFullStation(station, outletResponse)
 
-			outletResponse = append(outletResponse, outletSchema)
-		}
-
-		s := schema.StationFull{
-			Id:              station.GetStationID().String(),
-			Outlets:         outletResponse,
-			Available:       station.GetStationAvailability(),
-			Cost:            station.GetStationCost(),
-			Name:            station.GetStationName(),
-			Manufacturer:    station.GetStationManufacturer(),
-			CostDescription: station.GetStationCostDescription(),
-			Hours:           station.GetStationWorkingHours(),
-			Kilowatts:       station.GetStationKilowatts(),
-		}
-
-		checkins, err := api.checkinService.GetValidCheckinForStation(ctx, station.GetStationID())
+		checkins, err := api.checkinService.GetValidCheckinForStation(ctx, station, place.GetCompanyName())
 		if err != nil {
 			log.Println(err.Error())
 			w.Write([]byte(err.Error()))
@@ -187,11 +127,11 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		}
 
 		if checkins != nil && len(checkins) != 0 {
-			c := transformCheckin(checkins[0])
-			s.Checkin = &c
+			c := transformCheckinList(checkins)
+			stationResponse.Checkins = &c
 		}
 
-		stationsResponse = append(stationsResponse, s)
+		stationsResponse = append(stationsResponse, stationResponse)
 	}
 
 	photos, err := api.photoService.GetPhotoListByPlaceID(ctx, placeID)
@@ -203,17 +143,7 @@ func (api *apiServer) GetChargingStationsByLocationID(
 
 	yandexLink := config.GetConfig().YandexStorage.BaseUrl
 
-	for _, p := range photos {
-		photo := schema.Photo{
-			Id:        p.GetPhotoID().String(),
-			Caption:   p.GetPhotoCaption(),
-			Url:       yandexLink + "/" + p.GetPhotoName(),
-			UserId:    p.GetUserID().String(),
-			CreatedAt: p.GetCreatedAt(),
-		}
-
-		photosResponse = append(photosResponse, photo)
-	}
+	photosResponse := transformPhotosList(photos, yandexLink)
 
 	amenities, err := api.amenityService.GetAmenitiesListByLocationID(ctx, placeID)
 	if err != nil {
@@ -222,39 +152,9 @@ func (api *apiServer) GetChargingStationsByLocationID(
 		return
 	}
 
-	for _, amenity := range amenities {
-		a := schema.Amenity{
-			Id:         amenity.GetAmenityID().String(),
-			LocationId: amenity.GetLocationID().String(),
-			Form:       amenity.GetAmenityForm(),
-		}
+	amenitiesResponse := transformAmenitiesList(amenities)
 
-		amenitiesResponse = append(amenitiesResponse, a)
-	}
-
-	response := schema.AddressStationsFull{
-		Access:                       place.GetPlaceAccess(),
-		Address:                      place.GetPlaceAddress(),
-		IconType:                     place.GetPlaceIconType(),
-		Photos:                       &photosResponse,
-		Id:                           place.GetPlaceID().String(),
-		Latitude:                     place.GetPlaceLatitude(),
-		Longitude:                    place.GetPlaceLongitude(),
-		Name:                         place.GetPlaceName(),
-		Score:                        place.GetPlaceScore(),
-		Description:                  place.GetDescription(),
-		AccessRestriction:            place.GetAccessRestriction(),
-		AccessRestrictionDescription: place.GetAccessRestrictionDescription(),
-		Cost:                         place.GetCost(),
-		CostDescription:              place.GetCostDescription(),
-		Hours:                        place.GetHours(),
-		Open247:                      place.GetOpen247(),
-		ComingSoon:                   place.IsComingSoon(),
-		PhoneNumber:                  place.GetPhoneNumber(),
-		Stations:                     stationsResponse,
-		Reviews:                      &reviewsResponse,
-		Amenities:                    &amenitiesResponse,
-	}
+	response := transformLocationFull(place, &photosResponse, stationsResponse, &reviewsResponse, &amenitiesResponse)
 
 	log.Println(response)
 
@@ -326,7 +226,7 @@ func (api *apiServer) CreateFullLocation(w http.ResponseWriter, r *http.Request)
 
 // обновление локации со станциями
 // (PUT /v1/locations)
-func (api *apiServer) UpdateLocation(w http.ResponseWriter, r *http.Request, params schema.UpdateLocationParams) {
+func (api *apiServer) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	log.Println("api.UpdateLocation")
 	ctx := r.Context()
 	var req chargeMeV1.CreateFullLocationJSONBody
@@ -338,7 +238,7 @@ func (api *apiServer) UpdateLocation(w http.ResponseWriter, r *http.Request, par
 		return
 	}
 
-	locationId := placeDomain.PlaceID(params.LocationId)
+	locationId := placeDomain.PlaceID(req.Id)
 	location := convertLocationWithID(req, locationId)
 
 	err = api.placeService.UpdatePlace(ctx, location)

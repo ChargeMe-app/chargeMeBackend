@@ -61,7 +61,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseLocations'
+                $ref: '#/components/schemas/LocationsOnMap'
         '500':
           description: internal server error
           content:
@@ -81,14 +81,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddressStationsFull'
+              $ref: '#/components/schemas/LocationFull'
       responses:
         '200':
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseLocations'
+                $ref: '#/components/schemas/LocationsOnMap'
         '500':
           description: internal server error
           content:
@@ -102,17 +102,11 @@ paths:
       operationId: updateLocation
       summary: Обновление станции по идентификатору.
       description: Обновление станции по идентификатору.
-      parameters:
-        - name: locationId
-          required: true
-          in: query
-          schema:
-            type: string
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddressStationsFull'
+              $ref: '#/components/schemas/LocationFull'
       responses:
         '200':
           description: Success
@@ -147,7 +141,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddressStationsFull'
+                $ref: '#/components/schemas/LocationFull'
 
   /v1/review:
     post:
@@ -317,7 +311,7 @@ components:
         access_token:
           type: string
 
-    ResponseLocations:
+    LocationsOnMap:
       type: object
       required:
         - locations
@@ -326,19 +320,19 @@ components:
           type: array
           description: Результат запроса.
           items:
-            $ref: '#/components/schemas/AddressStationsPreliminary'
+            $ref: '#/components/schemas/LocationPreliminary'
 
-    AddressStationsPreliminary:
+    LocationPreliminary:
       description: Список станций по адресу
       type: object
       required:
-        - access
         - address
         - id
         - latitude
         - longitude
         - name
         - stations
+        - icon_type
       properties:
         access:
           type: integer
@@ -424,6 +418,7 @@ components:
         - rating
         - finishes_at
         - user_name
+        - is_auto
       properties:
         user_id:
           type: string
@@ -441,6 +436,8 @@ components:
           type: number
         rating:
           type: integer
+        is_auto:
+          type: boolean
         finishes_at:
           type: string
           format: date-time
@@ -458,9 +455,9 @@ components:
         outlets:
           type: array
           items:
-            $ref: '#/components/schemas/OutletPreliminary'
+            $ref: '#/components/schemas/Outlet'
 
-    OutletPreliminary:
+    Outlet:
       description: Сущность разъема.
       type: object
       required:
@@ -477,6 +474,11 @@ components:
           nullable: true
         power:
           type: integer
+        price:
+          type: number
+          nullable: true
+        price_unit:
+          type: string
 
     LocationWithFullStation:
       type: object
@@ -486,7 +488,7 @@ components:
         - amenities
       properties:
         location:
-          $ref: '#/components/schemas/AddressStationsFull'
+          $ref: '#/components/schemas/LocationFull'
         reviews:
           type: array
           description: Отзывы о локации
@@ -498,7 +500,7 @@ components:
           items:
             $ref: '#/components/schemas/Amenity'
 
-    AddressStationsFull:
+    LocationFull:
       description: Список станций по адресу
       type: object
       required:
@@ -508,6 +510,7 @@ components:
         - longitude
         - name
         - stations
+        - icon_type
       properties:
         photos:
           type: array
@@ -531,10 +534,6 @@ components:
           type: number
         description:
           type: string
-        access_restriction:
-          type: string
-        access_restriction_description:
-          type: string
         cost:
           type: boolean
         cost_description:
@@ -546,6 +545,8 @@ components:
         coming_soon:
           type: boolean
         phone_number:
+          type: string
+        company_name:
           type: string
         stations:
           type: array
@@ -591,7 +592,7 @@ components:
         outlets:
           type: array
           items:
-            $ref: "#/components/schemas/OutletPreliminary"
+            $ref: "#/components/schemas/Outlet"
         available:
           type: integer
         cost:
@@ -606,8 +607,10 @@ components:
           type: string
         kilowatts:
           type: number
-        checkin:
-          $ref: '#/components/schemas/CheckinStation'
+        checkins:
+          type: array
+          items:
+            $ref: '#/components/schemas/CheckinStation'
 
     Review:
       description: Отзыв о локации.
@@ -678,6 +681,7 @@ components:
       required:
         - id
         - location_id
+        - form
       properties:
         id:
           type: string

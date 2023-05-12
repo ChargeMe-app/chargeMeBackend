@@ -12,48 +12,9 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// Список станций по адресу
-type AddressStationsFull struct {
-	Access                       *int          `json:"access,omitempty"`
-	AccessRestriction            *string       `json:"access_restriction,omitempty"`
-	AccessRestrictionDescription *string       `json:"access_restriction_description,omitempty"`
-	Address                      string        `json:"address"`
-	Amenities                    *[]Amenity    `json:"amenities,omitempty"`
-	ComingSoon                   *bool         `json:"coming_soon,omitempty"`
-	Cost                         *bool         `json:"cost,omitempty"`
-	CostDescription              *string       `json:"cost_description,omitempty"`
-	Description                  *string       `json:"description,omitempty"`
-	Hours                        *string       `json:"hours,omitempty"`
-	IconType                     *string       `json:"icon_type,omitempty"`
-	Id                           string        `json:"id"`
-	Latitude                     float32       `json:"latitude"`
-	Longitude                    float32       `json:"longitude"`
-	Name                         string        `json:"name"`
-	Open247                      *bool         `json:"open247,omitempty"`
-	PhoneNumber                  *string       `json:"phone_number,omitempty"`
-	Photos                       *[]Photo      `json:"photos,omitempty"`
-	Reviews                      *[]Review     `json:"reviews,omitempty"`
-	Score                        *float32      `json:"score,omitempty"`
-	Stations                     []StationFull `json:"stations"`
-}
-
-// Список станций по адресу
-type AddressStationsPreliminary struct {
-	Access    int                  `json:"access"`
-	Address   string               `json:"address"`
-	Icon      *string              `json:"icon,omitempty"`
-	IconType  *string              `json:"icon_type,omitempty"`
-	Id        string               `json:"id"`
-	Latitude  float32              `json:"latitude"`
-	Longitude float32              `json:"longitude"`
-	Name      string               `json:"name"`
-	Score     *float32             `json:"score,omitempty"`
-	Stations  []StationPreliminary `json:"stations"`
-}
-
 // Удобсва.
 type Amenity struct {
-	Form       *int   `json:"form,omitempty"`
+	Form       int    `json:"form"`
 	Id         string `json:"id"`
 	LocationId string `json:"location_id"`
 }
@@ -92,6 +53,7 @@ type CheckinStation struct {
 
 	// Время окончания зарядки в UTC
 	FinishesAt  time.Time `json:"finishes_at"`
+	IsAuto      bool      `json:"is_auto"`
 	Kilowatts   *float32  `json:"kilowatts,omitempty"`
 	OutletId    string    `json:"outlet_id"`
 	Rating      int       `json:"rating"`
@@ -127,12 +89,58 @@ type GoogleAuthCredentials struct {
 	IdToken     string `json:"id_token"`
 }
 
+// Список станций по адресу
+type LocationFull struct {
+	Access          *int          `json:"access,omitempty"`
+	Address         string        `json:"address"`
+	Amenities       *[]Amenity    `json:"amenities,omitempty"`
+	ComingSoon      *bool         `json:"coming_soon,omitempty"`
+	CompanyName     *string       `json:"company_name,omitempty"`
+	Cost            *bool         `json:"cost,omitempty"`
+	CostDescription *string       `json:"cost_description,omitempty"`
+	Description     *string       `json:"description,omitempty"`
+	Hours           *string       `json:"hours,omitempty"`
+	IconType        string        `json:"icon_type"`
+	Id              string        `json:"id"`
+	Latitude        float32       `json:"latitude"`
+	Longitude       float32       `json:"longitude"`
+	Name            string        `json:"name"`
+	Open247         *bool         `json:"open247,omitempty"`
+	PhoneNumber     *string       `json:"phone_number,omitempty"`
+	Photos          *[]Photo      `json:"photos,omitempty"`
+	Reviews         *[]Review     `json:"reviews,omitempty"`
+	Score           *float32      `json:"score,omitempty"`
+	Stations        []StationFull `json:"stations"`
+}
+
+// Список станций по адресу
+type LocationPreliminary struct {
+	Access    *int                 `json:"access,omitempty"`
+	Address   string               `json:"address"`
+	Icon      *string              `json:"icon,omitempty"`
+	IconType  string               `json:"icon_type"`
+	Id        string               `json:"id"`
+	Latitude  float32              `json:"latitude"`
+	Longitude float32              `json:"longitude"`
+	Name      string               `json:"name"`
+	Score     *float32             `json:"score,omitempty"`
+	Stations  []StationPreliminary `json:"stations"`
+}
+
+// LocationsOnMap defines model for LocationsOnMap.
+type LocationsOnMap struct {
+	// Результат запроса.
+	Locations []LocationPreliminary `json:"locations"`
+}
+
 // Сущность разъема.
-type OutletPreliminary struct {
+type Outlet struct {
 	Connector int      `json:"connector"`
 	Id        string   `json:"id"`
 	Kilowatts *float32 `json:"kilowatts"`
 	Power     int      `json:"power"`
+	Price     *float32 `json:"price"`
+	PriceUnit *string  `json:"price_unit,omitempty"`
 }
 
 // Photo defines model for Photo.
@@ -142,12 +150,6 @@ type Photo struct {
 	Id        string    `json:"id"`
 	Url       string    `json:"url"`
 	UserId    string    `json:"user_id"`
-}
-
-// ResponseLocations defines model for ResponseLocations.
-type ResponseLocations struct {
-	// Результат запроса.
-	Locations []AddressStationsPreliminary `json:"locations"`
 }
 
 // Отзыв о локации.
@@ -178,24 +180,22 @@ type SignInRequest struct {
 
 // Полная информация о станции.
 type StationFull struct {
-	Available *int `json:"available,omitempty"`
-
-	// Сущность чекина.
-	Checkin         *CheckinStation     `json:"checkin,omitempty"`
-	Cost            *int                `json:"cost,omitempty"`
-	CostDescription *string             `json:"cost_description,omitempty"`
-	Hours           *string             `json:"hours,omitempty"`
-	Id              string              `json:"id"`
-	Kilowatts       *float32            `json:"kilowatts,omitempty"`
-	Manufacturer    *string             `json:"manufacturer,omitempty"`
-	Name            *string             `json:"name,omitempty"`
-	Outlets         []OutletPreliminary `json:"outlets"`
+	Available       *int              `json:"available,omitempty"`
+	Checkins        *[]CheckinStation `json:"checkins,omitempty"`
+	Cost            *int              `json:"cost,omitempty"`
+	CostDescription *string           `json:"cost_description,omitempty"`
+	Hours           *string           `json:"hours,omitempty"`
+	Id              string            `json:"id"`
+	Kilowatts       *float32          `json:"kilowatts,omitempty"`
+	Manufacturer    *string           `json:"manufacturer,omitempty"`
+	Name            *string           `json:"name,omitempty"`
+	Outlets         []Outlet          `json:"outlets"`
 }
 
 // Сущность станции.
 type StationPreliminary struct {
-	Id      string              `json:"id"`
-	Outlets []OutletPreliminary `json:"outlets"`
+	Id      string   `json:"id"`
+	Outlets []Outlet `json:"outlets"`
 }
 
 // Информация пользователя.
@@ -252,15 +252,10 @@ type GetLocationsParams struct {
 }
 
 // CreateFullLocationJSONBody defines parameters for CreateFullLocation.
-type CreateFullLocationJSONBody = AddressStationsFull
+type CreateFullLocationJSONBody = LocationFull
 
 // UpdateLocationJSONBody defines parameters for UpdateLocation.
-type UpdateLocationJSONBody = AddressStationsFull
-
-// UpdateLocationParams defines parameters for UpdateLocation.
-type UpdateLocationParams struct {
-	LocationId string `form:"locationId" json:"locationId"`
-}
+type UpdateLocationJSONBody = LocationFull
 
 // GetChargingStationsByLocationIDParams defines parameters for GetChargingStationsByLocationID.
 type GetChargingStationsByLocationIDParams struct {
@@ -310,7 +305,7 @@ type ServerInterface interface {
 	CreateFullLocation(w http.ResponseWriter, r *http.Request)
 	// Обновление станции по идентификатору.
 	// (PUT /v1/locations)
-	UpdateLocation(w http.ResponseWriter, r *http.Request, params UpdateLocationParams)
+	UpdateLocation(w http.ResponseWriter, r *http.Request)
 	// Получение списка зарядных станций и удобств на локации.
 	// (GET /v1/locations/stations)
 	GetChargingStationsByLocationID(w http.ResponseWriter, r *http.Request, params GetChargingStationsByLocationIDParams)
@@ -462,27 +457,8 @@ func (siw *ServerInterfaceWrapper) CreateFullLocation(w http.ResponseWriter, r *
 func (siw *ServerInterfaceWrapper) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params UpdateLocationParams
-
-	// ------------- Required query parameter "locationId" -------------
-	if paramValue := r.URL.Query().Get("locationId"); paramValue != "" {
-
-	} else {
-		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "locationId"})
-		return
-	}
-
-	err = runtime.BindQueryParameter("form", true, true, "locationId", r.URL.Query(), &params.LocationId)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "locationId", Err: err})
-		return
-	}
-
 	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateLocation(w, r, params)
+		siw.Handler.UpdateLocation(w, r)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
