@@ -1,0 +1,12 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: postgres_chargeMe
+    image: postgres
+    environment:
+      POSTGRES_USER: chargeme
+      POSTGRES_PASSWORD: c8e0248390414f3eba3d352fc3f9c810
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
