@@ -1,5 +1,4 @@
 ./stationData.json
-docker-compose.yml
 cmd/chargeMe/config.yaml
 ./example/check_integration/
 .idea

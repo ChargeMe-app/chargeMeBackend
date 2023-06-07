@@ -12,5 +12,5 @@ RUN go mod download
 RUN go build -o main ./cmd/chargeMe
 
 
-EXPOSE 8080
+EXPOSE 8081
 ENTRYPOINT ["./main"]
