@@ -76,8 +76,8 @@ type OutletDTOJson struct {
 }
 
 type AmenitiesDTOJson struct {
-	LocationID int  `json:"location_id,omitempty"`
-	Form       *int `json:"type,omitempty"`
+	LocationID int `json:"location_id,omitempty"`
+	Form       int `json:"type,omitempty"`
 }
 
 type ReviewDTOJson struct {
@@ -136,7 +136,7 @@ func main() {
 func startJob(ctx context.Context, storageRegistry *storage.Storages) error {
 	var dto []LocationDTOJson
 
-	jsonFile, err := os.Open("/Users/almazkhayrullin/Desktop/full.json")
+	jsonFile, err := os.Open("/Users/almazkhayrullin/Desktop/jsons/full.json")
 	if err != nil {
 		log.Fatal("failed to parse json:", err.Error())
 	}
@@ -246,6 +246,8 @@ func NewOutletsFromDTO(ctx context.Context, stationDTO StationsDTOJson, storageR
 
 		err = storageRegistry.OutletStorage.CreateOutlet(ctx, outlet)
 		if err != nil {
+			fmt.Println("outlet:", outlet)
+
 			return err
 		}
 
@@ -280,6 +282,8 @@ func NewReviewFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry 
 
 		err = storageRegistry.ReviewStorage.CreateReview(ctx, review)
 		if err != nil {
+			fmt.Println("review:", review)
+
 			return err
 		}
 	}
@@ -300,6 +304,8 @@ func NewAmenityFromDTO(ctx context.Context, dto LocationDTOJson, storageRegistry
 
 		err = storageRegistry.AmenityStorage.CreateAmenity(ctx, amenity)
 		if err != nil {
+			fmt.Println("amenity:", amenity)
+
 			return err
 		}
 	}

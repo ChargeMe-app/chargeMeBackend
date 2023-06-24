@@ -8,7 +8,7 @@ CREATE TABLE checkins
     comment      TEXT,
     kilowatts    FLOAT,
     rating       INTEGER,
-    isAuto       BOOL DEFAULT FALSE,
+    is_auto       BOOL DEFAULT FALSE,
     user_name    TEXT             NOT NULL,
     duration     INT              NOT NULL,
     started_at   TIMESTAMP(0)     NOT NULL,
